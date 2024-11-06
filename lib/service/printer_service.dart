@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -23,7 +24,7 @@ class PrinterService {
 
     pdf.addPage(
       pw.Page(
-        pageFormat: PdfPageFormat.a4,
+        pageFormat: PdfPageFormat.roll80,
         margin: const pw.EdgeInsets.all(16),
         build: (pw.Context context) {
           return pw.Column(
@@ -103,35 +104,38 @@ class PrinterService {
     return pdf;
   }
 
-  /// Tries to print the PDF to a connected printer.
-  /// Shows a popup if no printer is found.
+  /// Prints the PDF, with web and non-web support.
   Future<void> printPdf(BuildContext context) async {
     final pdf = await generateBillReceiptPdf();
 
-    // Check for available printers
-    final availablePrinters = await Printing.listPrinters();
-
-    if (availablePrinters.isNotEmpty) {
-      // If printers are available, select the first one (for demo purposes)
-      await Printing.directPrintPdf(
-        printer: availablePrinters.first,
-        onLayout: (PdfPageFormat format) async => pdf.save(),
-      );
+    if (kIsWeb) {
+      // On Web, use Printing.layoutPdf to show a print preview dialog
+      await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf.save());
     } else {
-      // Show popup if no printer is available
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('No Printer Found'),
-          content: const Text('Please connect to a printer to print this document.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      // On mobile (iOS/Android), continue as before
+      final availablePrinters = await Printing.listPrinters();
+
+      if (availablePrinters.isNotEmpty) {
+        await Printing.directPrintPdf(
+          printer: availablePrinters.first,
+          onLayout: (PdfPageFormat format) async => pdf.save(),
+        );
+      } else {
+        // Show popup if no printer is available
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('No Printer Found'),
+            content: const Text('Please connect to a printer to print this document.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 }

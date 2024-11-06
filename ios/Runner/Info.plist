@@ -45,5 +45,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>We need Bluetooth access to communicate with printers</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>We need Bluetooth access to communicate with printers</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>We need network access to find and communicate with printers</string>
+	<key>NSBonjourServices</key>
+	<array>
+	    <string>_ipp._tcp</string>
+	    <string>_ipps._tcp</string>
+	    <string>_printer._tcp</string>
+	</array>
+
 </dict>
 </plist>
