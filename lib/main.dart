@@ -28,19 +28,75 @@ class MyApp extends StatelessWidget {
 class DashboardView extends StatelessWidget {
   const DashboardView({super.key});
 
+  void _generateReport(BuildContext context) {
+    final List<String> statuses = ['Day', 'Week', 'Two Weeks', 'Month'];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0), // Match card corner radius
+          ),
+          title: const Text('Sales report'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: statuses.map((status) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: SizedBox(
+                  width: double.infinity, // Ensure button takes max width
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close the dialog
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.pink,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0), // Button corner styling
+                      ),
+                    ),
+                    child: Text(status),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Order Manager'),
+          title: const Text('TRT Order Manager'),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.inventory), text: 'Products'),
               Tab(icon: Icon(Icons.receipt), text: 'Orders'),
             ],
           ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                _generateReport(context);
+              },
+              icon: const Icon(Icons.sim_card_download_outlined),
+            )
+          ],
         ),
         body: const TabBarView(
           children: [
@@ -329,7 +385,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
             // App Name or Slogan
             Text(
-              'Order Manager',
+              'TRT Order Manager',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
