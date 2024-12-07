@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,31 +10,17 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.pink, // Set primary color to Colors.pink[700]
+        ),
         useMaterial3: true,
       ),
-      home: const DashboardView(),
+      home: const SplashScreen(),
     );
   }
 }
@@ -46,7 +34,7 @@ class DashboardView extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Products & Orders'),
+          title: const Text('Order Manager'),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.inventory), text: 'Products'),
@@ -277,7 +265,7 @@ class _OrdersPageState extends State<OrdersPage> {
                       Navigator.pop(context); // Close the dialog
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: orderStatuses[index] == status ? Colors.blueAccent : Colors.grey[300],
+                      backgroundColor: orderStatuses[index] == status ? Colors.pink : Colors.grey[300],
                       foregroundColor: orderStatuses[index] == status ? Colors.white : Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0), // Button corner styling
@@ -299,6 +287,78 @@ class _OrdersPageState extends State<OrdersPage> {
           ],
         );
       },
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Navigate to DashboardView after 3 seconds
+    Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardView()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.pink[700], // Splash screen background color
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Logo or Icon
+            Icon(
+              Icons.fastfood_rounded,
+              size: 80,
+              color: Colors.white,
+            ),
+            SizedBox(height: 16),
+
+            // App Name or Slogan
+            Text(
+              'Order Manager',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 8),
+
+            // Subtitle or tagline
+            Text(
+              'Manage your orders effortlessly!',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white70,
+              ),
+            ),
+            SizedBox(height: 32),
+
+            // Loading Indicator
+            SizedBox(
+              height: 25,
+              width: 25,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
