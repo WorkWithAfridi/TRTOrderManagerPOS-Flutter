@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pdf_printer/service/dependency_injection_service.dart';
 import 'package:pdf_printer/views/dashboard/order_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_list_view.dart';
 import 'package:pdf_printer/views/splash/splash_view.dart';
 
-void main() {
+void main() async {
+  await initApp();
   runApp(const MyApp());
+}
+
+Future<void> initApp() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  DependencyInjection.init();
 }
 
 class MyApp extends StatelessWidget {
@@ -12,8 +21,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Order Manager',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.pink, // Set primary color to Colors.pink[700]
