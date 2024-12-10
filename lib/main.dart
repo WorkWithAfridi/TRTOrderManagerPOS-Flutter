@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pdf_printer/views/order_list_view.dart';
-import 'package:pdf_printer/views/product_list_view.dart';
-import 'package:pdf_printer/views/splash_view.dart';
+import 'package:pdf_printer/views/dashboard/order_list_view.dart';
+import 'package:pdf_printer/views/dashboard/product_list_view.dart';
+import 'package:pdf_printer/views/splash/splash_view.dart';
 
 void main() {
   runApp(const MyApp());
