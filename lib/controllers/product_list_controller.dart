@@ -60,7 +60,7 @@ class ProductListController extends GetxController {
       );
 
       if (response != null && response.statusCode == 200) {
-        fetchAllProducts();
+        // fetchAllProducts();
         return true;
       } else {
         throw Exception("Failed to update product. Status code: ${response?.statusCode}");

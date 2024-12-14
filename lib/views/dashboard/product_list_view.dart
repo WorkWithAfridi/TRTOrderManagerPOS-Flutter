@@ -23,6 +23,10 @@ class ProductsPage extends StatelessWidget {
                     shrinkWrap: true, // Prevents scrolling issues within a SingleChildScrollView
                     itemBuilder: (context, index) {
                       final product = products[index];
+                      // if (index == products.length / 2) {
+                      //   controller.currentPage++;
+                      //   controller.fetchAllProducts();
+                      // }
                       return Column(
                         children: [
                           Column(
@@ -52,23 +56,6 @@ class ProductsPage extends StatelessWidget {
                             ],
                           ),
                         ],
-                      );
-
-                      Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(16.0),
-                          title: Text(product.name ?? 'N/A'),
-                          subtitle: Text('#${product.id ?? ''}'),
-                          trailing: Switch(
-                            value: product.status == 'publish',
-                            onChanged: (value) {
-                              controller.products.where((p) => p.id == product.id).first.status = value ? 'publish' : 'draft';
-                              controller.toggleProductStatus(isActive: value, productId: product.id ?? 0);
-                              controller.update();
-                            },
-                          ),
-                        ),
                       );
                     },
                   ),
