@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pdf_printer/controllers/order_list_controller.dart';
+import 'package:pdf_printer/controllers/product_list_controller.dart';
 import 'package:pdf_printer/main.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,6 +18,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Navigate to DashboardView after 3 seconds
+    Get.find<ProductListController>().fetchAllProducts();
+    Get.find<OrderListController>().getOrderList();
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,

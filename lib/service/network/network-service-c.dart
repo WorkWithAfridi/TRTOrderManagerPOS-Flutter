@@ -1,7 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
-import 'package:pdf_printer/views/global/no_internet.dart';
 
 class NetworkService extends GetxController {
   final Connectivity _connectivity = Connectivity();
@@ -17,13 +16,13 @@ class NetworkService extends GetxController {
     if (connectivityResultList.contains(ConnectivityResult.none)) {
       logger.d("Network down");
       isConnected = false;
-      Get.to(
-        () => const NoInternet(),
-      );
+      // Get.to(
+      //   () => const NoInternet(),
+      // );
     } else {
       logger.d("Network service restored");
       isConnected = true;
-      Get.back();
+      // Get.back();
     }
   }
 }

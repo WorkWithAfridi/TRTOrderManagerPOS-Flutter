@@ -1,0 +1,7 @@
+{
+    "url": "https://cp.trttechnologies.net",
+    "consumerKey": "ck_5117e88cc9242b055d8dc1ee329fee61b78661e7", 
+    "consumerSecret": "cs_36af9e099fcecc5f008df443f1993527870d1536", 
+    "version": "wc/v3",
+    "queryStringAuth": true 
+}

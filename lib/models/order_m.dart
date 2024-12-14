@@ -258,7 +258,7 @@ class LineItem {
   List<Tax>? taxes;
   List<MetaDatum>? metaData;
   String? sku;
-  int? price;
+  double? price;
 
   LineItem({
     this.id,
@@ -326,7 +326,7 @@ class MetaDatum {
   factory MetaDatum.fromJson(Map<String, dynamic> json) => MetaDatum(
         id: json["id"],
         key: json["key"],
-        value: json["value"],
+        // value: json["value"],
       );
 
   Map<String, dynamic> toJson() => {

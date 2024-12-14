@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf_printer/controllers/order_list_controller.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -9,158 +11,182 @@ class OrdersPage extends StatefulWidget {
 }
 
 class _OrdersPageState extends State<OrdersPage> {
-  // List to track the preparation time for each order
-  final List<int> preparationTimes = List.generate(10, (_) => 15); // Initial time: 15 minutes
-
-  // Nested list to represent products or menu items for each order
-  final List<List<String>> orderDetails = [
-    ['Burger', 'Fries', 'Coke'],
-    ['Pizza', 'Garlic Bread', 'Lemonade'],
-    ['Pasta', 'Salad', 'Wine'],
-    ['Steak', 'Mashed Potatoes', 'Water'],
-    ['Sushi', 'Miso Soup', 'Green Tea'],
-    ['Tacos', 'Nachos', 'Margarita'],
-    ['Chicken Wings', 'Coleslaw', 'Beer'],
-    ['Pancakes', 'Maple Syrup', 'Orange Juice'],
-    ['Fried Rice', 'Spring Rolls', 'Iced Tea'],
-    ['Ice Cream', 'Brownie', 'Hot Chocolate'],
-  ];
-
-  // List to track the order creation times
-  final List<DateTime> orderCreationTimes = List.generate(
-    10,
-    (_) => DateTime.now().subtract(Duration(minutes: 10 * (_ + 1))),
-  ); // Orders created in the past
-
-  // List to track the status of each order
-  final List<String> orderStatuses = List.generate(10, (_) => 'Pending'); // Initial status: Pending
+  OrderListController get controller => Get.find<OrderListController>();
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: preparationTimes.length,
-      itemBuilder: (context, index) {
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          elevation: 3,
-          child: Padding(
+    return Scaffold(
+      body: GetBuilder<OrderListController>(
+        init: controller,
+        builder: (_) {
+          final orders = controller.orderList;
+
+          return ListView.builder(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Order ID
-                Text(
-                  'Order ID: O${index + 1}',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 4),
+            itemCount: orders.length,
+            itemBuilder: (context, index) {
+              final order = orders[index];
 
-                // Order Creation Time
-                Text(
-                  'Created At: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(orderCreationTimes[index])}',
-                  style: Theme.of(context).textTheme.bodySmall,
+              return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(height: 8),
-
-                // Order Status
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Status: ${orderStatuses[index]}',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blueAccent,
+                margin: const EdgeInsets.only(bottom: 16),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Order ID and Status
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Order #${order.id}',
+                            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _showStatusUpdateDialog(context, index);
-                      },
-                      child: const Text('Update Status'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
+                          Chip(
+                            label: Text(
+                              order.status ?? "NO-STATUS",
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: _getStatusColor(order.status ?? 'NO-STATUS'),
+                          ),
+                        ],
+                      ),
 
-                // Order Details
-                Text(
-                  'Order Details:',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
-                // Displaying products in a ListView
-                MediaQuery.removePadding(
-                  context: context,
-                  removeBottom: true,
-                  removeTop: true,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: orderDetails[index].length,
-                    itemBuilder: (context, productIndex) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.check_circle, color: Colors.green),
-                            const SizedBox(width: 8),
-                            Text(orderDetails[index][productIndex]),
-                          ],
-                        ),
-                      );
-                    },
+                      // Order Creation Time
+                      Text(
+                        'Created: ${DateFormat('yyyy-MM-dd HH:mm').format(order.dateCreated ?? DateTime.now())}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+
+                      const Divider(height: 20, thickness: 1),
+
+                      // Order Details
+                      Text(
+                        'Items:',
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: (order.lineItems ?? []).length,
+                        itemBuilder: (context, productIndex) {
+                          final product = order.lineItems?[productIndex];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.check_circle, size: 20, color: Colors.green),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    '${product?.name} x${product?.quantity}',
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ),
+                                Text(
+                                  '\$${((product?.price ?? 0) * (product?.quantity ?? 0)).toStringAsFixed(2)}',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+
+                      const Divider(height: 20, thickness: 1),
+
+                      // Total Preparation Time
+                      Text(
+                        'Total Preparation Time: ${00} minutes',
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // setState(() {
+                              //   order.preparationTime += 5;
+                              // });
+                            },
+                            icon: const Icon(Icons.add),
+                            label: const Text('+5 minutes'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              _showStatusUpdateDialog(context, order);
+                            },
+                            icon: const Icon(Icons.update),
+                            label: const Text('Update Status'),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // Logic for printing receipt
+                            },
+                            icon: const Icon(Icons.print),
+                            label: const Text('Print Receipt'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-
-                // Total Preparation Time
-                Text(
-                  'Total Time to Prepare: ${preparationTimes[index]} minutes',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-
-                // Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          preparationTimes[index] += 5; // Increment time by 5 minutes
-                        });
-                      },
-                      child: const Text('+5 minutes'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Print receipt logic
-                      },
-                      child: const Text('Print Receipt'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
-  // Function to show the status update dialog
-  void _showStatusUpdateDialog(BuildContext context, int index) {
-    final List<String> statuses = ['Pending', 'In Progress', 'Cooking', 'Ready', 'Delivered'];
+  // Function to get status color
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return Colors.grey;
+      case 'in progress':
+        return Colors.orange;
+      case 'cooking':
+        return Colors.blue;
+      case 'ready':
+        return Colors.green;
+      case 'delivered':
+        return Colors.purple;
+      default:
+        return Colors.black;
+    }
+  }
+
+  // Function to show status update dialog
+  void _showStatusUpdateDialog(BuildContext context, dynamic order) {
+    final statuses = ['Pending', 'In Progress', 'Cooking', 'Ready', 'Delivered'];
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0), // Match card corner radius
+            borderRadius: BorderRadius.circular(16.0),
           ),
           title: const Text('Update Order Status'),
           content: Column(
@@ -168,36 +194,22 @@ class _OrdersPageState extends State<OrdersPage> {
             children: statuses.map((status) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: SizedBox(
-                  width: double.infinity, // Ensure button takes max width
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        orderStatuses[index] = status; // Update the order status
-                      });
-                      Navigator.pop(context); // Close the dialog
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: orderStatuses[index] == status ? Colors.pink : Colors.grey[300],
-                      foregroundColor: orderStatuses[index] == status ? Colors.white : Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0), // Button corner styling
-                      ),
-                    ),
-                    child: Text(status),
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      order.status = status;
+                    });
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: order.status == status ? Colors.blueAccent : Colors.grey[300],
+                    foregroundColor: order.status == status ? Colors.white : Colors.black,
                   ),
+                  child: Text(status),
                 ),
               );
             }).toList(),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-              },
-              child: const Text('Cancel'),
-            ),
-          ],
         );
       },
     );
