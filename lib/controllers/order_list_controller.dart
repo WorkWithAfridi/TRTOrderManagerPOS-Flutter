@@ -40,6 +40,7 @@ class OrderListController extends GetxController {
         params: {
           'consumer_key': consumerKey, // Replace with actual key
           'consumer_secret': consumerSecret, // Replace with actual secret
+          'per_page': 100,
         },
       );
 
@@ -49,6 +50,7 @@ class OrderListController extends GetxController {
         // Parse response to list of OrderModel
         final fetchedOrders = (response.data as List).map((order) => OrderModel.fromJson(order)).toList();
         orderList = fetchedOrders;
+        update();
         return orderList;
       } else {
         logger.e("Failed to fetch order list");

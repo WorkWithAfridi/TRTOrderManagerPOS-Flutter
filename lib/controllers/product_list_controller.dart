@@ -9,6 +9,7 @@ class ProductListController extends GetxController {
   final NetworkController _networkController = Get.find<NetworkController>();
 
   List<ProductModel> products = [];
+  int currentPage = 1;
 
   Future<List<ProductModel>?> fetchAllProducts() async {
     String endpoint = "$baseUrl/wp-json/wc/v3/products"; // WooCommerce Products endpoint
@@ -19,6 +20,8 @@ class ProductListController extends GetxController {
         params: {
           'consumer_key': consumerKey, // Replace with actual key
           'consumer_secret': consumerSecret, // Replace with actual secret
+          'per_page': 100,
+          'page': currentPage,
         },
       );
 
@@ -26,7 +29,9 @@ class ProductListController extends GetxController {
 
       if (response != null && response.statusCode == 200) {
         List<ProductModel> fetchedProducts = (response.data as List).map((product) => ProductModel.fromJson(product)).toList();
-        products = fetchedProducts;
+        products.addAll(fetchedProducts);
+        logger.d("Total products: ${products.length}");
+        update();
         return products;
       } else {
         throw Exception("Failed to fetch products. Status code: ${response?.statusCode}");
@@ -38,9 +43,9 @@ class ProductListController extends GetxController {
     return null;
   }
 
-  Future<bool> updateProductDetails({
+  Future<bool> toggleProductStatus({
     required int productId,
-    required Map<String, dynamic> updatedData,
+    required bool isActive, // true for publish, false for deactivate
   }) async {
     final String endpoint = "$baseUrl/wp-json/wc/v3/products/$productId"; // Endpoint for updating product
     try {
@@ -50,11 +55,12 @@ class ProductListController extends GetxController {
         params: {
           'consumer_key': consumerKey, // Replace with actual key
           'consumer_secret': consumerSecret, // Replace with actual secret
-          ...updatedData, // Merge additional fields for the update
+          'status': isActive ? 'publish' : 'draft', // Set status based on the toggle
         },
       );
 
       if (response != null && response.statusCode == 200) {
+        fetchAllProducts();
         return true;
       } else {
         throw Exception("Failed to update product. Status code: ${response?.statusCode}");
