@@ -10,6 +10,7 @@ class ProductListController extends GetxController {
 
   List<ProductModel> products = [];
   int currentPage = 1;
+  List<int> productIds = [];
 
   Future<List<ProductModel>?> fetchAllProducts() async {
     String endpoint = "$baseUrl/wp-json/wc/v3/products"; // WooCommerce Products endpoint
@@ -25,11 +26,20 @@ class ProductListController extends GetxController {
         },
       );
 
-      logger.d("Response data: ${response?.data}");
+      // logger.d("Response data: ${response?.data}");
 
       if (response != null && response.statusCode == 200) {
         List<ProductModel> fetchedProducts = (response.data as List).map((product) => ProductModel.fromJson(product)).toList();
-        products.addAll(fetchedProducts);
+        for (var product in fetchedProducts) {
+          if (product.id != null) {
+            if (!productIds.contains(product.id!)) {
+              {
+                products.add(product);
+                productIds.add(product.id ?? 0);
+              }
+            }
+          }
+        }
         logger.d("Total products: ${products.length}");
         update();
         return products;

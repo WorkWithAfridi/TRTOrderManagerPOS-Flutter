@@ -291,7 +291,7 @@ class LineItem {
         taxes: json["taxes"] == null ? [] : List<Tax>.from(json["taxes"]!.map((x) => Tax.fromJson(x))),
         metaData: json["meta_data"] == null ? [] : List<MetaDatum>.from(json["meta_data"]!.map((x) => MetaDatum.fromJson(x))),
         sku: json["sku"],
-        price: json["price"],
+        price: json["price"] == null ? 0.0 : double.parse(json["price"].toString()),
       );
 
   Map<String, dynamic> toJson() => {

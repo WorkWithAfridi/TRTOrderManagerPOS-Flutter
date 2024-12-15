@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/service/dependency_injection_service.dart';
+import 'package:pdf_printer/service/first_boot_checker.dart';
+import 'package:pdf_printer/service/notification_sound_player.dart';
 import 'package:pdf_printer/views/dashboard/order_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_list_view.dart';
 import 'package:pdf_printer/views/splash/splash_view.dart';
@@ -13,7 +16,10 @@ void main() async {
 Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await GetStorage.init();
+
   DependencyInjection.init();
+  FirstBootChecker().checkFirstBoot();
 }
 
 class MyApp extends StatelessWidget {
@@ -105,6 +111,12 @@ class DashboardView extends StatelessWidget {
                 _generateReport(context);
               },
               icon: const Icon(Icons.sim_card_download_outlined),
+            ),
+            IconButton(
+              onPressed: () {
+                NotificationSoundPlayer().playNotification();
+              },
+              icon: const Icon(Icons.notification_add),
             )
           ],
         ),

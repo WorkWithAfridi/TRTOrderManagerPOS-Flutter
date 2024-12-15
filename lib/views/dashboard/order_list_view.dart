@@ -105,6 +105,22 @@ class _OrdersPageState extends State<OrdersPage> {
 
                       const Divider(height: 20, thickness: 1),
 
+                      // Order Notes
+                      // Row(
+                      //   children: [
+                      //     Text(
+                      //       'Notes:',
+                      //       style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
+                      //     ),
+                      //     Text(
+                      //       '${order.}',
+                      //     )
+                      //   ],
+                      // ),
+                      // const SizedBox(height: 8),
+
+                      // const Divider(height: 20, thickness: 1),
+
                       // Total Preparation Time
                       Text(
                         'Total Preparation Time: ${00} minutes',
