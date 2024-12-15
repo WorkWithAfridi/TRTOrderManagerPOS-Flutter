@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="pdf_printer"
+        android:label="TRT Order Manager"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

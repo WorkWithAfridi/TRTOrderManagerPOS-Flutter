@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = pdf_printer
+PRODUCT_NAME = TRT Order Manager
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.workwithafridi.pdfprinterapp.pdfPrinter
+PRODUCT_BUNDLE_IDENTIFIER = com.workwithafridi.trtordermanager
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2024 com.workwithafridi.pdfprinterapp. All rights reserved.
