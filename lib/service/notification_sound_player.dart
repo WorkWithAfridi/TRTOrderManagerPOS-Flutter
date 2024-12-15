@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:pdf_printer/service/debug/logger.dart';
 
 class NotificationSoundPlayer {
   // Singleton instance
@@ -18,6 +19,7 @@ class NotificationSoundPlayer {
     try {
       // Load and play the audio asset
       await _audioPlayer.play(AssetSource('sounds/notification.mp3'));
+      logger.d("PLAYING NOTIFICATION SOUND");
     } catch (e) {
       // Handle error (optional)
       print('Error playing notification sound: $e');

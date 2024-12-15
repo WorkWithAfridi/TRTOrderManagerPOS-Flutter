@@ -70,6 +70,9 @@ class OrderListController extends GetxController {
       }
       orderList = fetchedOrders;
       update();
+
+      logger.d("Total orders: ${orderList.length}");
+      saveOrderListToLocalStorage();
       return orderList;
     } else {
       logger.e("Failed to fetch order list");
@@ -77,8 +80,6 @@ class OrderListController extends GetxController {
     // } catch (e) {
     //   logger.e("Error fetching order list: $e");
     // }
-
-    saveOrderListToLocalStorage();
 
     update();
     return null;
@@ -88,6 +89,8 @@ class OrderListController extends GetxController {
     try {
       // Serialize orderList to JSON
       final List<Map<String, dynamic>> jsonOrderList = orderList.map((order) => order.toJson()).toList();
+
+      logger.d("Order list to be saved to local storage: $jsonOrderList");
 
       // Save serialized data to GetStorage
       _storage.write('orderList', jsonOrderList);
@@ -104,7 +107,8 @@ class OrderListController extends GetxController {
         orderList = jsonOrderList.map((json) => OrderModel.fromJson(json)).toList();
         orderIds = orderList.map((order) => order.id!).toList();
         update();
-        logger.d("Order list loaded from local storage.");
+        logger.d("Loaded orderlist from local storage : $jsonOrderList");
+        logger.d("Order list loaded from local storage. - ${orderList.length}");
       }
     } catch (e) {
       logger.e("Error loading order list from local storage: $e");
