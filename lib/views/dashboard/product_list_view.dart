@@ -39,6 +39,7 @@ class ProductsPage extends StatelessWidget {
                                     product.name ?? 'N/A',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
+                                      fontSize: 20,
                                     ),
                                   ),
                                   const Spacer(),

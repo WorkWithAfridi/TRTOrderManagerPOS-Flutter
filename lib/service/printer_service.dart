@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:pdf_printer/models/sales_report_m.dart';
 import 'package:printing/printing.dart';
 
 class PrinterService {
@@ -107,6 +108,130 @@ class PrinterService {
   /// Prints the PDF, with web and non-web support.
   Future<void> printPdf(BuildContext context) async {
     final pdf = await generateBillReceiptPdf();
+
+    if (kIsWeb) {
+      // On Web, use Printing.layoutPdf to show a print preview dialog
+      await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf.save());
+    } else {
+      // On mobile (iOS/Android), continue as before
+      final availablePrinters = await Printing.listPrinters();
+
+      if (availablePrinters.isNotEmpty) {
+        await Printing.directPrintPdf(
+          printer: availablePrinters.first,
+          onLayout: (PdfPageFormat format) async => pdf.save(),
+        );
+      } else {
+        // Show popup if no printer is available
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('No Printer Found'),
+            content: const Text('Please connect to a printer to print this document.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
+  /// Generates a sales report PDF document
+  Future<pw.Document> _generateSalesReportPdf(List<SalesReportModel> reports) async {
+    final pdf = pw.Document();
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(16),
+        build: (pw.Context context) {
+          return [
+            pw.Text(
+              'Sales Report',
+              style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.SizedBox(height: 16),
+
+            // Add a table for each report
+            for (var report in reports)
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    'Grouped By: ${report.totalsGroupedBy ?? "N/A"}',
+                    style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                  ),
+                  pw.SizedBox(height: 8),
+                  pw.Table.fromTextArray(
+                    headers: [
+                      'Metric',
+                      'Value',
+                    ],
+                    data: [
+                      ['Total Sales', report.totalSales ?? "N/A"],
+                      ['Net Sales', report.netSales ?? "N/A"],
+                      ['Average Sales', report.averageSales ?? "N/A"],
+                      ['Total Orders', report.totalOrders?.toString() ?? "N/A"],
+                      ['Total Items', report.totalItems?.toString() ?? "N/A"],
+                      ['Total Tax', report.totalTax ?? "N/A"],
+                      ['Total Shipping', report.totalShipping ?? "N/A"],
+                      ['Total Refunds', report.totalRefunds?.toString() ?? "N/A"],
+                      ['Total Discount', report.totalDiscount ?? "N/A"],
+                      ['Total Customers', report.totalCustomers?.toString() ?? "N/A"],
+                    ],
+                    headerStyle: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+                    cellStyle: const pw.TextStyle(fontSize: 12),
+                    border: pw.TableBorder.all(width: 0.5),
+                  ),
+                  pw.SizedBox(height: 16),
+                  if (report.totals != null && report.totals!.isNotEmpty)
+                    pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text(
+                          'Totals by Group:',
+                          style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                        ),
+                        pw.SizedBox(height: 8),
+                        pw.Table.fromTextArray(
+                          headers: ['Group', 'Sales', 'Orders', 'Items', 'Tax', 'Shipping', 'Discount', 'Customers'],
+                          data: report.totals!.entries.map((entry) {
+                            final total = entry.value;
+                            return [
+                              entry.key,
+                              total.sales ?? "N/A",
+                              total.orders?.toString() ?? "N/A",
+                              total.items?.toString() ?? "N/A",
+                              total.tax ?? "N/A",
+                              total.shipping ?? "N/A",
+                              total.discount ?? "N/A",
+                              total.customers?.toString() ?? "N/A",
+                            ];
+                          }).toList(),
+                          headerStyle: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+                          cellStyle: const pw.TextStyle(fontSize: 12),
+                          border: pw.TableBorder.all(width: 0.5),
+                        ),
+                      ],
+                    ),
+                  pw.Divider(thickness: 1),
+                ],
+              ),
+          ];
+        },
+      ),
+    );
+
+    return pdf;
+  }
+
+  /// Prints the PDF, with web and non-web support.
+  Future<void> printSalesReport(BuildContext context, List<SalesReportModel> reports) async {
+    final pdf = await _generateSalesReportPdf(reports);
 
     if (kIsWeb) {
       // On Web, use Printing.layoutPdf to show a print preview dialog

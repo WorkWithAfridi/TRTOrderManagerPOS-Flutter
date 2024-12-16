@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:pdf_printer/controllers/sales_report_controller.dart';
 import 'package:pdf_printer/service/dependency_injection_service.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
-import 'package:pdf_printer/service/notification_sound_player.dart';
 import 'package:pdf_printer/views/dashboard/order_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_list_view.dart';
 import 'package:pdf_printer/views/splash/splash_view.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
       title: 'Order Manager',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.pink, // Set primary color to Colors.pink[700]
+          seedColor: const Color(0xFF0FCA77), // Set primary color to Colors.pink[700]
         ),
         useMaterial3: true,
       ),
@@ -43,6 +44,8 @@ class MyApp extends StatelessWidget {
 
 class DashboardView extends StatelessWidget {
   const DashboardView({super.key});
+
+  SalesReportController get salesReportController => Get.find<SalesReportController>();
 
   void _generateReport(BuildContext context) {
     final List<String> statuses = ['Day', 'Week', 'Two Weeks', 'Month'];
@@ -55,30 +58,51 @@ class DashboardView extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.0), // Match card corner radius
           ),
           title: const Text('Sales report'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: statuses.map((status) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: SizedBox(
-                  width: double.infinity, // Ensure button takes max width
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Close the dialog
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.pink,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0), // Button corner styling
-                      ),
-                    ),
-                    child: Text(status),
+          content: Obx(() => salesReportController.isLoading.value
+              ? const SizedBox(
+                  height: 80,
+                  width: 80,
+                  child: Center(
+                    child: Align(child: CircularProgressIndicator()),
                   ),
-                ),
-              );
-            }).toList(),
-          ),
+                )
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: statuses.map((status) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: SizedBox(
+                        width: double.infinity, // Ensure button takes max width
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            switch (status) {
+                              case 'Day':
+                                await salesReportController.getSalesReport(period: "day");
+                                break;
+                              case 'Week':
+                                await salesReportController.getSalesReport(period: "week");
+                                break;
+                              case 'Two Weeks':
+                                await salesReportController.getSalesReport(period: "two_weeks");
+                                break;
+                              case 'Month':
+                                await salesReportController.getSalesReport(period: "month");
+                                break;
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0FCA77),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0), // Button corner styling
+                            ),
+                          ),
+                          child: Text(status),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                )),
           actions: [
             TextButton(
               onPressed: () {
@@ -106,18 +130,19 @@ class DashboardView extends StatelessWidget {
             ],
           ),
           actions: [
-            IconButton(
+            ElevatedButton(
               onPressed: () {
                 _generateReport(context);
               },
-              icon: const Icon(Icons.sim_card_download_outlined),
+              child: const Text("Report"),
             ),
-            IconButton(
-              onPressed: () {
-                NotificationSoundPlayer().playNotification();
-              },
-              icon: const Icon(Icons.notification_add),
-            )
+            const Gap(8),
+            // IconButton(
+            //   onPressed: () {
+            //     NotificationSoundPlayer().playNotification();
+            //   },
+            //   icon: const Icon(Icons.notification_add),
+            // )
           ],
         ),
         body: const TabBarView(
