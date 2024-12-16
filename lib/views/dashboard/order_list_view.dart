@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf_printer/controllers/order_list_controller.dart';
+import 'package:pdf_printer/service/printer_service.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -154,7 +155,7 @@ class _OrdersPageState extends State<OrdersPage> {
                           ),
                           ElevatedButton.icon(
                             onPressed: () {
-                              // Logic for printing receipt
+                              PrinterService().printOrderBill(context, order);
                             },
                             icon: const Icon(Icons.print),
                             label: const Text('Print Receipt'),

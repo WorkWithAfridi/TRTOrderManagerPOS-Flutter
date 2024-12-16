@@ -14,7 +14,8 @@ class PrintPdfView extends StatelessWidget {
       ),
       body: Center(
         child: ElevatedButton(
-          onPressed: () => printService.printPdf(context),
+          // onPressed: () => printService.printPdf(context),
+          onPressed: () {},
           child: const Text('Print Demo PDF'),
         ),
       ),
