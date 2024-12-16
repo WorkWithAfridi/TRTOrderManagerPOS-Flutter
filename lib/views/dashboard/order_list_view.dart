@@ -158,9 +158,9 @@ class _OrdersPageState extends State<OrdersPage> {
                             },
                             icon: const Icon(Icons.print),
                             label: const Text('Print Receipt'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                            ),
+                            // style: ElevatedButton.styleFrom(
+                            //   backgroundColor: Colors.green,
+                            // ),
                           ),
                         ],
                       ),

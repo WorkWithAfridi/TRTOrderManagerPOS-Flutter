@@ -39,6 +39,7 @@ class SalesReportController extends GetxController {
         // Parse the response into SalesReportModel
         salesReportList = (response.data as List).map((report) => SalesReportModel.fromJson(report)).toList();
         logger.d("Fetched $period report successfully: $salesReportList");
+        Get.back();
         Get.to(
           () => SalesReportScreen(),
         );
