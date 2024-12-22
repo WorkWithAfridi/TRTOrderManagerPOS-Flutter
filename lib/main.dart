@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:pdf_printer/controllers/dashboard_controller.dart';
 import 'package:pdf_printer/controllers/sales_report_controller.dart';
 import 'package:pdf_printer/service/dependency_injection_service.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
@@ -46,6 +46,8 @@ class DashboardView extends StatelessWidget {
   const DashboardView({super.key});
 
   SalesReportController get salesReportController => Get.find<SalesReportController>();
+
+  DashboardController get dashboardController => Get.find<DashboardController>();
 
   void _generateReport(BuildContext context) {
     final List<String> statuses = ['Day', 'Week', 'Two Weeks', 'Month'];
@@ -118,38 +120,103 @@ class DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('TRT Order Manager'),
-          bottom: const TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.inventory), text: 'Products'),
-              Tab(icon: Icon(Icons.receipt), text: 'Orders'),
-            ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('TRT Order Manager'),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              _generateReport(context);
+            },
+            child: const Text("Report"),
           ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                _generateReport(context);
-              },
-              child: const Text("Report"),
+          const SizedBox(width: 8),
+        ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            SizedBox(
+              width: Get.width,
+              child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                ),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Logo or Icon
+                    Icon(
+                      Icons.fastfood_rounded,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 16),
+
+                    // App Name or Slogan
+                    Text(
+                      'TRT Order Manager',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const Gap(8),
-            // IconButton(
-            //   onPressed: () {
-            //     NotificationSoundPlayer().playNotification();
-            //   },
-            //   icon: const Icon(Icons.notification_add),
-            // )
+            Obx(() => ListTile(
+                  leading: Icon(
+                    Icons.inventory,
+                    color: dashboardController.isProductTabSelected.value ? Colors.green : Colors.grey,
+                  ),
+                  title: Text(
+                    'Products',
+                    style: TextStyle(
+                      color: dashboardController.isProductTabSelected.value ? Colors.black : Colors.grey,
+                    ),
+                  ),
+                  onTap: () {
+                    dashboardController.isProductTabSelected.value = true;
+                    Get.back();
+                  },
+                )),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: const Divider(height: 20, thickness: 1),
+            ),
+            Obx(() => ListTile(
+                  leading: Icon(
+                    Icons.receipt,
+                    color: !dashboardController.isProductTabSelected.value ? Colors.green : Colors.grey,
+                  ),
+                  title: Text(
+                    'Orders',
+                    style: TextStyle(
+                      color: !dashboardController.isProductTabSelected.value ? Colors.black : Colors.grey,
+                    ),
+                  ),
+                  onTap: () {
+                    dashboardController.isProductTabSelected.value = false;
+                    Get.back();
+                  },
+                )),
+            const Spacer(),
+            ListTile(
+              leading: const Icon(Icons.close),
+              title: const Text('Close'),
+              onTap: () {
+                Get.back();
+              },
+            )
           ],
         ),
-        body: const TabBarView(
-          children: [
-            ProductsPage(),
-            OrdersPage(),
-          ],
+      ),
+      body: Obx(
+        () => AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          child: dashboardController.isProductTabSelected.value ? const ProductsPage() : const OrdersPage(),
         ),
       ),
     );
