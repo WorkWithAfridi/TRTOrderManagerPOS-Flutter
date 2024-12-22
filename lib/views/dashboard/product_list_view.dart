@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pdf_printer/controllers/product_list_controller.dart';
@@ -14,7 +15,7 @@ class ProductsPage extends StatelessWidget {
       builder: (_) {
         final products = controller.products;
         return Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: products.isEmpty
               ? const Center(child: Text('No Products Found'))
               : RefreshIndicator(
@@ -55,9 +56,12 @@ class ProductsPage extends StatelessWidget {
                                       topLeft: Radius.circular(8),
                                       bottomLeft: Radius.circular(8),
                                     ),
-                                    child: Image.network(
-                                      product.images?.first.src ?? '',
+                                    child: CachedNetworkImage(
+                                      imageUrl: product.images?.first.src ?? '',
                                       fit: BoxFit.cover,
+                                      errorWidget: (context, url, error) => const Icon(
+                                        Icons.error,
+                                      ),
                                     ),
                                   ),
                                 ),
