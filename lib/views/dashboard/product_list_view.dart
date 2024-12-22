@@ -44,6 +44,8 @@ class ProductsPage extends StatelessWidget {
                           controller.update();
                         },
                         child: Card(
+                          elevation: 6,
+                          shadowColor: Colors.black.withOpacity(.6),
                           child: Row(
                             children: [
                               Flexible(

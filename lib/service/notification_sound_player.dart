@@ -18,7 +18,11 @@ class NotificationSoundPlayer {
   Future<void> playNotification() async {
     try {
       // Load and play the audio asset
-      await _audioPlayer.play(AssetSource('sounds/notification.mp3'));
+      await _audioPlayer.play(
+        AssetSource(
+          'sounds/notification.mp3',
+        ),
+      );
       logger.d("PLAYING NOTIFICATION SOUND");
     } catch (e) {
       // Handle error (optional)
