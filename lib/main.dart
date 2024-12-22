@@ -7,6 +7,7 @@ import 'package:pdf_printer/service/dependency_injection_service.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
 import 'package:pdf_printer/views/dashboard/order_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_list_view.dart';
+import 'package:pdf_printer/views/dashboard/product_search_view.dart';
 import 'package:pdf_printer/views/splash/splash_view.dart';
 
 void main() async {
@@ -122,7 +123,7 @@ class DashboardView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('TRT Order Manager'),
+        title: Obx(() => Text('TRT Order Manager - ${dashboardController.isProductTabSelected.value ? 'Products' : 'Orders'}')),
         actions: [
           ElevatedButton(
             onPressed: () {
@@ -131,6 +132,23 @@ class DashboardView extends StatelessWidget {
             child: const Text("Report"),
           ),
           const SizedBox(width: 8),
+          Obx(
+            () => dashboardController.isProductTabSelected.value
+                ? Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Get.to(
+                            const ProductSearchPage(),
+                          );
+                        },
+                        child: const Text("Search"),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                  )
+                : const SizedBox(),
+          ),
         ],
       ),
       drawer: Drawer(
