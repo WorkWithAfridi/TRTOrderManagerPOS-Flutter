@@ -33,11 +33,12 @@ class _OrdersPageState extends State<OrdersPage> {
                 final order = orders[index];
 
                 return Card(
+                  elevation: 6,
+                  shadowColor: Colors.black.withOpacity(.6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   margin: const EdgeInsets.only(bottom: 16),
-                  elevation: 4,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
