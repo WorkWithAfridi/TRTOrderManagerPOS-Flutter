@@ -22,28 +22,32 @@ class PrinterService {
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               // Header Section
-              pw.Text(companyName, style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 8),
-              pw.Text('Bill Receipt', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-              pw.Divider(thickness: 2),
-              pw.SizedBox(height: 8),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                children: [
+                  pw.Text(companyName, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
+                  pw.SizedBox(height: 8),
+                  pw.Text('Order #${order.id}', style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold)),
+                  pw.Divider(thickness: 2),
+                  pw.SizedBox(height: 8),
+                ],
+              ),
 
               // Customer and Date Information
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
-                  pw.Text('Customer: ${order.customerId}, ', style: const pw.TextStyle(fontSize: 8)),
-                  pw.Text('Date: ${order.dateCreated.toString().substring(0, 10)}', style: const pw.TextStyle(fontSize: 8)),
+                  pw.Text('Date: ${order.dateCreated.toString().substring(0, 10)}', style: const pw.TextStyle(fontSize: 6)),
                 ],
               ),
-              pw.SizedBox(height: 16),
+              pw.SizedBox(height: 6),
 
               // Table Header
               pw.Table.fromTextArray(
-                headerStyle: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold),
+                headerStyle: pw.TextStyle(fontSize: 4, fontWeight: pw.FontWeight.bold),
                 headers: ['Item', 'Quantity', 'Price', 'Total'],
-                cellStyle: const pw.TextStyle(fontSize: 6),
+                cellStyle: const pw.TextStyle(fontSize: 4),
                 border: pw.TableBorder.all(color: PdfColors.black),
                 data: (order.lineItems ?? []).map((item) {
                   return [
@@ -54,7 +58,7 @@ class PrinterService {
                   ];
                 }).toList(),
               ),
-              pw.SizedBox(height: 16),
+              pw.SizedBox(height: 4),
 
               // Subtotal, Tax, and Total
               pw.Align(
@@ -65,11 +69,42 @@ class PrinterService {
                     pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                       children: [
-                        pw.Text('Total:', style: const pw.TextStyle(fontSize: 12)),
-                        pw.Text('\$${order.total}', style: const pw.TextStyle(fontSize: 12)),
+                        pw.Text('SUBTOTAL:', style: const pw.TextStyle(fontSize: 4)),
+                        pw.Text(
+                          '\$${(order.lineItems ?? []).fold(0.0, (sum, item) => sum + (item.quantity ?? 0) * (item.price ?? 0.0))}',
+                          style: const pw.TextStyle(fontSize: 4),
+                        ),
                       ],
                     ),
-                    pw.SizedBox(height: 8),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text('SHIPPING:', style: const pw.TextStyle(fontSize: 4)),
+                        pw.Text('\$${order.shippingTotal}', style: const pw.TextStyle(fontSize: 4)),
+                      ],
+                    ),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text('TAX:', style: const pw.TextStyle(fontSize: 4)),
+                        pw.Text('\$${order.totalTax}', style: const pw.TextStyle(fontSize: 4)),
+                      ],
+                    ),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text('PAYMENT METHOD:', style: const pw.TextStyle(fontSize: 4)),
+                        pw.Text('\$${order.paymentMethod}', style: const pw.TextStyle(fontSize: 4)),
+                      ],
+                    ),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text('Total:', style: const pw.TextStyle(fontSize: 4)),
+                        pw.Text('\$${order.total}', style: const pw.TextStyle(fontSize: 4)),
+                      ],
+                    ),
+                    pw.SizedBox(height: 2),
                     // pw.Row(
                     //   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     //   children: [
@@ -89,11 +124,76 @@ class PrinterService {
                   ],
                 ),
               ),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Divider(
+                    thickness: 0.5,
+                  ),
+                  pw.Text(
+                    'User Details:',
+                    style: pw.TextStyle(
+                      fontSize: 5,
+                      fontWeight: pw.FontWeight.bold,
+                    ),
+                  ),
+                  pw.SizedBox(height: 2),
+                  pw.Text(
+                    'Name: ${order.billing?.firstName ?? ''} ${order.billing?.lastName ?? ''}',
+                    style: const pw.TextStyle(fontSize: 4),
+                  ),
+                  pw.SizedBox(height: 2),
+                  pw.Text(
+                    'Address 1: ${order.billing?.address1 ?? ''}',
+                    style: const pw.TextStyle(fontSize: 4),
+                  ),
+                  pw.SizedBox(height: 2),
+                  pw.Text(
+                    'City: ${order.billing?.city ?? ''}',
+                    style: const pw.TextStyle(fontSize: 4),
+                  ),
+                  pw.SizedBox(height: 2),
+                  pw.Row(
+                    children: [
+                      pw.Text(
+                        'State: ${order.billing?.state ?? ''}.',
+                        style: const pw.TextStyle(fontSize: 4),
+                      ),
+                      pw.SizedBox(width: 2),
+                      pw.Text(
+                        'Postcode: ${order.billing?.postcode ?? ''}',
+                        style: const pw.TextStyle(fontSize: 4),
+                      ),
+                    ],
+                  ),
+                  pw.SizedBox(height: 2),
+                  pw.Row(
+                    children: [
+                      pw.Text(
+                        'Email: ${order.billing?.email ?? ''}.',
+                        style: const pw.TextStyle(fontSize: 4),
+                      ),
+                      pw.SizedBox(width: 2),
+                      pw.Text(
+                        'Phone: ${order.billing?.phone ?? ''}',
+                        style: const pw.TextStyle(fontSize: 4),
+                      ),
+                    ],
+                  )
+                ],
+              ),
 
-              pw.Text('Powered By TRT Technologies Ltd', style: const pw.TextStyle(fontSize: 6)),
-
-              pw.SizedBox(height: 2),
-              pw.Text('www.trttech.ca', style: const pw.TextStyle(fontSize: 6)),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                children: [
+                  pw.Divider(
+                    thickness: 0.5,
+                  ),
+                  pw.Text('Powered By TRT Technologies Ltd', style: const pw.TextStyle(fontSize: 4)),
+                  pw.SizedBox(height: 2),
+                  pw.Text('www.trttech.ca', style: const pw.TextStyle(fontSize: 4)),
+                ],
+              ),
             ],
           );
         },
