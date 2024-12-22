@@ -5,6 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf_printer/models/order_m.dart';
 import 'package:pdf_printer/models/sales_report_m.dart';
 import 'package:pdf_printer/prod_env/prod_end.dart';
+import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:printing/printing.dart';
 
 class PrinterService {
@@ -104,9 +105,10 @@ class PrinterService {
 
   /// Prints the PDF, with web and non-web support.
   Future<void> printOrderBill(
-    BuildContext context,
+    // BuildContext context,
     OrderModel order,
   ) async {
+    logger.d("Printing order with id: ${order.id}");
     final pdf = await generateBillReceiptPdf(order);
 
     if (kIsWeb) {
@@ -123,19 +125,21 @@ class PrinterService {
         );
       } else {
         // Show popup if no printer is available
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('No Printer Found'),
-            content: const Text('Please connect to a printer to print this document.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+        // showDialog(
+        //   context: context,
+        //   builder: (ctx) => AlertDialog(
+        //     title: const Text('No Printer Found'),
+        //     content: const Text('Please connect to a printer to print this document.'),
+        //     actions: [
+        //       TextButton(
+        //         onPressed: () => Navigator.of(ctx).pop(),
+        //         child: const Text('OK'),
+        //       ),
+        //     ],
+        //   ),
+        // );
+
+        logger.d("No printer found.");
       }
     }
   }

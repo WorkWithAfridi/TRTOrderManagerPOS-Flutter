@@ -8,6 +8,7 @@ import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
 import 'package:pdf_printer/service/network/network-c.dart';
 import 'package:pdf_printer/service/notification_sound_player.dart';
+import 'package:pdf_printer/service/printer_service.dart';
 
 class OrderListController extends GetxController {
   Timer? _timer;
@@ -65,6 +66,9 @@ class OrderListController extends GetxController {
               orderIds.add(order.id ?? 0);
               if (!FirstBootChecker().isFirstBoot) {
                 NotificationSoundPlayer().playNotification();
+                PrinterService().printOrderBill(
+                  order,
+                );
               }
             }
           }

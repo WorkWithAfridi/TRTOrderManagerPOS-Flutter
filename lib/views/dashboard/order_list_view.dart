@@ -161,7 +161,7 @@ class _OrdersPageState extends State<OrdersPage> {
                             ),
                             ElevatedButton.icon(
                               onPressed: () {
-                                PrinterService().printOrderBill(context, order);
+                                PrinterService().printOrderBill(order);
                               },
                               icon: const Icon(Icons.print),
                               label: const Text('Print Receipt'),
