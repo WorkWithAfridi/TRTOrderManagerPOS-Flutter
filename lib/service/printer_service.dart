@@ -144,7 +144,7 @@ class PrinterService {
                   ),
                   pw.SizedBox(height: 2),
                   pw.Text(
-                    'Address 1: ${order.billing?.address1 ?? ''}',
+                    'Address: ${order.billing?.address1 ?? ''}',
                     style: const pw.TextStyle(fontSize: 4),
                   ),
                   pw.SizedBox(height: 2),
