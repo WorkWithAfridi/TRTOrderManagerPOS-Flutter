@@ -24,7 +24,7 @@ class _OrdersPageState extends State<OrdersPage> {
 
           return RefreshIndicator(
             onRefresh: () {
-              return controller.getOrderList();
+              return controller.getOrderList(context);
             },
             child: ListView.builder(
               padding: const EdgeInsets.all(16.0),

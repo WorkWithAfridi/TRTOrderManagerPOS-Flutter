@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/controllers/dashboard_controller.dart';
+import 'package:pdf_printer/controllers/order_list_controller.dart';
 import 'package:pdf_printer/controllers/sales_report_controller.dart';
 import 'package:pdf_printer/service/dependency_injection_service.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
@@ -43,12 +44,24 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class DashboardView extends StatelessWidget {
+class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
 
+  @override
+  State<DashboardView> createState() => _DashboardViewState();
+}
+
+class _DashboardViewState extends State<DashboardView> {
   SalesReportController get salesReportController => Get.find<SalesReportController>();
 
   DashboardController get dashboardController => Get.find<DashboardController>();
+  OrderListController get orderListController => Get.find<OrderListController>();
+
+  @override
+  void initState() {
+    orderListController.initOrderLoop(context);
+    super.initState();
+  }
 
   void _generateReport(BuildContext context) {
     final List<String> statuses = ['Day', 'Week', 'Two Weeks', 'Month'];

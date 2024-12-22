@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/models/order_m.dart';
@@ -18,15 +19,14 @@ class OrderListController extends GetxController {
 
   final NetworkController _networkController = Get.find<NetworkController>();
 
-  @override
-  void onInit() {
+  void initOrderLoop(BuildContext context) {
     super.onInit();
     // Call getOrderList initially
-    getOrderList();
+    getOrderList(context);
 
     // Set up a timer to call getOrderList every 10 seconds
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      getOrderList();
+      getOrderList(context);
     });
   }
 
@@ -37,7 +37,8 @@ class OrderListController extends GetxController {
     super.onClose();
   }
 
-  Future<List<OrderModel>?> getOrderList({bool shouldLoadFromLocalStorage = true}) async {
+  Future<List<OrderModel>?> getOrderList(BuildContext context, {bool shouldLoadFromLocalStorage = true}) async {
+    bool receivedNewOrders = false;
     if (shouldLoadFromLocalStorage) {
       loadOrderListFromLocalStorage();
     }
@@ -69,6 +70,7 @@ class OrderListController extends GetxController {
                 PrinterService().printOrderBill(
                   order,
                 );
+                receivedNewOrders = true;
               }
             }
           }
@@ -79,6 +81,12 @@ class OrderListController extends GetxController {
 
       logger.d("Total orders: ${orderList.length}");
       saveOrderListToLocalStorage();
+
+      if (receivedNewOrders) {
+        showNewOrdersDialog(
+          context,
+        );
+      }
       return orderList;
     } else {
       logger.e("Failed to fetch order list");
@@ -121,7 +129,10 @@ class OrderListController extends GetxController {
     }
   }
 
-  Future<bool> updateOrderStatus(int orderId, String status) async {
+  Future<bool> updateOrderStatus(
+    int orderId,
+    String status,
+  ) async {
     final String endpoint = "$baseUrl/wp-json/wc/v3/orders/$orderId"; // Corrected endpoint
     try {
       final response = await _networkController.request(
@@ -136,9 +147,6 @@ class OrderListController extends GetxController {
 
       if (response != null && response.statusCode == 200) {
         logger.d("Order status updated successfully. Status: $status");
-        getOrderList(
-          shouldLoadFromLocalStorage: false,
-        );
         return true;
       } else {
         throw Exception("Failed to update order status. Status code: ${response?.statusCode}");
@@ -147,5 +155,45 @@ class OrderListController extends GetxController {
       logger.e("Error updating status for order #$orderId: $e");
     }
     return false;
+  }
+
+  void showNewOrdersDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          title: const Text(
+            'New Orders!',
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: const Text(
+            'You have new orders waiting to be processed. Please check them at your earliest convenience.',
+            style: TextStyle(fontSize: 16.0),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                NotificationSoundPlayer().stopNotification();
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

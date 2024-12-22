@@ -14,9 +14,12 @@ class NotificationSoundPlayer {
   // Audio player instance
   final AudioPlayer _audioPlayer = AudioPlayer();
 
-  // Method to play the notification sound
+  // Method to play the notification sound in a loop
   Future<void> playNotification() async {
     try {
+      // Set the looping mode to loop the audio
+      await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+
       // Load and play the audio asset
       await _audioPlayer.play(
         AssetSource(
@@ -27,6 +30,18 @@ class NotificationSoundPlayer {
     } catch (e) {
       // Handle error (optional)
       print('Error playing notification sound: $e');
+    }
+  }
+
+  // Method to stop the notification sound
+  Future<void> stopNotification() async {
+    try {
+      // Stop the audio playback
+      await _audioPlayer.stop();
+      logger.d("STOPPED NOTIFICATION SOUND");
+    } catch (e) {
+      // Handle error (optional)
+      print('Error stopping notification sound: $e');
     }
   }
 }
