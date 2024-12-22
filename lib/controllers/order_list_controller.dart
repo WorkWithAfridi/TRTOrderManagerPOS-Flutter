@@ -24,8 +24,8 @@ class OrderListController extends GetxController {
     getOrderList();
 
     // Set up a timer to call getOrderList every 10 seconds
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      // getOrderList();
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      getOrderList();
     });
   }
 
