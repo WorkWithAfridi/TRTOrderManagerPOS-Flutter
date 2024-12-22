@@ -40,6 +40,8 @@ class ProductListController extends GetxController {
             }
           }
         }
+        // sort product by name
+        products.sort((a, b) => (a.name ?? "").compareTo(b.name ?? ""));
         logger.d("Total products: ${products.length}");
         update();
         return products;
