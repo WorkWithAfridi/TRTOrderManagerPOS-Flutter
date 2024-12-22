@@ -24,7 +24,7 @@ class ProductsPage extends StatelessWidget {
                   child: GridView.builder(
                     itemCount: products.length,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4, // Number of columns
+                      crossAxisCount: 3, // Number of columns
                       crossAxisSpacing: 8.0, // Horizontal spacing
                       mainAxisSpacing: 8.0, // Vertical spacing
                       childAspectRatio: 3 / 2, // Aspect ratio of each grid item
@@ -43,50 +43,79 @@ class ProductsPage extends StatelessWidget {
                           controller.update();
                         },
                         child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '#${product.id ?? ''}',
-                                  style: const TextStyle(fontWeight: FontWeight.normal),
-                                ),
-                                const SizedBox(height: 8.0),
-                                Text(
-                                  product.name ?? 'N/A',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                          child: Row(
+                            children: [
+                              Flexible(
+                                flex: 3,
+                                child: SizedBox(
+                                  height: double.maxFinite,
+                                  width: double.maxFinite,
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      bottomLeft: Radius.circular(8),
+                                    ),
+                                    child: Image.network(
+                                      product.images?.first.src ?? '',
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
-                                const Spacer(),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      'Status',
-                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                                    ),
-                                    Switch(
-                                      value: product.status == 'publish',
-                                      activeTrackColor: Colors.green,
-                                      activeColor: Colors.white,
-                                      inactiveTrackColor: Colors.red,
-                                      inactiveThumbColor: Colors.white,
-                                      onChanged: (value) {
-                                        controller.products.where((p) => p.id == product.id).first.status = value ? 'publish' : 'draft';
-                                        controller.toggleProductStatus(
-                                          isActive: value,
-                                          productId: product.id ?? 0,
-                                        );
-                                        controller.update();
-                                      },
-                                    ),
-                                  ],
+                              ),
+                              Flexible(
+                                flex: 4,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 16,
+                                    top: 12,
+                                    bottom: 12,
+                                    right: 12,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '#${product.id ?? ''}',
+                                        style: const TextStyle(fontWeight: FontWeight.normal),
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      Text(
+                                        product.name ?? 'N/A',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'Status',
+                                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                          ),
+                                          Switch(
+                                            value: product.status == 'publish',
+                                            activeTrackColor: Colors.green,
+                                            activeColor: Colors.white,
+                                            inactiveTrackColor: Colors.red,
+                                            inactiveThumbColor: Colors.white,
+                                            onChanged: (value) {
+                                              controller.products.where((p) => p.id == product.id).first.status = value ? 'publish' : 'draft';
+                                              controller.toggleProductStatus(
+                                                isActive: value,
+                                                productId: product.id ?? 0,
+                                              );
+                                              controller.update();
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       );
