@@ -36,8 +36,10 @@ class OrderListController extends GetxController {
     super.onClose();
   }
 
-  Future<List<OrderModel>?> getOrderList() async {
-    loadOrderListFromLocalStorage();
+  Future<List<OrderModel>?> getOrderList({bool shouldLoadFromLocalStorage = true}) async {
+    if (shouldLoadFromLocalStorage) {
+      loadOrderListFromLocalStorage();
+    }
     String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
     // try {
     final response = await _networkController.request(
@@ -115,8 +117,8 @@ class OrderListController extends GetxController {
     }
   }
 
-  Future<bool> updateOrderDetails(int orderId, Map<String, dynamic> data) async {
-    final String endpoint = "$baseUrl/wp-json/wc/v3//orders/$orderId"; // Endpoint for updating product
+  Future<bool> updateOrderStatus(int orderId, String status) async {
+    final String endpoint = "$baseUrl/wp-json/wc/v3/orders/$orderId"; // Corrected endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
@@ -124,17 +126,21 @@ class OrderListController extends GetxController {
         params: {
           'consumer_key': consumerKey, // Replace with actual key
           'consumer_secret': consumerSecret, // Replace with actual secret
-          ...data, // Merge additional fields for the update
+          'status': status, // Only updating the status field
         },
       );
 
       if (response != null && response.statusCode == 200) {
+        logger.d("Order status updated successfully. Status: $status");
+        getOrderList(
+          shouldLoadFromLocalStorage: false,
+        );
         return true;
       } else {
-        throw Exception("Failed to update order. Status code: ${response?.statusCode}");
+        throw Exception("Failed to update order status. Status code: ${response?.statusCode}");
       }
     } catch (e) {
-      logger.e("Error updating order #$orderId: $e");
+      logger.e("Error updating status for order #$orderId: $e");
     }
     return false;
   }

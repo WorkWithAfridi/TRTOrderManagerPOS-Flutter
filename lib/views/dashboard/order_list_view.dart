@@ -55,7 +55,7 @@ class _OrdersPageState extends State<OrdersPage> {
                             ),
                             Chip(
                               label: Text(
-                                order.status ?? "NO-STATUS",
+                                (order.status ?? "NO-STATUS")[0].toUpperCase() + (order.status ?? "NO-STATUS").substring(1),
                                 style: const TextStyle(color: Colors.white),
                               ),
                               backgroundColor: _getStatusColor(order.status ?? 'NO-STATUS'),
@@ -144,10 +144,12 @@ class _OrdersPageState extends State<OrdersPage> {
                                 //   order.preparationTime += 5;
                                 // });
                               },
-                              icon: const Icon(Icons.add),
-                              label: const Text('+5 minutes'),
+                              label: const Text(
+                                '+5 minutes',
+                                style: TextStyle(color: Colors.white),
+                              ),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange,
+                                backgroundColor: Colors.red,
                               ),
                             ),
                             ElevatedButton.icon(
@@ -184,16 +186,10 @@ class _OrdersPageState extends State<OrdersPage> {
   // Function to get status color
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'pending':
-        return Colors.grey;
-      case 'in progress':
-        return Colors.orange;
-      case 'cooking':
-        return Colors.blue;
-      case 'ready':
+      case 'completed':
         return Colors.green;
-      case 'delivered':
-        return Colors.purple;
+      case 'cancelled':
+        return Colors.red;
       default:
         return Colors.black;
     }
@@ -201,7 +197,17 @@ class _OrdersPageState extends State<OrdersPage> {
 
   // Function to show status update dialog
   void _showStatusUpdateDialog(BuildContext context, dynamic order) {
-    final statuses = ['Pending', 'In Progress', 'Cooking', 'Ready', 'Delivered'];
+    // List of allowed statuses
+    final statuses = [
+      'Pending',
+      'Processing',
+      'On-Hold',
+      'Completed',
+      'Cancelled',
+      'Refunded',
+      'Failed',
+      'Trash',
+    ];
 
     showDialog(
       context: context,
@@ -219,13 +225,15 @@ class _OrdersPageState extends State<OrdersPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      order.status = status;
+                      order.status = status.toLowerCase(); // Use lowercase to match API convention
+
+                      controller.updateOrderStatus(order.id, status.toLowerCase());
                     });
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: order.status == status ? Colors.blueAccent : Colors.grey[300],
-                    foregroundColor: order.status == status ? Colors.white : Colors.black,
+                    backgroundColor: order.status == status.toLowerCase() ? Colors.blueAccent : Colors.grey[300],
+                    foregroundColor: order.status == status.toLowerCase() ? Colors.white : Colors.black,
                   ),
                   child: Text(status),
                 ),
