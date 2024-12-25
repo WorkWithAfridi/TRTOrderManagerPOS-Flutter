@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +17,7 @@ class OrderListController extends GetxController {
   Timer? _timer;
   List<OrderModel> orderList = [];
   List<int> orderIds = [];
+  List<OrderTimerModel> orderTimers = [];
   final GetStorage _storage = GetStorage(); // Initialize GetStorage
 
   final NetworkController _networkController = Get.find<NetworkController>();
@@ -70,6 +73,9 @@ class OrderListController extends GetxController {
                 PrinterService().printOrderBill(
                   order,
                 );
+                orderTimers.add(
+                  OrderTimerModel(orderId: order.id!, secondsRemaining: 300),
+                );
                 receivedNewOrders = true;
               }
             }
@@ -79,7 +85,7 @@ class OrderListController extends GetxController {
       orderList = fetchedOrders;
       update();
 
-      logger.d("Total orders: ${orderList.length}");
+      // logger.d("Total orders: ${orderList.length}");
       saveOrderListToLocalStorage();
 
       if (receivedNewOrders) {
@@ -99,19 +105,36 @@ class OrderListController extends GetxController {
     return null;
   }
 
+  void increaseOrderTimerBy5Minutes(
+    int orderId,
+  ) {
+    try {
+      final order = orderTimers.firstWhere(
+        (order) => order.orderId == orderId,
+      );
+      order.secondsRemaining += 300;
+      saveTimerToLocalStorage();
+      update();
+    } catch (e) {
+      logger.e("Error updating timer for order #$orderId: $e");
+    }
+  }
+
   void saveOrderListToLocalStorage() {
     try {
       // Serialize orderList to JSON
       final List<Map<String, dynamic>> jsonOrderList = orderList.map((order) => order.toJson()).toList();
 
-      logger.d("Order list to be saved to local storage: $jsonOrderList");
+      // logger.d("Order list to be saved to local storage: $jsonOrderList");
 
       // Save serialized data to GetStorage
       _storage.write('orderList', jsonOrderList);
-      logger.d("Order list saved to local storage successfully.");
+      // logger.d("Order list saved to local storage successfully.");
+      saveTimerToLocalStorage();
     } catch (e) {
       logger.e("Error saving order list to local storage: $e");
     }
+    update();
   }
 
   void loadOrderListFromLocalStorage() {
@@ -120,12 +143,57 @@ class OrderListController extends GetxController {
       if (jsonOrderList != null) {
         orderList = jsonOrderList.map((json) => OrderModel.fromJson(json)).toList();
         orderIds = orderList.map((order) => order.id!).toList();
-        update();
-        logger.d("Loaded orderlist from local storage : $jsonOrderList");
-        logger.d("Order list loaded from local storage. - ${orderList.length}");
+        // logger.d("Loaded orderlist from local storage : $jsonOrderList");
+        // logger.d("Order list loaded from local storage. - ${orderList.length}");
       }
+      loadTimerListFromLocalStorage();
     } catch (e) {
       logger.e("Error loading order list from local storage: $e");
+    }
+    update();
+  }
+
+  void loadTimerListFromLocalStorage() {
+    try {
+      final List<dynamic>? jsonTimerList = _storage.read<List<dynamic>>('timerList');
+      if (jsonTimerList != null) {
+        orderTimers = jsonTimerList.map((json) => OrderTimerModel.fromJson(json)).toList();
+        update();
+        // logger.d("Loaded timerlist from local storage : $jsonTimerList");
+        // logger.d("Timer list loaded from local storage. - ${orderTimers.length}");
+      }
+    } catch (e) {
+      logger.e("Error loading timer list from local storage: $e");
+    }
+  }
+
+  void saveTimerToLocalStorage() {
+    try {
+      // Serialize orderList to JSON
+      final List<dynamic> jsonTimerList = orderTimers.map((timer) => timer.toJson()).toList();
+
+      // logger.d("Timer list to be saved to local storage: $jsonTimerList");
+
+      // Save serialized data to GetStorage
+      _storage.write('timerList', jsonTimerList);
+      // logger.d("Timer list saved to local storage successfully.");
+    } catch (e) {
+      logger.e("Error saving timer list to local storage: $e");
+    }
+  }
+
+  int? getMinutesRemaining(
+    int orderId,
+  ) {
+    try {
+      final order = orderTimers.firstWhere(
+        (order) => order.orderId == orderId,
+      );
+
+      return (order.secondsRemaining ~/ 60); // Return minutes if found, otherwise null
+    } catch (e) {
+      logger.e("Error getting minutes remaining for order #$orderId: $e");
+      return 0;
     }
   }
 
@@ -196,4 +264,55 @@ class OrderListController extends GetxController {
       },
     );
   }
+}
+
+class OrderTimerModel {
+  final int orderId;
+  int secondsRemaining;
+
+  OrderTimerModel({
+    required this.orderId,
+    required this.secondsRemaining,
+  });
+
+  OrderTimerModel copyWith({
+    int? orderId,
+    int? secondsRemaining,
+  }) {
+    return OrderTimerModel(
+      orderId: orderId ?? this.orderId,
+      secondsRemaining: secondsRemaining ?? this.secondsRemaining,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'orderId': orderId,
+      'secondsRemaining': secondsRemaining,
+    };
+  }
+
+  factory OrderTimerModel.fromMap(Map<String, dynamic> map) {
+    return OrderTimerModel(
+      orderId: map['orderId'] as int,
+      secondsRemaining: map['secondsRemaining'] as int,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory OrderTimerModel.fromJson(String source) => OrderTimerModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  String toString() => 'OrderTimerModel(orderId: $orderId, secondsRemaining: $secondsRemaining)';
+
+  @override
+  bool operator ==(covariant OrderTimerModel other) {
+    if (identical(this, other)) return true;
+
+    return other.orderId == orderId && other.secondsRemaining == secondsRemaining;
+  }
+
+  @override
+  int get hashCode => orderId.hashCode ^ secondsRemaining.hashCode;
 }

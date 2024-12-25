@@ -129,7 +129,7 @@ class _OrdersPageState extends State<OrdersPage> {
 
                         // Total Preparation Time
                         Text(
-                          'Total Preparation Time: ${00} minutes',
+                          'Total Preparation Time: ${controller.getMinutesRemaining(order.id ?? 0) ?? 0} minutes',
                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
                         ),
 
@@ -141,9 +141,7 @@ class _OrdersPageState extends State<OrdersPage> {
                           children: [
                             ElevatedButton.icon(
                               onPressed: () {
-                                // setState(() {
-                                //   order.preparationTime += 5;
-                                // });
+                                controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
                               },
                               label: const Text(
                                 '+5 minutes',

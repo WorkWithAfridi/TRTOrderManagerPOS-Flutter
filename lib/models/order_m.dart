@@ -2,7 +2,6 @@
 //
 //     final orderModel = orderModelFromJson(jsonString);
 
-import 'dart:async';
 import 'dart:convert';
 
 List<OrderModel> orderModelFromJson(String str) => List<OrderModel>.from(json.decode(str).map((x) => OrderModel.fromJson(x)));
@@ -52,7 +51,6 @@ class OrderModel {
   List<dynamic>? couponLines;
   List<Refund>? refunds;
   Links? links;
-  Timer? timer;
 
   OrderModel({
     this.id,
