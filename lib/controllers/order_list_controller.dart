@@ -30,6 +30,7 @@ class OrderListController extends GetxController {
     // Set up a timer to call getOrderList every 10 seconds
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       getOrderList(context);
+      decreaseAllTimerBy1Minutes();
     });
   }
 
@@ -103,6 +104,16 @@ class OrderListController extends GetxController {
 
     update();
     return null;
+  }
+
+  void decreaseAllTimerBy1Minutes() {
+    for (var order in orderTimers) {
+      if (order.secondsRemaining > 0) {
+        order.secondsRemaining -= 60;
+      }
+    }
+    saveTimerToLocalStorage();
+    update();
   }
 
   void increaseOrderTimerBy5Minutes(
