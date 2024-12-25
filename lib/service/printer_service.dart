@@ -51,7 +51,7 @@ class PrinterService {
                 border: pw.TableBorder.all(color: PdfColors.black),
                 data: (order.lineItems ?? []).map((item) {
                   return [
-                    item.name,
+                    "${item.name} ${(item.metaData ?? []).map((e) => e.value ?? "").join(", ")}",
                     item.quantity,
                     '\$${(item.price ?? 0.0).toStringAsFixed(2)}',
                     '\$${((item.quantity ?? 0) * (item.price ?? 0.0)).toStringAsFixed(2)}'
