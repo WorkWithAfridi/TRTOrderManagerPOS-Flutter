@@ -238,6 +238,7 @@ class OrderListController extends GetxController {
 
   void showNewOrdersDialog(BuildContext context) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(

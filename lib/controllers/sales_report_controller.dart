@@ -23,6 +23,8 @@ class SalesReportController extends GetxController {
 
     isLoading.value = true; // Show loading spinner
 
+    logger.d("After: ${dateRange['after']}, Before: ${dateRange['before']}");
+
     try {
       final response = await _networkController.request(
         url: endpoint,
@@ -30,10 +32,12 @@ class SalesReportController extends GetxController {
         params: {
           'consumer_key': consumerKey,
           'consumer_secret': consumerSecret,
-          'after': dateRange['after']!,
-          'before': dateRange['before']!,
+          'date_min': dateRange['after']!.substring(0, 10),
+          'date_max': dateRange['before']!.substring(0, 10),
         },
       );
+
+      logger.d("Response data: ${response?.data}");
 
       if (response != null && response.statusCode == 200) {
         // Parse the response into SalesReportModel

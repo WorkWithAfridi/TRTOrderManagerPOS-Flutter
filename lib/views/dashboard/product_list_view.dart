@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pdf_printer/controllers/product_list_controller.dart';
@@ -58,13 +57,21 @@ class ProductsPage extends StatelessWidget {
                                       topLeft: Radius.circular(8),
                                       bottomLeft: Radius.circular(8),
                                     ),
-                                    child: CachedNetworkImage(
-                                      imageUrl: product.images?.first.src ?? '',
+                                    child: Image.network(
+                                      product.images?.first.src ?? '',
                                       fit: BoxFit.cover,
-                                      errorWidget: (context, url, error) => const Icon(
+                                      errorBuilder: (context, error, stackTrace) => const Icon(
                                         Icons.error,
                                       ),
                                     ),
+
+                                    // CachedNetworkImage(
+                                    //   imageUrl: product.images?.first.src ?? '',
+                                    //   fit: BoxFit.cover,
+                                    //   errorWidget: (context, url, error) => const Icon(
+                                    //     Icons.error,
+                                    //   ),
+                                    // ),
                                   ),
                                 ),
                               ),

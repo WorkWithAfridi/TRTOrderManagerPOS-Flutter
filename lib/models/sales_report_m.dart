@@ -16,7 +16,7 @@ class SalesReportModel {
   int? totalItems;
   String? totalTax;
   String? totalShipping;
-  int? totalRefunds;
+  double? totalRefunds;
   String? totalDiscount;
   String? totalsGroupedBy;
   Map<String, Total>? totals;

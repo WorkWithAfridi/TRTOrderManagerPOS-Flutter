@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/controllers/dashboard_controller.dart';
 import 'package:pdf_printer/controllers/order_list_controller.dart';
 import 'package:pdf_printer/controllers/sales_report_controller.dart';
+import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/dependency_injection_service.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
 import 'package:pdf_printer/views/dashboard/order_list_view.dart';
@@ -91,17 +92,22 @@ class _DashboardViewState extends State<DashboardView> {
                         width: double.infinity, // Ensure button takes max width
                         child: ElevatedButton(
                           onPressed: () async {
+                            logger.d("Selected status: $status");
                             switch (status) {
                               case 'Day':
+                                logger.d("Day");
                                 await salesReportController.getSalesReport(period: "day");
                                 break;
                               case 'Week':
+                                logger.d("Week");
                                 await salesReportController.getSalesReport(period: "week");
                                 break;
                               case 'Two Weeks':
+                                logger.d("Two Weeks");
                                 await salesReportController.getSalesReport(period: "two_weeks");
                                 break;
                               case 'Month':
+                                logger.d("Month");
                                 await salesReportController.getSalesReport(period: "month");
                                 break;
                             }
@@ -199,26 +205,6 @@ class _DashboardViewState extends State<DashboardView> {
             ),
             Obx(() => ListTile(
                   leading: Icon(
-                    Icons.inventory,
-                    color: dashboardController.isProductTabSelected.value ? Colors.green : Colors.grey,
-                  ),
-                  title: Text(
-                    'Products',
-                    style: TextStyle(
-                      color: dashboardController.isProductTabSelected.value ? Colors.black : Colors.grey,
-                    ),
-                  ),
-                  onTap: () {
-                    dashboardController.isProductTabSelected.value = true;
-                    Get.back();
-                  },
-                )),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: const Divider(height: 20, thickness: 1),
-            ),
-            Obx(() => ListTile(
-                  leading: Icon(
                     Icons.receipt,
                     color: !dashboardController.isProductTabSelected.value ? Colors.green : Colors.grey,
                   ),
@@ -230,6 +216,26 @@ class _DashboardViewState extends State<DashboardView> {
                   ),
                   onTap: () {
                     dashboardController.isProductTabSelected.value = false;
+                    Get.back();
+                  },
+                )),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: const Divider(height: 20, thickness: 1),
+            ),
+            Obx(() => ListTile(
+                  leading: Icon(
+                    Icons.inventory,
+                    color: dashboardController.isProductTabSelected.value ? Colors.green : Colors.grey,
+                  ),
+                  title: Text(
+                    'Products',
+                    style: TextStyle(
+                      color: dashboardController.isProductTabSelected.value ? Colors.black : Colors.grey,
+                    ),
+                  ),
+                  onTap: () {
+                    dashboardController.isProductTabSelected.value = true;
                     Get.back();
                   },
                 )),

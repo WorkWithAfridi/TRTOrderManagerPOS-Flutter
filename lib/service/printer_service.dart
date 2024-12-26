@@ -28,21 +28,13 @@ class PrinterService {
                   pw.Text(companyName, style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
                   pw.SizedBox(height: 8),
                   pw.Text('Order #${order.id}', style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold)),
+                  pw.Text(order.dateCreated.toString().substring(0, 10), style: const pw.TextStyle(fontSize: 6)),
                   pw.Divider(thickness: 2),
                   pw.SizedBox(height: 8),
                 ],
               ),
 
-              // Customer and Date Information
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Text('Date: ${order.dateCreated.toString().substring(0, 10)}', style: const pw.TextStyle(fontSize: 6)),
-                ],
-              ),
-              pw.SizedBox(height: 6),
-
+              // TAX
               // Table Header
               pw.Table.fromTextArray(
                 headerStyle: pw.TextStyle(fontSize: 4, fontWeight: pw.FontWeight.bold),
@@ -51,12 +43,27 @@ class PrinterService {
                 border: pw.TableBorder.all(color: PdfColors.black),
                 data: (order.lineItems ?? []).map((item) {
                   return [
-                    "${item.name} ${(item.metaData ?? []).map((e) => e.value ?? "").join(", ")}",
-                    item.quantity,
+                    // metadata[display_value]
+                    "${item.name} ${(item.metaData ?? []).map((e) {
+                      if (e.key == "_exoptions") {
+                        return "";
+                      }
+                      return ("\n - ${e.displayValue}");
+                    }).join("")}",
+                    "x"
+                        "${item.quantity ?? 0}",
                     '\$${(item.price ?? 0.0).toStringAsFixed(2)}',
                     '\$${((item.quantity ?? 0) * (item.price ?? 0.0)).toStringAsFixed(2)}'
                   ];
                 }).toList(),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('Notes:', style: const pw.TextStyle(fontSize: 4)),
+                  pw.Text('${order.customerNote}', style: const pw.TextStyle(fontSize: 4)),
+                ],
               ),
               pw.SizedBox(height: 4),
 
@@ -83,6 +90,22 @@ class PrinterService {
                         pw.Text('\$${order.shippingTotal}', style: const pw.TextStyle(fontSize: 4)),
                       ],
                     ),
+                    ...(order.taxLines ?? []).map((e) {
+                      return pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text('${e.label}:', style: const pw.TextStyle(fontSize: 4)),
+                          pw.Text('\$${e.taxTotal}', style: const pw.TextStyle(fontSize: 4)),
+                        ],
+                      );
+                    }),
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text('Total TAX:', style: const pw.TextStyle(fontSize: 4)),
+                        pw.Text('\$${order.totalTax}', style: const pw.TextStyle(fontSize: 4)),
+                      ],
+                    ),
                     pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                       children: [
@@ -94,7 +117,7 @@ class PrinterService {
                       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Text('PAYMENT METHOD:', style: const pw.TextStyle(fontSize: 4)),
-                        pw.Text('\$${order.paymentMethod}', style: const pw.TextStyle(fontSize: 4)),
+                        pw.Text('${order.paymentMethodTitle}', style: const pw.TextStyle(fontSize: 4)),
                       ],
                     ),
                     pw.Row(
@@ -131,7 +154,7 @@ class PrinterService {
                     thickness: 0.5,
                   ),
                   pw.Text(
-                    'User Details:',
+                    'Customer:',
                     style: pw.TextStyle(
                       fontSize: 5,
                       fontWeight: pw.FontWeight.bold,
@@ -139,47 +162,25 @@ class PrinterService {
                   ),
                   pw.SizedBox(height: 2),
                   pw.Text(
-                    'Name: ${order.billing?.firstName ?? ''} ${order.billing?.lastName ?? ''}',
+                    '${order.billing?.firstName ?? ''} ${order.billing?.lastName ?? ''}',
                     style: const pw.TextStyle(fontSize: 4),
                   ),
                   pw.SizedBox(height: 2),
                   pw.Text(
-                    'Address: ${order.billing?.address1 ?? ''}',
+                    order.billing?.phone ?? '',
                     style: const pw.TextStyle(fontSize: 4),
                   ),
                   pw.SizedBox(height: 2),
                   pw.Text(
-                    'City: ${order.billing?.city ?? ''}',
+                    '${order.billing?.email ?? ''}.',
                     style: const pw.TextStyle(fontSize: 4),
                   ),
                   pw.SizedBox(height: 2),
-                  pw.Row(
-                    children: [
-                      pw.Text(
-                        'State: ${order.billing?.state ?? ''}.',
-                        style: const pw.TextStyle(fontSize: 4),
-                      ),
-                      pw.SizedBox(width: 2),
-                      pw.Text(
-                        'Postcode: ${order.billing?.postcode ?? ''}',
-                        style: const pw.TextStyle(fontSize: 4),
-                      ),
-                    ],
+                  pw.Text(
+                    order.billing?.address1 ?? '',
+                    style: const pw.TextStyle(fontSize: 4),
                   ),
                   pw.SizedBox(height: 2),
-                  pw.Row(
-                    children: [
-                      pw.Text(
-                        'Email: ${order.billing?.email ?? ''}.',
-                        style: const pw.TextStyle(fontSize: 4),
-                      ),
-                      pw.SizedBox(width: 2),
-                      pw.Text(
-                        'Phone: ${order.billing?.phone ?? ''}',
-                        style: const pw.TextStyle(fontSize: 4),
-                      ),
-                    ],
-                  )
                 ],
               ),
 
@@ -323,6 +324,17 @@ class PrinterService {
                       ],
                     ),
                   pw.Divider(thickness: 1),
+                  pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.center,
+                    children: [
+                      pw.Divider(
+                        thickness: 0.5,
+                      ),
+                      pw.Text('Powered By TRT Technologies Ltd', style: const pw.TextStyle(fontSize: 4)),
+                      pw.SizedBox(height: 2),
+                      pw.Text('www.trttech.ca', style: const pw.TextStyle(fontSize: 4)),
+                    ],
+                  ),
                 ],
               ),
           ];

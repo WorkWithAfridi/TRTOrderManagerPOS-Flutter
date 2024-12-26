@@ -49,7 +49,7 @@ class _OrdersPageState extends State<OrdersPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Order #${order.id}',
+                              'Order #${order.id} : ${order.billing?.firstName} ${order.billing?.lastName}',
                               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -185,9 +185,19 @@ class _OrdersPageState extends State<OrdersPage> {
   // Function to get status color
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
+      case 'pending':
+        return Colors.orange;
+      case 'processing':
+        return Colors.orange;
+      case 'on-hold':
+        return Colors.orange;
       case 'completed':
         return Colors.green;
       case 'cancelled':
+        return Colors.red;
+      case 'refunded':
+        return Colors.red;
+      case 'failed':
         return Colors.red;
       default:
         return Colors.black;
@@ -205,7 +215,7 @@ class _OrdersPageState extends State<OrdersPage> {
       'Cancelled',
       'Refunded',
       'Failed',
-      'Trash',
+      // 'Trash',
     ];
 
     showDialog(
