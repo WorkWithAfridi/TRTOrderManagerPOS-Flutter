@@ -47,60 +47,60 @@ class OrderListController extends GetxController {
       loadOrderListFromLocalStorage();
     }
     String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
-    // try {
-    final response = await _networkController.request(
-      url: endpoint,
-      method: Method.GET,
-      params: {
-        'consumer_key': consumerKey, // Replace with actual key
-        'consumer_secret': consumerSecret, // Replace with actual secret
-        'per_page': 100,
-      },
-    );
+    try {
+      final response = await _networkController.request(
+        url: endpoint,
+        method: Method.GET,
+        params: {
+          'consumer_key': consumerKey, // Replace with actual key
+          'consumer_secret': consumerSecret, // Replace with actual secret
+          'per_page': 100,
+        },
+      );
 
-    // logger.d("Response data: ${response?.data}");
+      // logger.d("Response data: ${response?.data}");
 
-    if (response != null && response.statusCode == 200) {
-      // Parse response to list of OrderModel
-      final fetchedOrders = (response.data as List).map((order) => OrderModel.fromJson(order)).toList();
-      for (var order in fetchedOrders) {
-        if (order.id != null) {
-          if (!orderIds.contains(order.id!)) {
-            {
-              orderList.add(order);
-              orderIds.add(order.id ?? 0);
-              if (!FirstBootChecker().isFirstBoot) {
-                NotificationSoundPlayer().playNotification();
-                PrinterService().printOrderBill(
-                  order,
-                );
-                orderTimers.add(
-                  OrderTimerModel(orderId: order.id!, secondsRemaining: 300),
-                );
-                receivedNewOrders = true;
+      if (response != null && response.statusCode == 200) {
+        // Parse response to list of OrderModel
+        final fetchedOrders = (response.data as List).map((order) => OrderModel.fromJson(order)).toList();
+        for (var order in fetchedOrders) {
+          if (order.id != null) {
+            if (!orderIds.contains(order.id!)) {
+              {
+                orderList.add(order);
+                orderIds.add(order.id ?? 0);
+                if (!FirstBootChecker().isFirstBoot) {
+                  NotificationSoundPlayer().playNotification();
+                  PrinterService().printOrderBill(
+                    order,
+                  );
+                  orderTimers.add(
+                    OrderTimerModel(orderId: order.id!, secondsRemaining: 0),
+                  );
+                  receivedNewOrders = true;
+                }
               }
             }
           }
         }
-      }
-      orderList = fetchedOrders;
-      update();
+        orderList = fetchedOrders;
+        update();
 
-      // logger.d("Total orders: ${orderList.length}");
-      saveOrderListToLocalStorage();
+        // logger.d("Total orders: ${orderList.length}");
+        saveOrderListToLocalStorage();
 
-      if (receivedNewOrders) {
-        showNewOrdersDialog(
-          context,
-        );
+        if (receivedNewOrders) {
+          showNewOrdersDialog(
+            context,
+          );
+        }
+        return orderList;
+      } else {
+        logger.e("Failed to fetch order list");
       }
-      return orderList;
-    } else {
-      logger.e("Failed to fetch order list");
+    } catch (e) {
+      logger.e("Error fetching order list: $e");
     }
-    // } catch (e) {
-    //   logger.e("Error fetching order list: $e");
-    // }
 
     update();
     return null;
@@ -116,18 +116,47 @@ class OrderListController extends GetxController {
     update();
   }
 
-  void increaseOrderTimerBy5Minutes(
+  void increaseOrderTimerBy1Minutes(
     int orderId,
   ) {
     try {
       final order = orderTimers.firstWhere(
         (order) => order.orderId == orderId,
       );
-      order.secondsRemaining += 300;
+      order.secondsRemaining += 60;
       saveTimerToLocalStorage();
       update();
     } catch (e) {
       logger.e("Error updating timer for order #$orderId: $e");
+      orderTimers.add(
+        OrderTimerModel(
+          orderId: orderId,
+          secondsRemaining: 60,
+        ),
+      );
+      update();
+    }
+  }
+
+  void decreaseOrderTimerBy1Minutes(
+    int orderId,
+  ) {
+    try {
+      final order = orderTimers.firstWhere(
+        (order) => order.orderId == orderId,
+      );
+      order.secondsRemaining -= 60;
+      saveTimerToLocalStorage();
+      update();
+    } catch (e) {
+      logger.e("Error updating timer for order #$orderId: $e");
+      orderTimers.add(
+        OrderTimerModel(
+          orderId: orderId,
+          secondsRemaining: 60,
+        ),
+      );
+      update();
     }
   }
 
@@ -154,8 +183,7 @@ class OrderListController extends GetxController {
       if (jsonOrderList != null) {
         orderList = jsonOrderList.map((json) => OrderModel.fromJson(json)).toList();
         orderIds = orderList.map((order) => order.id!).toList();
-        // logger.d("Loaded orderlist from local storage : $jsonOrderList");
-        // logger.d("Order list loaded from local storage. - ${orderList.length}");
+        logger.d("OrderIds: $orderIds");
       }
       loadTimerListFromLocalStorage();
     } catch (e) {
@@ -167,11 +195,21 @@ class OrderListController extends GetxController {
   void loadTimerListFromLocalStorage() {
     try {
       final List<dynamic>? jsonTimerList = _storage.read<List<dynamic>>('timerList');
+      logger.d("Timer list loaded from local storage. - ${jsonTimerList?.length}");
       if (jsonTimerList != null) {
         orderTimers = jsonTimerList.map((json) => OrderTimerModel.fromJson(json)).toList();
         update();
         // logger.d("Loaded timerlist from local storage : $jsonTimerList");
         // logger.d("Timer list loaded from local storage. - ${orderTimers.length}");
+      }
+
+      if (orderIds.length != orderTimers.length) {
+        for (var orderId in orderIds) {
+          if (!orderTimers.any((element) => element.orderId == orderId)) {
+            orderTimers.add(OrderTimerModel(orderId: orderId, secondsRemaining: 300));
+          }
+        }
+        saveTimerToLocalStorage();
       }
     } catch (e) {
       logger.e("Error loading timer list from local storage: $e");

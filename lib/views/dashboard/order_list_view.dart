@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf_printer/controllers/order_list_controller.dart';
@@ -141,10 +142,78 @@ class _OrdersPageState extends State<OrdersPage> {
                           children: [
                             ElevatedButton.icon(
                               onPressed: () {
-                                controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
+                                // controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16.0),
+                                      ),
+                                      content: GetBuilder<OrderListController>(
+                                        init: controller,
+                                        initState: (_) {},
+                                        builder: (_) {
+                                          return Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Text('Update Order Status'),
+                                              const Gap(10),
+                                              Text(
+                                                'Total Preparation Time: ${controller.getMinutesRemaining(order.id ?? 0) ?? 0} minutes',
+                                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 22,
+                                                    ),
+                                              ),
+                                              const Gap(20),
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      controller.decreaseOrderTimerBy1Minutes(order.id ?? 0);
+                                                    },
+                                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                                    child: const Text(
+                                                      '- 1 minutes',
+                                                      style: TextStyle(color: Colors.white),
+                                                    ),
+                                                  ),
+                                                  const Gap(12),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      controller.increaseOrderTimerBy1Minutes(order.id ?? 0);
+                                                    },
+                                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                                    child: const Text(
+                                                      '+ 1 minutes',
+                                                      style: TextStyle(color: Colors.white),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const Gap(20),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Get.back();
+                                                },
+                                                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                                                child: const Text(
+                                                  'Done',
+                                                  style: TextStyle(color: Colors.white),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                );
                               },
                               label: const Text(
-                                '+5 minutes',
+                                'Update timer',
                                 style: TextStyle(color: Colors.white),
                               ),
                               style: ElevatedButton.styleFrom(
