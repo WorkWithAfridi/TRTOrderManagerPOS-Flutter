@@ -281,11 +281,12 @@ class OrderListController extends GetxController {
     try {
       final response = await _networkController.request(
         url: endpoint,
-        method: Method.PUT,
+        method: Method.POST,
         params: {
           'consumer_key': consumerKey, // Replace with actual key
           'consumer_secret': consumerSecret, // Replace with actual secret
-          'order_id': orderId, 'delivery_time': (getMinutesRemaining(orderId) ?? 0).toString(),
+          'order_id': orderId,
+          'delivery_time': (getMinutesRemaining(orderId) ?? 0).toString(),
         },
       );
 
