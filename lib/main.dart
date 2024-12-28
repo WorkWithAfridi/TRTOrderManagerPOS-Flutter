@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/controllers/dashboard_controller.dart';
@@ -275,7 +276,57 @@ class _DashboardViewState extends State<DashboardView> {
                                     inactiveTrackColor: Colors.red,
                                     inactiveThumbColor: Colors.white,
                                     onChanged: (value) {
-                                      productListController.toggleAllProductStatus();
+                                      showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(16.0),
+                                            ),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  'Are you sure you want to update all products status?',
+                                                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 22,
+                                                      ),
+                                                ),
+                                                const Gap(20),
+                                                Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        Get.back();
+                                                      },
+                                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                                      child: const Text(
+                                                        'NO',
+                                                        style: TextStyle(color: Colors.white),
+                                                      ),
+                                                    ),
+                                                    const Gap(12),
+                                                    ElevatedButton(
+                                                      onPressed: () {
+                                                        productListController.toggleAllProductStatus();
+                                                        Get.back();
+                                                      },
+                                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                                      child: const Text(
+                                                        'YES',
+                                                        style: TextStyle(color: Colors.white),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      );
                                     },
                                   ),
                                   Text(
