@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:pdf_printer/controllers/store_controller.dart';
 import 'package:pdf_printer/models/order_m.dart';
 import 'package:pdf_printer/models/sales_report_m.dart';
 import 'package:pdf_printer/prod_env/prod_end.dart';
@@ -12,6 +14,8 @@ class PrinterService {
   /// Generates a bill receipt PDF document with demo data
   Future<pw.Document> generateBillReceiptPdf(OrderModel order) async {
     final pdf = pw.Document();
+
+    StoreController storeController = Get.find<StoreController>();
 
     pdf.addPage(
       pw.Page(
@@ -25,8 +29,10 @@ class PrinterService {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
-                  pw.Text(companyName, style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold)),
-                  pw.SizedBox(height: 6),
+                  pw.Text(storeController.storeModel?.name ?? companyName, style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold)),
+                  pw.Text(storeController.storeModel?.address ?? "- -", style: pw.TextStyle(fontSize: 4, fontWeight: pw.FontWeight.bold)),
+                  pw.Text(storeController.storeModel?.contact ?? "- -", style: pw.TextStyle(fontSize: 4, fontWeight: pw.FontWeight.bold)),
+                  pw.SizedBox(height: 4),
                   pw.Text('Order #${order.id}', style: pw.TextStyle(fontSize: 5, fontWeight: pw.FontWeight.bold)),
                   pw.Text(order.dateCreated.toString().substring(0, 10), style: const pw.TextStyle(fontSize: 5)),
                   pw.SizedBox(height: 4),

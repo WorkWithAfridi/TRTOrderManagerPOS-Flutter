@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pdf_printer/controllers/product_list_controller.dart';
+import 'package:pdf_printer/controllers/store_controller.dart';
 import 'package:pdf_printer/main.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -18,13 +19,15 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     // Navigate to DashboardView after 3 seconds
     Get.find<ProductListController>().fetchAllProducts();
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const DashboardView(),
-        ),
-      );
+    Get.find<StoreController>().getStoreDetails().then((_) {
+      Timer(const Duration(seconds: 2), () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const DashboardView(),
+          ),
+        );
+      });
     });
   }
 
