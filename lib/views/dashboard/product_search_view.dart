@@ -156,9 +156,9 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
                                                   Row(
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
-                                                      const Text(
-                                                        'Status',
-                                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                                      Text(
+                                                        product.status == 'publish' ? 'In-Stock' : 'Out of Stock',
+                                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                                                       ),
                                                       Switch(
                                                         value: product.status == 'publish',

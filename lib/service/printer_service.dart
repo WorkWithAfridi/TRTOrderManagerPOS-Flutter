@@ -16,6 +16,7 @@ class PrinterService {
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.roll80,
+        margin: const pw.EdgeInsets.all(4),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -28,17 +29,36 @@ class PrinterService {
                   pw.SizedBox(height: 6),
                   pw.Text('Order #${order.id}', style: pw.TextStyle(fontSize: 5, fontWeight: pw.FontWeight.bold)),
                   pw.Text(order.dateCreated.toString().substring(0, 10), style: const pw.TextStyle(fontSize: 5)),
-                  pw.Divider(thickness: 1),
-                  pw.SizedBox(height: 6),
+                  pw.SizedBox(height: 4),
+                  pw.Container(
+                    height: 0.5,
+                    color: PdfColor.fromHex('#000000'),
+                  ),
+                  pw.SizedBox(height: 4),
                 ],
               ),
+
+              // Notes
+              order.customerNote != null
+                  ? pw.Column(children: [
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.start,
+                        children: [
+                          pw.Text('Notes: ', style: const pw.TextStyle(fontSize: 4)),
+                          pw.Text('${order.customerNote}', style: const pw.TextStyle(fontSize: 4)),
+                        ],
+                      ),
+                      pw.SizedBox(height: 2),
+                    ])
+                  : pw.SizedBox.shrink(),
 
               // Table Header
               pw.Table.fromTextArray(
                 headerStyle: pw.TextStyle(fontSize: 4, fontWeight: pw.FontWeight.bold),
                 headers: ['Item', 'Quantity', 'Price', 'Total'],
-                cellStyle: const pw.TextStyle(fontSize: 4),
+                cellStyle: const pw.TextStyle(fontSize: 4, height: .8),
                 border: pw.TableBorder.all(color: PdfColors.black, width: 0.2),
+                cellPadding: const pw.EdgeInsets.all(1),
                 data: (order.lineItems ?? []).map((item) {
                   return [
                     "${item.name} ${(item.metaData ?? []).map((e) => (e.key == "_exoptions" ? "" : "\n - ${e.displayValue}")).join("")}",
@@ -47,16 +67,6 @@ class PrinterService {
                     '\$${((item.quantity ?? 0) * (item.price ?? 0.0)).toStringAsFixed(2)}'
                   ];
                 }).toList(),
-              ),
-              pw.SizedBox(height: 4),
-
-              // Notes
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Text('Notes:', style: const pw.TextStyle(fontSize: 4)),
-                  pw.Text('${order.customerNote}', style: const pw.TextStyle(fontSize: 4)),
-                ],
               ),
               pw.SizedBox(height: 4),
 
@@ -122,7 +132,12 @@ class PrinterService {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Divider(thickness: 0.5),
+                  pw.SizedBox(height: 4),
+                  pw.Container(
+                    height: 0.5,
+                    color: PdfColor.fromHex('#000000'),
+                  ),
+                  pw.SizedBox(height: 4),
                   pw.Text(
                     'Customer:',
                     style: pw.TextStyle(
@@ -205,6 +220,7 @@ class PrinterService {
 
     pdf.addPage(
       pw.Page(
+        margin: const pw.EdgeInsets.all(4),
         pageFormat: PdfPageFormat.roll80,
         build: (pw.Context context) {
           return pw.Column(
@@ -278,13 +294,23 @@ class PrinterService {
                           ),
                         ],
                       ),
-                    pw.Divider(thickness: 1),
+                    pw.SizedBox(height: 4),
+                    pw.Container(
+                      height: 0.5,
+                      color: PdfColor.fromHex('#000000'),
+                    ),
+                    pw.SizedBox(height: 4),
                   ],
                 ),
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
-                  pw.Divider(thickness: 0.5),
+                  pw.SizedBox(height: 4),
+                  pw.Container(
+                    height: 0.5,
+                    color: PdfColor.fromHex('#000000'),
+                  ),
+                  pw.SizedBox(height: 4),
                   pw.Text('Powered By TRT Technologies Ltd', style: const pw.TextStyle(fontSize: 4)),
                   pw.SizedBox(height: 2),
                   pw.Text('www.trttech.ca', style: const pw.TextStyle(fontSize: 4)),
