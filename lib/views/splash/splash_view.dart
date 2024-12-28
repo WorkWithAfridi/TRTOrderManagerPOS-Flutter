@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:pdf_printer/controllers/product_list_controller.dart';
 import 'package:pdf_printer/controllers/store_controller.dart';
@@ -33,22 +34,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFF0FCA77), // Splash screen background color
+    return Scaffold(
+      backgroundColor: const Color(0xFF0FCA77), // Splash screen background color
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Logo or Icon
-            Icon(
-              Icons.fastfood_rounded,
-              size: 80,
-              color: Colors.white,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(100),
+              child: SvgPicture.asset(
+                'assets/icon/app-logo.svg',
+                height: 80,
+                width: 80,
+              ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // App Name or Slogan
-            Text(
+            const Text(
               'TRT Order Manager',
               style: TextStyle(
                 fontSize: 24,
@@ -56,20 +60,20 @@ class _SplashScreenState extends State<SplashScreen> {
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
 
             // Subtitle or tagline
-            Text(
+            const Text(
               'Manage your orders effortlessly!',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white70,
               ),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
 
             // Loading Indicator
-            SizedBox(
+            const SizedBox(
               height: 25,
               width: 25,
               child: CircularProgressIndicator(

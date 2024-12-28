@@ -3,7 +3,6 @@ import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf_printer/controllers/order_list_controller.dart';
-import 'package:pdf_printer/controllers/store_controller.dart';
 import 'package:pdf_printer/service/printer_service.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -19,16 +18,16 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Get.find<StoreController>().getStoreDetails();
-            },
-            child: const Text("TEST"),
-          )
-        ],
-      ),
+      // appBar: AppBar(
+      //   actions: [
+      //     ElevatedButton(
+      //       onPressed: () {
+      //         Get.find<StoreController>().getStoreDetails();
+      //       },
+      //       child: const Text("TEST"),
+      //     )
+      //   ],
+      // ),
       body: GetBuilder<OrderListController>(
         init: controller,
         builder: (_) {

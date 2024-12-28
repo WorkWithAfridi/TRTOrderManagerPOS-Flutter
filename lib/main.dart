@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -159,19 +160,23 @@ class _DashboardViewState extends State<DashboardView> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                 ),
-                child: const Column(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Logo or Icon
-                    Icon(
-                      Icons.fastfood_rounded,
-                      size: 40,
-                      color: Colors.white,
+
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: SvgPicture.asset(
+                        'assets/icon/app-logo.svg',
+                        height: 80,
+                        width: 80,
+                      ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
                     // App Name or Slogan
-                    Text(
+                    const Text(
                       'TRT Order Manager',
                       style: TextStyle(
                         fontSize: 14,
