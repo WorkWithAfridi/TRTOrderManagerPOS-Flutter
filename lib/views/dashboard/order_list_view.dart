@@ -145,6 +145,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                 // controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
                                 showDialog(
                                   context: context,
+                                  barrierDismissible: false,
                                   builder: (context) {
                                     return AlertDialog(
                                       shape: RoundedRectangleBorder(
@@ -172,22 +173,22 @@ class _OrdersPageState extends State<OrdersPage> {
                                                 children: [
                                                   ElevatedButton(
                                                     onPressed: () {
-                                                      controller.decreaseOrderTimerBy1Minutes(order.id ?? 0);
+                                                      controller.decreaseOrderTimerBy5Minutes(order.id ?? 0);
                                                     },
                                                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                                                     child: const Text(
-                                                      '- 1 minutes',
+                                                      '- 5 minutes',
                                                       style: TextStyle(color: Colors.white),
                                                     ),
                                                   ),
                                                   const Gap(12),
                                                   ElevatedButton(
                                                     onPressed: () {
-                                                      controller.increaseOrderTimerBy1Minutes(order.id ?? 0);
+                                                      controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
                                                     },
                                                     style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                                                     child: const Text(
-                                                      '+ 1 minutes',
+                                                      '+ 5 minutes',
                                                       style: TextStyle(color: Colors.white),
                                                     ),
                                                   ),
@@ -196,6 +197,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                               const Gap(20),
                                               ElevatedButton(
                                                 onPressed: () {
+                                                  controller.notifyCustomerOnOrderTimerUpdate(order.id ?? 0);
                                                   Get.back();
                                                 },
                                                 style: ElevatedButton.styleFrom(backgroundColor: Colors.black),

@@ -116,14 +116,14 @@ class OrderListController extends GetxController {
     update();
   }
 
-  void increaseOrderTimerBy1Minutes(
+  void increaseOrderTimerBy5Minutes(
     int orderId,
   ) {
     try {
       final order = orderTimers.firstWhere(
         (order) => order.orderId == orderId,
       );
-      order.secondsRemaining += 60;
+      order.secondsRemaining += 300;
       saveTimerToLocalStorage();
       update();
     } catch (e) {
@@ -131,21 +131,21 @@ class OrderListController extends GetxController {
       orderTimers.add(
         OrderTimerModel(
           orderId: orderId,
-          secondsRemaining: 60,
+          secondsRemaining: 300,
         ),
       );
       update();
     }
   }
 
-  void decreaseOrderTimerBy1Minutes(
+  void decreaseOrderTimerBy5Minutes(
     int orderId,
   ) {
     try {
       final order = orderTimers.firstWhere(
         (order) => order.orderId == orderId,
       );
-      order.secondsRemaining -= 60;
+      order.secondsRemaining -= 300;
       saveTimerToLocalStorage();
       update();
     } catch (e) {
@@ -153,7 +153,7 @@ class OrderListController extends GetxController {
       orderTimers.add(
         OrderTimerModel(
           orderId: orderId,
-          secondsRemaining: 60,
+          secondsRemaining: 300,
         ),
       );
       update();
@@ -270,6 +270,33 @@ class OrderListController extends GetxController {
       }
     } catch (e) {
       logger.e("Error updating status for order #$orderId: $e");
+    }
+    return false;
+  }
+
+  Future<bool> notifyCustomerOnOrderTimerUpdate(
+    int orderId,
+  ) async {
+    final String endpoint = "$baseUrl/wp-json/wc/v3/trt/order/email"; // Corrected endpoint
+    try {
+      final response = await _networkController.request(
+        url: endpoint,
+        method: Method.PUT,
+        params: {
+          'consumer_key': consumerKey, // Replace with actual key
+          'consumer_secret': consumerSecret, // Replace with actual secret
+          'order_id': orderId, 'delivery_time': (getMinutesRemaining(orderId) ?? 0).toString(),
+        },
+      );
+
+      if (response != null && response.statusCode == 200) {
+        logger.d("Notification sent successfully.");
+        return true;
+      } else {
+        throw Exception("Failed to notify customer. Status code: ${response?.statusCode}");
+      }
+    } catch (e) {
+      logger.e("Error notifying customer for order #$orderId: $e");
     }
     return false;
   }
