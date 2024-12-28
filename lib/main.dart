@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/controllers/dashboard_controller.dart';
 import 'package:pdf_printer/controllers/order_list_controller.dart';
+import 'package:pdf_printer/controllers/product_list_controller.dart';
 import 'package:pdf_printer/controllers/sales_report_controller.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/dependency_injection_service.dart';
@@ -57,6 +58,7 @@ class _DashboardViewState extends State<DashboardView> {
 
   DashboardController get dashboardController => Get.find<DashboardController>();
   OrderListController get orderListController => Get.find<OrderListController>();
+  ProductListController get productListController => Get.find<ProductListController>();
 
   @override
   void initState() {
@@ -142,33 +144,10 @@ class _DashboardViewState extends State<DashboardView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
         title: Obx(() => Text('TRT Order Manager - ${dashboardController.isProductTabSelected.value ? 'Products' : 'Orders'}')),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              _generateReport(context);
-            },
-            child: const Text("Report"),
-          ),
-          const SizedBox(width: 8),
-          Obx(
-            () => dashboardController.isProductTabSelected.value
-                ? Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          Get.to(
-                            const ProductSearchPage(),
-                          );
-                        },
-                        child: const Text("Search"),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                  )
-                : const SizedBox(),
-          ),
-        ],
       ),
       drawer: Drawer(
         child: Column(
@@ -225,7 +204,7 @@ class _DashboardViewState extends State<DashboardView> {
             ),
             Obx(() => ListTile(
                   leading: Icon(
-                    Icons.inventory,
+                    Icons.fastfood_rounded,
                     color: dashboardController.isProductTabSelected.value ? Colors.green : Colors.grey,
                   ),
                   title: Text(
@@ -239,6 +218,27 @@ class _DashboardViewState extends State<DashboardView> {
                     Get.back();
                   },
                 )),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: const Divider(height: 20, thickness: 1),
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.file_copy_sharp,
+                color: Colors.grey,
+              ),
+              title: const Text(
+                'Report',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+              onTap: () {
+                Get.back();
+
+                _generateReport(context);
+              },
+            ),
             const Spacer(),
             ListTile(
               leading: const Icon(Icons.close),
@@ -253,7 +253,54 @@ class _DashboardViewState extends State<DashboardView> {
       body: Obx(
         () => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          child: dashboardController.isProductTabSelected.value ? const ProductsPage() : const OrdersPage(),
+          child: dashboardController.isProductTabSelected.value
+              ? Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GetBuilder<ProductListController>(
+                            init: productListController,
+                            initState: (_) {},
+                            builder: (_) {
+                              return Row(
+                                children: [
+                                  const Text("All products: "),
+                                  Switch(
+                                    value: productListController.isAllProductActive,
+                                    activeTrackColor: Colors.green,
+                                    activeColor: Colors.white,
+                                    inactiveTrackColor: Colors.red,
+                                    inactiveThumbColor: Colors.white,
+                                    onChanged: (value) {
+                                      productListController.toggleAllProductStatus();
+                                    },
+                                  ),
+                                  Text(
+                                    productListController.isAllProductActive ? ' (in-stock)' : ' (out-of-stock)',
+                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              );
+                            },
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.to(
+                                const ProductSearchPage(),
+                              );
+                            },
+                            child: const Text("Search"),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Expanded(child: ProductsPage()),
+                  ],
+                )
+              : const OrdersPage(),
         ),
       ),
     );
