@@ -8,6 +8,7 @@ import 'package:pdf_printer/service/network/network-c.dart';
 
 class StoreController extends GetxController {
   StoreModel? storeModel;
+  bool isStoreActive = false;
   final GetStorage _storage = GetStorage(); // Initialize GetStorage
 
   final NetworkController _networkController = Get.find<NetworkController>();
@@ -26,6 +27,7 @@ class StoreController extends GetxController {
 
       if (response != null && response.statusCode == 200) {
         storeModel = StoreModel.fromJson(response.data);
+        isStoreActive = storeModel?.storeEnabled ?? false;
         logger.d("Response data: ${response.data}");
       } else {
         throw Exception("Failed to fetch store details. Status code: ${response?.statusCode}");
@@ -33,6 +35,32 @@ class StoreController extends GetxController {
     } catch (e) {
       logger.e("Error fetching store details: $e");
     }
+  }
+
+  Future toogleStoreStatus() async {
+    isStoreActive = !isStoreActive;
+    update();
+    final String endpoint = "$baseUrl/wp-json/wc/v3/trt/store/toggle"; // Corrected endpoint
+    try {
+      final response = await _networkController.request(
+        url: endpoint,
+        method: Method.POST,
+        params: {
+          'consumer_key': consumerKey, // Replace with actual key
+          'consumer_secret': consumerSecret, // Replace with actual secret
+          'enabled': isStoreActive,
+        },
+      );
+
+      if (response != null && response.statusCode == 200) {
+        logger.d("Response data: ${response.data}");
+      } else {
+        throw Exception("Failed to toogle store status. Status code: ${response?.statusCode}");
+      }
+    } catch (e) {
+      logger.e("Error toogling store status: $e");
+    }
+    update();
   }
 }
 
