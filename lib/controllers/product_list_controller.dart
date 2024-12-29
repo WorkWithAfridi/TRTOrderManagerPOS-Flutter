@@ -10,6 +10,7 @@ class ProductListController extends GetxController {
   final NetworkController _networkController = Get.find<NetworkController>();
 
   bool isAllProductActive = false;
+  var isLoading = false.obs;
 
   List<ProductModel> products = [];
   int currentPage = 1;

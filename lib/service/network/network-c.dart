@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -66,14 +67,18 @@ class NetworkController extends GetxController {
   Future<Response<dynamic>?> request({
     required String url,
     required Method method,
-    params,
+    Map<String, dynamic>? params,
+    Map<String, dynamic>? body,
   }) async {
     logger.d("Request URL: $url");
+    logger.d("Request Params: ${jsonEncode(params)}");
+
     try {
       Map<String, dynamic> payload = {
         'url': url,
         'method': method,
         'params': params,
+        'body': body,
       };
 
       Response response = await compute(
@@ -107,43 +112,50 @@ class NetworkController extends GetxController {
     final url = data['url'];
     final method = data['method'];
     final params = data['params'];
+    final body = data['body'];
 
     Response response;
     switch (method) {
       case Method.POST:
         response = await _dio!.post(
           url,
-          data: params,
+          queryParameters: params,
+          data: body,
         );
         break;
       case Method.DELETE:
         response = await _dio!.delete(
           url,
-          data: params,
+          queryParameters: params,
+          data: body,
         );
         break;
       case Method.PATCH:
         response = await _dio!.patch(
           url,
           queryParameters: params,
+          data: body,
         );
         break;
       case Method.PUT:
         response = await _dio!.put(
           url,
           queryParameters: params,
+          data: body,
         );
         break;
       case Method.GET:
         response = await _dio!.get(
           url,
           queryParameters: params,
+          data: body,
         );
         break;
       default:
         response = await _dio!.get(
           url,
           queryParameters: params,
+          data: body,
         );
         break;
     }

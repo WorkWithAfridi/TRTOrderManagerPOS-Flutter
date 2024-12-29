@@ -48,6 +48,8 @@ class StoreController extends GetxController {
         params: {
           'consumer_key': consumerKey, // Replace with actual key
           'consumer_secret': consumerSecret, // Replace with actual secret
+        },
+        body: {
           'enabled': isStoreActive,
         },
       );

@@ -285,6 +285,8 @@ class OrderListController extends GetxController {
         params: {
           'consumer_key': consumerKey, // Replace with actual key
           'consumer_secret': consumerSecret, // Replace with actual secret
+        },
+        body: {
           'order_id': orderId,
           'delivery_time': (getMinutesRemaining(orderId) ?? 0).toString(),
         },

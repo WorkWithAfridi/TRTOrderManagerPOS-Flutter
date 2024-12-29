@@ -7,6 +7,7 @@ import 'package:pdf_printer/controllers/dashboard_controller.dart';
 import 'package:pdf_printer/controllers/order_list_controller.dart';
 import 'package:pdf_printer/controllers/product_list_controller.dart';
 import 'package:pdf_printer/controllers/sales_report_controller.dart';
+import 'package:pdf_printer/controllers/store_controller.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/dependency_injection_service.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
@@ -14,7 +15,6 @@ import 'package:pdf_printer/views/dashboard/order_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_search_view.dart';
 import 'package:pdf_printer/views/splash/splash_view.dart';
-import 'package:pdf_printer/views/store_settings_view.dart';
 
 void main() async {
   await initApp();
@@ -143,6 +143,8 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
+  StoreController get controller => Get.find<StoreController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,7 +152,101 @@ class _DashboardViewState extends State<DashboardView> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        title: Obx(() => Text('TRT Order Manager - ${dashboardController.isProductTabSelected.value ? 'Products' : 'Orders'}')),
+        title: Obx(() => Text('TRT Order Manager - ${dashboardController.isProductTabSelected.value ? 'Store' : 'Orders'}')),
+        actions: [
+          Obx(
+            () => dashboardController.isProductTabSelected.value
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text("Store: ",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          )),
+                      GetBuilder<StoreController>(
+                        init: controller,
+                        initState: (_) {},
+                        builder: (_) {
+                          return Switch(
+                            value: controller.isStoreActive,
+                            activeTrackColor: Colors.green,
+                            activeColor: Colors.white,
+                            inactiveTrackColor: Colors.red,
+                            inactiveThumbColor: Colors.white,
+                            onChanged: (value) {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16.0),
+                                    ),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Are you sure you want to ${controller.isStoreActive ? 'stop receiving online orders' : 'start receiving online orders'}?',
+                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 22,
+                                              ),
+                                        ),
+                                        const Gap(20),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          children: [
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Get.back();
+                                              },
+                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(12.0),
+                                                child: Text(
+                                                  'NO',
+                                                  style: TextStyle(color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                            const Gap(16),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                controller.toogleStoreStatus();
+
+                                                Get.back();
+                                              },
+                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(12.0),
+                                                child: Text(
+                                                  'YES',
+                                                  style: TextStyle(color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      Text(
+                        controller.isStoreActive ? ' (open)' : ' (closed)',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const Gap(20),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          )
+        ],
       ),
       drawer: Drawer(
         child: Column(
@@ -215,7 +311,7 @@ class _DashboardViewState extends State<DashboardView> {
                     color: dashboardController.isProductTabSelected.value ? Colors.green : Colors.grey,
                   ),
                   title: Text(
-                    'Products',
+                    'Store',
                     style: TextStyle(
                       color: dashboardController.isProductTabSelected.value ? Colors.black : Colors.grey,
                     ),
@@ -246,28 +342,36 @@ class _DashboardViewState extends State<DashboardView> {
                 _generateReport(context);
               },
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: const Divider(height: 20, thickness: 1),
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.settings,
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16),
+            //   child: const Divider(height: 20, thickness: 1),
+            // ),
+            // ListTile(
+            //   leading: const Icon(
+            //     Icons.settings,
+            //     color: Colors.grey,
+            //   ),
+            //   title: const Text(
+            //     'Store Settings',
+            //     style: TextStyle(
+            //       color: Colors.grey,
+            //     ),
+            //   ),
+            //   onTap: () {
+            //     Get.to(
+            //       () => const StoreSettingsView(),
+            //     );
+            //   },
+            // ),
+            const Spacer(),
+            const Text(
+              "Copyright © 2024\nwww.trttech.ca\nAll Rights Reserved by TRT Technologies Ltd.",
+              style: TextStyle(
+                fontSize: 12,
                 color: Colors.grey,
               ),
-              title: const Text(
-                'Store Settings',
-                style: TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
-              onTap: () {
-                Get.to(
-                  () => const StoreSettingsView(),
-                );
-              },
             ),
-            const Spacer(),
+            const Gap(12),
             ListTile(
               leading: const Icon(Icons.close),
               title: const Text('Close'),
@@ -315,7 +419,7 @@ class _DashboardViewState extends State<DashboardView> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                  'Are you sure you want to update all products status?',
+                                                  'Are you sure you want to set all products ${productListController.isAllProductActive ? 'out-of-stock' : 'in-stock'}?',
                                                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                                         fontWeight: FontWeight.bold,
                                                         fontSize: 22,
@@ -330,9 +434,12 @@ class _DashboardViewState extends State<DashboardView> {
                                                         Get.back();
                                                       },
                                                       style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                                      child: const Text(
-                                                        'NO',
-                                                        style: TextStyle(color: Colors.white),
+                                                      child: const Padding(
+                                                        padding: EdgeInsets.all(12.0),
+                                                        child: Text(
+                                                          'NO',
+                                                          style: TextStyle(color: Colors.white),
+                                                        ),
                                                       ),
                                                     ),
                                                     const Gap(12),
@@ -342,9 +449,12 @@ class _DashboardViewState extends State<DashboardView> {
                                                         Get.back();
                                                       },
                                                       style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                                      child: const Text(
-                                                        'YES',
-                                                        style: TextStyle(color: Colors.white),
+                                                      child: const Padding(
+                                                        padding: EdgeInsets.all(12.0),
+                                                        child: Text(
+                                                          'YES',
+                                                          style: TextStyle(color: Colors.white),
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
@@ -364,18 +474,44 @@ class _DashboardViewState extends State<DashboardView> {
                               );
                             },
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Get.to(
-                                const ProductSearchPage(),
-                              );
-                            },
-                            child: const Text("Search"),
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  productListController.isLoading.value = true;
+                                  await productListController.fetchAllProducts();
+                                  await Get.find<StoreController>().getStoreDetails();
+                                  productListController.isLoading.value = false;
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(12.0),
+                                  child: Text("Refresh"),
+                                ),
+                              ),
+                              const Gap(12),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Get.to(
+                                    const ProductSearchPage(),
+                                  );
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(12.0),
+                                  child: Text("Search"),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                    const Expanded(child: ProductsPage()),
+                    Expanded(
+                      child: productListController.isLoading.value
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : const ProductsPage(),
+                    ),
                   ],
                 )
               : const OrdersPage(),
