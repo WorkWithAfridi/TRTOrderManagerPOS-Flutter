@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf_printer/models/order_m.dart';
 import 'package:pdf_printer/prod_env/prod_end.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
@@ -41,21 +42,34 @@ class OrderListController extends GetxController {
     super.onClose();
   }
 
-  Future<List<OrderModel>?> getOrderList(BuildContext context, {bool shouldLoadFromLocalStorage = true}) async {
+  Future<List<OrderModel>?> getOrderList(
+    BuildContext context, {
+    bool shouldLoadFromLocalStorage = true,
+    bool fetchAllOrders = true,
+  }) async {
     bool receivedNewOrders = false;
     if (shouldLoadFromLocalStorage) {
       loadOrderListFromLocalStorage();
     }
     String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
+    // Get today's date in ISO 8601 format
+    String today = DateFormat("yyyy-MM-ddT00:00:00").format(DateTime.now());
+
+    Map<String, dynamic> params = {
+      'consumer_key': consumerKey, // Replace with actual key
+      'consumer_secret': consumerSecret, // Replace with actual secret
+      'per_page': 100,
+    };
+
+    if (!fetchAllOrders) {
+      params.assign("after", today);
+    }
+
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.GET,
-        params: {
-          'consumer_key': consumerKey, // Replace with actual key
-          'consumer_secret': consumerSecret, // Replace with actual secret
-          'per_page': 100,
-        },
+        params: params,
       );
 
       // logger.d("Response data: ${response?.data}");
