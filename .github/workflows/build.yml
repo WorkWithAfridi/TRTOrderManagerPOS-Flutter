@@ -19,7 +19,7 @@ jobs:
               uses: subosito/flutter-action@v2
               with:
                   channel: stable
-                  flutter-version: 3.5.x # in ubuntu, pubspec.yaml can be used
+                  flutter-version: 3.5.3 # in ubuntu, pubspec.yaml can be used
 
             - name: Disable Analytics & Enable Windows Builds
               shell: pwsh
