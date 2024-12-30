@@ -28,8 +28,9 @@ jobs:
                   flutter config --enable-windows-desktop
                   flutter --version
 
-            - name: Flutter doctor
-              run: flutter doctor
+            # only for debugging
+            # - name: Flutter doctor
+            #   run: flutter doctor
 
             - name: Flutter pub get
               run: flutter pub get
@@ -41,4 +42,4 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: windows-build
-                  path: build/windows/runner/Release/
+                  path: build/windows/x64/runner/Release/
