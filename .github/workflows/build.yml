@@ -7,10 +7,13 @@ jobs:
         runs-on: windows-latest
         steps:
             - name: Setup Flutter
-              run: choco install flutter
+              run: choco install flutter --confirm --no-progress
 
             - name: Echo Version
               run: flutter --version
+
+            - name: Disable Analytics
+              run: flutter config --no-analytics
 
             - name: Check Flutter health
               run: flutter doctor
