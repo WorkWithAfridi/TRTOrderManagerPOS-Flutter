@@ -1,0 +1,32 @@
+name: Build Flutter Windows App
+
+on: workflow_dispatch
+
+jobs:
+    build-windows-release:
+        runs-on: windows-latest
+        steps:
+            - run: choco -v
+            # - name: Checkout code
+            #   uses: actions/checkout@v4
+
+            # - name: Set up Flutter
+            #   uses: subosito/flutter-action@v2
+            #   with:
+            #       channel: stable
+            #       flutter-version: 'stable'
+
+            # - name: Install dependencies
+            #   run: flutter pub get
+
+            # - name: Check Health
+            #   run: flutter doctor
+
+            # - name: Build Windows executable
+            #   run: flutter build windows
+
+            # - name: Upload build artifacts
+            #   uses: actions/upload-artifact@v3
+            #   with:
+            #       name: windows-build
+            #       path: build/windows/runner/Release/
