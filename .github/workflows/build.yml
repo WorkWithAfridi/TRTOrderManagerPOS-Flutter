@@ -1,10 +1,31 @@
 name: Build Release - Windows
 
-on: workflow_dispatch
+on:
+    workflow_dispatch:
+        inputs:
+            baseurl:
+                description: 'Define website url'
+                required: true
+                default: 'https://cp.trttechnologies.net'
+            version:
+                description: 'Define api version'
+                required: true
+                default: 'wc/v3'
+            consumerkey:
+                description: 'Define consumer key'
+                required: true
+            consumersecret:
+                description: 'Define consumer secret'
+                required: true
 
 jobs:
     build-windows-release:
         runs-on: windows-latest
+        env:
+            baseurl: ${{ github.event.inputs.baseurl }}
+            version: ${{ github.event.inputs.version }}
+            consumerkey: ${{ github.event.inputs.consumerkey }}
+            consumersecret: ${{ github.event.inputs.consumersecret }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -43,3 +64,5 @@ jobs:
               with:
                   name: windows-build
                   path: build/windows/x64/runner/Release/
+
+            # use output from last step to initialize with inno-setup
