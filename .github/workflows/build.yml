@@ -36,6 +36,7 @@ jobs:
                   Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
                   refreshenv
                   [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\tools\flutter\bin", [EnvironmentVariableTarget]::Machine)
+                  flutter --version
               #   $env:Path += ";C:\tools\flutter\bin"
 
             - name: Echo Version
