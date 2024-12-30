@@ -6,8 +6,29 @@ jobs:
     build-windows-release:
         runs-on: windows-latest
         steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            # Step 2: Cache Flutter installation
+            - name: Cache Flutter
+              uses: actions/cache@v4
+              with:
+                  path: C:\tools\flutter
+                  key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-flutter-
+
+            # - name: Setup Flutter
+            #   run: choco install flutter --confirm --no-progress
+
             - name: Setup Flutter
-              run: choco install flutter --confirm --no-progress
+              run: |
+                  if (-Not (Test-Path C:\tools\flutter)) {
+                    choco install flutter --confirm
+                  }
+
+            - name: Add Flutter to path
+              run: $env:Path += ";C:\tools\flutter\bin"
 
             - name: Echo Version
               run: flutter --version
@@ -17,8 +38,6 @@ jobs:
 
             - name: Check Flutter health
               run: flutter doctor
-            # - name: Checkout code
-            #   uses: actions/checkout@v4
 
             # - name: Set up Flutter
             #   uses: subosito/flutter-action@v2
