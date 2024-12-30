@@ -22,21 +22,29 @@ jobs:
             #   run: choco install flutter --confirm --no-progress
 
             - name: Setup Flutter
+              shell: pwsh
               run: |
                   if (-Not (Test-Path C:\tools\flutter)) {
-                    choco install flutter --confirm
+                    choco install flutter --confirm --no-progress
                   }
 
             - name: Add Flutter to path
-              run: $env:Path += ";C:\tools\flutter\bin"
+              shell: pwsh
+              run: |
+                  Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+                  refreshenv
+              #   $env:Path += ";C:\tools\flutter\bin"
 
             - name: Echo Version
+              shell: pwsh
               run: flutter --version
 
             - name: Disable Analytics
+              shell: pwsh
               run: flutter config --no-analytics
 
             - name: Check Flutter health
+              shell: pwsh
               run: flutter doctor
 
             # - name: Set up Flutter
