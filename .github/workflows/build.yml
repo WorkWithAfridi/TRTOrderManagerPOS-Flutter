@@ -1,0 +1,68 @@
+name: Build Release - Windows
+
+on:
+    workflow_dispatch:
+        inputs:
+            baseurl:
+                description: 'Define website url'
+                required: true
+                default: 'https://cp.trttechnologies.net'
+            version:
+                description: 'Define api version'
+                required: true
+                default: 'wc/v3'
+            consumerkey:
+                description: 'Define consumer key'
+                required: true
+            consumersecret:
+                description: 'Define consumer secret'
+                required: true
+
+jobs:
+    build-windows-release:
+        runs-on: windows-latest
+        env:
+            baseurl: ${{ github.event.inputs.baseurl }}
+            version: ${{ github.event.inputs.version }}
+            consumerkey: ${{ github.event.inputs.consumerkey }}
+            consumersecret: ${{ github.event.inputs.consumersecret }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Cache Flutter dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ~/.pub-cache
+                  key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+
+            - name: Install Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  channel: stable
+                  #   flutter-version: 3.5.3 # in ubuntu, pubspec.yaml can be used
+
+            - name: Disable Analytics & Enable Windows Builds
+              shell: pwsh
+              run: |
+                  flutter config --no-analytics
+                  flutter config --enable-windows-desktop
+                  flutter --version
+
+            # only for debugging
+            # - name: Flutter doctor
+            #   run: flutter doctor
+
+            - name: Flutter pub get
+              run: flutter pub get
+
+            - name: Build Windows
+              run: flutter build windows --release
+
+            - name: Upload Windows build
+              uses: actions/upload-artifact@v4
+              with:
+                  name: windows-build
+                  path: build/windows/x64/runner/Release/
+
+            # use output from last step to initialize with inno-setup

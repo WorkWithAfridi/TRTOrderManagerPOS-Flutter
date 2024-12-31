@@ -1,0 +1,73 @@
+name: Build Flutter - Chocolatey
+
+on: workflow_dispatch
+
+jobs:
+    build-windows-release:
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Ensure Flutter Directory Exists
+              shell: pwsh
+              run: |
+                  if (-Not (Test-Path C:\tools\flutter)) {
+                  mkdir C:\tools\flutter
+                  }
+
+            # Step 2: Cache Flutter installation
+            - name: Cache Flutter
+              uses: actions/cache@v4
+              with:
+                  path: C:\tools\flutter
+                  key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-flutter-
+
+            # - name: Setup Flutter
+            #   run: choco install flutter --confirm --no-progress
+            - name: Setup Flutter and Add to path
+              shell: pwsh
+              run: |
+                  if (-Not (Test-Path C:\tools\flutter)) {
+                    choco install flutter --confirm --no-progress
+                  }
+                  Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+                  refreshenv
+                  [Environment]::SetEnvironmentVariable("Path", $env:Path + ";C:\tools\flutter\bin", [EnvironmentVariableTarget]::Machine)
+                  flutter --version
+              #   $env:Path += ";C:\tools\flutter\bin"
+
+            - name: Echo Version
+              shell: pwsh
+              run: flutter --version
+
+            - name: Disable Analytics
+              shell: pwsh
+              run: flutter config --no-analytics
+
+            - name: Check Flutter health
+              shell: pwsh
+              run: flutter doctor
+
+            # - name: Set up Flutter
+            #   uses: subosito/flutter-action@v2
+            #   with:
+            #       channel: stable
+            #       flutter-version: 'stable'
+
+            # - name: Install dependencies
+            #   run: flutter pub get
+
+            # - name: Check Health
+            #   run: flutter doctor
+
+            # - name: Build Windows executable
+            #   run: flutter build windows
+
+            # - name: Upload build artifacts
+            #   uses: actions/upload-artifact@v3
+            #   with:
+            #       name: windows-build
+            #       path: build/windows/runner/Release/
