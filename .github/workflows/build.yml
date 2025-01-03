@@ -8,7 +8,7 @@ on:
                 required: true
                 default: 'https://cp.trttechnologies.net'
             version:
-                description: 'Define api version'
+                description: 'Define API version'
                 required: true
                 default: 'wc/v3'
             consumerkey:
@@ -30,17 +30,10 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Cache Flutter dependencies
-              uses: actions/cache@v4
-              with:
-                  path: ~/.pub-cache
-                  key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-
             - name: Install Flutter
               uses: subosito/flutter-action@v2
               with:
                   channel: stable
-                  #   flutter-version: 3.5.3 # in ubuntu, pubspec.yaml can be used
 
             - name: Disable Analytics & Enable Windows Builds
               shell: pwsh
@@ -49,20 +42,93 @@ jobs:
                   flutter config --enable-windows-desktop
                   flutter --version
 
-            # only for debugging
-            # - name: Flutter doctor
-            #   run: flutter doctor
+            - name: Cache Flutter dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ${{ env.PUB_CACHE }}
+                  key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pub-
 
-            - name: Flutter pub get
+            - name: Install Flutter Dependencies
               run: flutter pub get
 
             - name: Build Windows
-              run: flutter build windows --release
+              run: flutter build windows --dart-define=BASE_URL=${{ env.baseurl }} --dart-define=CONSUMER_KEY=${{ env.consumerkey }} --dart-define=CONSUMER_SECRET=${{ env.consumersecret }} --dart-define=VERSION=${{ env.version }} --release
 
             - name: Upload Windows build
               uses: actions/upload-artifact@v4
               with:
-                  name: windows-build
+                  name: windows-portable-x64
                   path: build/windows/x64/runner/Release/
 
-            # use output from last step to initialize with inno-setup
+            - name: Download and Install Inno Setup
+              shell: powershell
+              run: |
+                  Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
+                  Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
+
+            - name: Create Inno Setup Script
+              shell: powershell
+              run: |
+                  $scriptPath = "$env:GITHUB_WORKSPACE/build_script.iss"
+                  Set-Content -Path $scriptPath -Value @"
+                  ; Inno Setup Script
+                  #define MyAppName "TRTOrderManager"
+                  ;#define MyAppVersion "$env:VERSION"
+                  #define MyAppPublisher "trttech.ca"
+                  #define MyAppURL "https://trttech.ca"
+
+                  ; the flutter executable exe name
+                  #define MyAppExeName "pdf_printer.exe"
+
+                  [Setup]
+                  ;AppId={{5960F34D-1E42-402C-8C85-DE2FF24CBAE4}
+                  AppName={#MyAppName}
+                  AppVersion=1.0.0
+                  AppPublisher={#MyAppPublisher}
+                  AppPublisherURL={#MyAppURL}
+                  AppSupportURL={#MyAppURL}
+                  DefaultDirName={autopf}\trtordermanager
+                  DisableProgramGroupPage=yes
+                  OutputDir=build\installer
+                  OutputBaseFilename=TrtInstaller
+                  PrivilegesRequired=lowest
+                  ;SetupIconFile=..\..\assets\icon\icon.png
+                  Compression=lzma
+                  SolidCompression=yes
+                  WizardStyle=modern
+                  LanguageDetectionMethod=uilanguage
+
+                  [Languages]
+                  Name: "english"; MessagesFile: "compiler:Default.isl"
+
+                  [Tasks]
+                  Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+                  [Files]
+                  Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+                  ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+
+
+                  [UninstallDelete]
+                  Type: filesandordirs; Name: "{app}"
+
+                  [Icons]
+                  Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+                  Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+
+                  [Run]
+                  Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+                  "@
+
+            - name: Run Inno Setup Compiler
+              shell: powershell
+              run: |
+                  &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" build_script.iss
+
+            - name: Upload Installer
+              uses: actions/upload-artifact@v4
+              with:
+                  name: windows-installer-x64
+                  path: build/installer/*.exe
