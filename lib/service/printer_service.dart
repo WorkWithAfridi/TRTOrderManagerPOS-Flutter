@@ -6,7 +6,6 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf_printer/controllers/store_controller.dart';
 import 'package:pdf_printer/models/order_m.dart';
 import 'package:pdf_printer/models/sales_report_m.dart';
-import 'package:pdf_printer/prod_env/prod_end.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:printing/printing.dart';
 
@@ -40,7 +39,7 @@ class PrinterService {
                   crossAxisAlignment: pw.CrossAxisAlignment.center,
                   children: [
                     pw.Text(
-                      storeController.storeModel?.name ?? companyName,
+                      storeController.storeModel?.name ?? "",
                       style: headerTS.copyWith(
                         fontWeight: pw.FontWeight.bold,
                         fontSize: 12,
@@ -149,7 +148,7 @@ class PrinterService {
                             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                             children: [
                               pw.Text(
-                                'Payment method:',
+                                'Payment:',
                                 style: bodyTS,
                               ),
                               pw.Text('${order.paymentMethodTitle}', style: bodyTS),

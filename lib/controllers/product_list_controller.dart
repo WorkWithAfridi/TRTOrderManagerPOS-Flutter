@@ -1,7 +1,7 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/models/product_m.dart';
-import 'package:pdf_printer/prod_env/prod_end.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 
 import '../service/network/network-c.dart';
@@ -19,14 +19,15 @@ class ProductListController extends GetxController {
 
   Future<List<ProductModel>?> fetchAllProducts() async {
     checkIfAllProductActive();
+    String? baseUrl = dotenv.env['baseurl'];
     String endpoint = "$baseUrl/wp-json/wc/v3/products"; // WooCommerce Products endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.GET,
         params: {
-          'consumer_key': consumerKey, // Replace with actual key
-          'consumer_secret': consumerSecret, // Replace with actual secret
+          'consumer_key': dotenv.env['consumerkey'], // Replace with actual key
+          'consumer_secret': dotenv.env['consumersecret'], // Replace with actual secret
           'per_page': 100,
           'page': currentPage,
         },
@@ -65,14 +66,15 @@ class ProductListController extends GetxController {
     required int productId,
     required bool isActive, // true for publish, false for deactivate
   }) async {
+    String? baseUrl = dotenv.env['baseurl'];
     final String endpoint = "$baseUrl/wp-json/wc/v3/products/$productId"; // Endpoint for updating product
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.PUT,
         params: {
-          'consumer_key': consumerKey, // Replace with actual key
-          'consumer_secret': consumerSecret, // Replace with actual secret
+          'consumer_key': dotenv.env['consumerkey'], // Replace with actual key
+          'consumer_secret': dotenv.env['consumersecret'], // Replace with actual secret
           'status': isActive ? 'publish' : 'draft', // Set status based on the toggle
         },
       );
@@ -106,6 +108,7 @@ class ProductListController extends GetxController {
       product.status = isAllProductActive ? 'publish' : 'draft';
     }
     update();
+    String? baseUrl = dotenv.env['baseurl'];
     final String endpoint = "$baseUrl/wp-json/wc/v3/products/batch"; // Endpoint for updating product
 
     try {
@@ -113,8 +116,8 @@ class ProductListController extends GetxController {
         url: endpoint,
         method: Method.PUT,
         params: {
-          'consumer_key': consumerKey, // Replace with actual key
-          'consumer_secret': consumerSecret, // Replace with actual secret
+          'consumer_key': dotenv.env['consumerkey'], // Replace with actual key
+          'consumer_secret': dotenv.env['consumersecret'], // Replace with actual secret
 
           "update": [
             ...products.map((product) => {

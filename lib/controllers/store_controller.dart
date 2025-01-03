@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pdf_printer/prod_env/prod_end.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/network/network-c.dart';
 
@@ -14,14 +14,15 @@ class StoreController extends GetxController {
   final NetworkController _networkController = Get.find<NetworkController>();
 
   Future getStoreDetails() async {
+    String? baseUrl = dotenv.env['baseurl'];
     final String endpoint = "$baseUrl/wp-json/wc/v3/trt/store/status"; // Corrected endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.GET,
         params: {
-          'consumer_key': consumerKey, // Replace with actual key
-          'consumer_secret': consumerSecret, // Replace with actual secret
+          'consumer_key': dotenv.env['consumerkey'], // Replace with actual key
+          'consumer_secret': dotenv.env['consumersecret'], // Replace with actual secret
         },
       );
 
@@ -40,14 +41,15 @@ class StoreController extends GetxController {
   Future toogleStoreStatus() async {
     isStoreActive = !isStoreActive;
     update();
+    String? baseUrl = dotenv.env['baseurl'];
     final String endpoint = "$baseUrl/wp-json/wc/v3/trt/store/toggle"; // Corrected endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.POST,
         params: {
-          'consumer_key': consumerKey, // Replace with actual key
-          'consumer_secret': consumerSecret, // Replace with actual secret
+          'consumer_key': dotenv.env['consumerkey'], // Replace with actual key
+          'consumer_secret': dotenv.env['consumersecret'], // Replace with actual secret
         },
         body: {
           'enabled': isStoreActive,

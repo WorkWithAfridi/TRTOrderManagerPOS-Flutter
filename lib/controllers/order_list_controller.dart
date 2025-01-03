@@ -3,11 +3,11 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf_printer/models/order_m.dart';
-import 'package:pdf_printer/prod_env/prod_end.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
 import 'package:pdf_printer/service/network/network-c.dart';
@@ -51,13 +51,14 @@ class OrderListController extends GetxController {
     if (shouldLoadFromLocalStorage) {
       loadOrderListFromLocalStorage();
     }
+    String? baseUrl = dotenv.env['baseurl'];
     String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
     // Get today's date in ISO 8601 format
     String today = DateFormat("yyyy-MM-ddT00:00:00").format(DateTime.now());
 
     Map<String, dynamic> params = {
-      'consumer_key': consumerKey, // Replace with actual key
-      'consumer_secret': consumerSecret, // Replace with actual secret
+      'consumer_key': dotenv.env['consumerkey'], // Replace with actual key
+      'consumer_secret': dotenv.env['consumersecret'], // Replace with actual secret
       'per_page': 100,
     };
 
@@ -264,14 +265,15 @@ class OrderListController extends GetxController {
     int orderId,
     String status,
   ) async {
+    String? baseUrl = dotenv.env['baseurl'];
     final String endpoint = "$baseUrl/wp-json/wc/v3/orders/$orderId"; // Corrected endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.PUT,
         params: {
-          'consumer_key': consumerKey, // Replace with actual key
-          'consumer_secret': consumerSecret, // Replace with actual secret
+          'consumer_key': dotenv.env['consumerkey'], // Replace with actual key
+          'consumer_secret': dotenv.env['consumersecret'], // Replace with actual secret
           'status': status, // Only updating the status field
         },
       );
@@ -291,14 +293,15 @@ class OrderListController extends GetxController {
   Future<bool> notifyCustomerOnOrderTimerUpdate(
     int orderId,
   ) async {
+    String? baseUrl = dotenv.env['baseurl'];
     final String endpoint = "$baseUrl/wp-json/wc/v3/trt/order/email"; // Corrected endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.POST,
         params: {
-          'consumer_key': consumerKey, // Replace with actual key
-          'consumer_secret': consumerSecret, // Replace with actual secret
+          'consumer_key': dotenv.env['consumerkey'], // Replace with actual key
+          'consumer_secret': dotenv.env['consumersecret'], // Replace with actual secret
         },
         body: {
           'order_id': orderId,
