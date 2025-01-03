@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
@@ -24,7 +26,19 @@ void main() async {
 
 Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
+  try {
+    await dotenv.load();
+
+    String? conKey = dotenv.env['consumerkey']; // Replace with actual key
+    String? conSec = dotenv.env['consumersecret']; // Replace with actual secret
+
+    if (conKey == null || conSec == null || conKey.isEmpty || conSec.isEmpty) {
+      throw Exception("Consumer key or secret not found in .env file.");
+    }
+  } catch (e) {
+    logger.e("Error loading .env file: $e");
+    exit(1);
+  }
   await GetStorage.init();
 
   DependencyInjection.init();
