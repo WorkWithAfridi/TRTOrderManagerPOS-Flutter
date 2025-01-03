@@ -27,7 +27,7 @@ class PrinterService {
       pw.Page(
         clip: true,
         pageFormat: PdfPageFormat.roll80,
-        margin: const pw.EdgeInsets.only(right: 70),
+        margin: const pw.EdgeInsets.only(right: 65),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -56,6 +56,15 @@ class PrinterService {
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text('Order #${order.id}', style: headerTS),
+                    pw.Text(
+                        'Order type: #${order.metaData?.firstWhere(
+                              (e) => e.key == "exwfood_order_method",
+                              orElse: () {
+                                return OrderModelMetaDatum(id: 0, key: "", value: "");
+                              },
+                            ).value ?? ''}',
+                        style: headerTS),
+                    pw.SizedBox(height: 4),
                     pw.Text(order.dateCreated.toString().substring(0, 10), style: headerTS),
                     pw.SizedBox(height: 4),
                   ],

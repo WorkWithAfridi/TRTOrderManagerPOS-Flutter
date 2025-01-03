@@ -1,7 +1,7 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:pdf_printer/models/sales_report_m.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
+import 'package:pdf_printer/service/evn_constant.dart';
 import 'package:pdf_printer/views/report/report_view.dart';
 
 import '../service/network/network-c.dart';
@@ -16,7 +16,7 @@ class SalesReportController extends GetxController {
   // Method to fetch the sales report
   Future<List<SalesReportModel>> getSalesReport({required String period}) async {
     // period can be "day", "week", "two_weeks", or "month"
-    String? baseUrl = dotenv.env['baseurl'];
+    String? baseUrl = EvnConstant.baseUrl;
     String endpoint = "$baseUrl/wp-json/wc/v3/reports/sales"; // WooCommerce Reports endpoint
 
     // Determine the date range for the report based on the selected period
@@ -31,8 +31,8 @@ class SalesReportController extends GetxController {
         url: endpoint,
         method: Method.GET,
         params: {
-          'consumer_key': dotenv.env['consumerkey'], // Replace with actual key
-          'consumer_secret': dotenv.env['consumersecret'], // Replace with actual secret
+          'consumer_key': EvnConstant.consumerKey, // Replace with actual key
+          'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
           'date_min': dateRange['after']!.substring(0, 10),
           'date_max': dateRange['before']!.substring(0, 10),
         },

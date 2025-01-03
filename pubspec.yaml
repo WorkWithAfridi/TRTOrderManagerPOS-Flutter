@@ -35,7 +35,7 @@ dependencies:
   dio: ^5.7.0
   flutter:
     sdk: flutter
-  flutter_dotenv: ^5.2.1
+  # flutter_dotenv: ^5.2.1
   flutter_svg: ^2.0.16
   gap: ^3.0.1
   geocoding: ^3.0.0
@@ -64,7 +64,7 @@ flutter:
   assets:
     - assets/sounds/notification.mp3
     - assets/icon/
-    - .env
+    # - .env
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

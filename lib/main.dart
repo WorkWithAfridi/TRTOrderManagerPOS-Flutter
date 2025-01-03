@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -13,6 +12,7 @@ import 'package:pdf_printer/controllers/sales_report_controller.dart';
 import 'package:pdf_printer/controllers/store_controller.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/dependency_injection_service.dart';
+import 'package:pdf_printer/service/evn_constant.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
 import 'package:pdf_printer/views/dashboard/order_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_list_view.dart';
@@ -26,20 +26,16 @@ void main() async {
 
 Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
+
   try {
-    await dotenv.load();
-
-    String? conKey = dotenv.env['consumerkey']; // Replace with actual key
-    String? conSec = dotenv.env['consumersecret']; // Replace with actual secret
-
-    if (conKey == null || conSec == null || conKey.isEmpty || conSec.isEmpty) {
-      throw Exception("Consumer key or secret not found in .env file.");
+    if (EvnConstant.consumerKey == "" || EvnConstant.consumerSecret == "" || EvnConstant.baseUrl == "") {
+      throw Exception("Environment variables are not set");
     }
   } catch (e) {
-    logger.e("Error loading .env file: $e");
+    logger.e("Error initializing app: $e");
     exit(1);
   }
-  await GetStorage.init();
 
   DependencyInjection.init();
   FirstBootChecker().checkFirstBoot();
@@ -535,3 +531,6 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 }
+
+// run on chrome command
+// flutter run -d chrome --dart-define=BASE_URL=https://cp.trttechnologies.net --dart-define=CONSUMER_KEY=ck_bc2663992cdf540bf18572a3b8ed25527b472001 --dart-define=CONSUMER_SECRET=cs_f8dcc9937cb605113bfc0431bbe2c219d1b18ed8 --dart-define=VERSION=wc/v3
