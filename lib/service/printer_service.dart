@@ -28,7 +28,7 @@ class PrinterService {
       pw.Page(
         clip: true,
         pageFormat: PdfPageFormat.roll80,
-        margin: const pw.EdgeInsets.all(0),
+        margin: const pw.EdgeInsets.only(right: 70),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -298,7 +298,6 @@ class PrinterService {
       await Printing.layoutPdf(
         onLayout: (PdfPageFormat format) async => pdf.save(),
         format: PdfPageFormat.roll80,
-        usePrinterSettings: true,
       );
     } else {
       final availablePrinters = await Printing.listPrinters();
@@ -307,7 +306,6 @@ class PrinterService {
         await Printing.directPrintPdf(
           printer: availablePrinters.first,
           format: PdfPageFormat.roll80,
-          usePrinterSettings: true,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
       } else {
