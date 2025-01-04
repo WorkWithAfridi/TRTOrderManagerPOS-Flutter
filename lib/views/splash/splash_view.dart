@@ -19,7 +19,12 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     // Navigate to DashboardView after 3 seconds
+    appSetup();
+  }
+
+  Future<void> appSetup() async {
     Get.find<ProductListController>().fetchAllProducts();
+    await Get.find<StoreController>().setupPrinter();
     Get.find<StoreController>().getStoreDetails().then((_) {
       Timer(const Duration(seconds: 2), () {
         Navigator.pushReplacement(

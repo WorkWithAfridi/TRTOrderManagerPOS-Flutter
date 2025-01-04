@@ -18,6 +18,7 @@ import 'package:pdf_printer/views/dashboard/order_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_search_view.dart';
 import 'package:pdf_printer/views/splash/splash_view.dart';
+import 'package:pdf_printer/views/store_settings_view.dart';
 
 void main() async {
   await initApp();
@@ -353,27 +354,27 @@ class _DashboardViewState extends State<DashboardView> {
                 _generateReport(context);
               },
             ),
-            // Container(
-            //   padding: const EdgeInsets.symmetric(horizontal: 16),
-            //   child: const Divider(height: 20, thickness: 1),
-            // ),
-            // ListTile(
-            //   leading: const Icon(
-            //     Icons.settings,
-            //     color: Colors.grey,
-            //   ),
-            //   title: const Text(
-            //     'Store Settings',
-            //     style: TextStyle(
-            //       color: Colors.grey,
-            //     ),
-            //   ),
-            //   onTap: () {
-            //     Get.to(
-            //       () => const StoreSettingsView(),
-            //     );
-            //   },
-            // ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: const Divider(height: 20, thickness: 1),
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.settings,
+                color: Colors.grey,
+              ),
+              title: const Text(
+                'Store Settings',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+              onTap: () {
+                Get.to(
+                  () => const StoreSettingsView(),
+                );
+              },
+            ),
             const Spacer(),
             const Text(
               "Copyright © 2024\nwww.trttech.ca\nAll Rights Reserved by TRT Technologies Ltd.",

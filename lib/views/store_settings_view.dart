@@ -27,27 +27,20 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
       body: GetBuilder<StoreController>(
         init: controller,
         builder: (_) {
-          return Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+          return SizedBox(
+            height: Get.height,
+            width: Get.width,
+            child: const Column(
               children: [
-                const Text("Store status: ",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    )),
-                Switch(
-                  value: controller.isStoreActive,
-                  activeTrackColor: Colors.green,
-                  activeColor: Colors.white,
-                  inactiveTrackColor: Colors.red,
-                  inactiveThumbColor: Colors.white,
-                  onChanged: (value) {
-                    controller.toogleStoreStatus();
-                  },
-                ),
-                Text(
-                  controller.isStoreActive ? ' (open)' : ' (closed)',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    Text(
+                      "Printer: ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    // Dropdown with a list of string,
+                    // when selected, should print the selected value
+                  ],
                 )
               ],
             ),

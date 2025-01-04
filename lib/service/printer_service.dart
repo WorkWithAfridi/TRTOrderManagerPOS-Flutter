@@ -10,7 +10,17 @@ import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:printing/printing.dart';
 
 class PrinterService {
-  /// Generates a bill receipt PDF document with demo data
+  Printer? selectedPrinter;
+
+  getListOfAvailablePrinters() async {
+    final availablePrinters = await Printing.listPrinters();
+    for (var printer in availablePrinters) {
+      logger.d(
+        "Printer: ${printer.name} - ${printer.model} - ${printer.isDefault ? "Default" : ""}",
+      );
+    }
+  }
+
   Future<pw.Document> generateBillReceiptPdf(OrderModel order) async {
     final pdf = pw.Document();
 
@@ -65,7 +75,7 @@ class PrinterService {
                             ).value ?? ''}',
                         style: headerTS),
                     pw.Text(
-                        'Order type: #${order.metaData?.firstWhere(
+                        'Time taken: #${order.metaData?.firstWhere(
                               (e) => e.key == "exwfood_time_deli",
                               orElse: () {
                                 return OrderModelMetaDatum(id: 0, key: "", value: "");

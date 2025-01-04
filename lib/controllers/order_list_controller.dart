@@ -123,8 +123,11 @@ class OrderListController extends GetxController {
 
   void decreaseAllTimerBy1Minutes() {
     for (var order in orderTimers) {
-      if (order.secondsRemaining > 0) {
-        order.secondsRemaining -= 60;
+      logger.d("Timer: Current order id: ${order.orderId}, seconds remaining: ${order.secondsRemaining}");
+      if (order.secondsRemaining != null) {
+        if (order.secondsRemaining! > 0) {
+          order.secondsRemaining = order.secondsRemaining! - 60;
+        }
       }
     }
     saveTimerToLocalStorage();
@@ -138,7 +141,12 @@ class OrderListController extends GetxController {
       final order = orderTimers.firstWhere(
         (order) => order.orderId == orderId,
       );
-      order.secondsRemaining += 300;
+      if (order.secondsRemaining == null) {
+        order.secondsRemaining = 0;
+        order.secondsRemaining = order.secondsRemaining! + 300;
+      } else {
+        order.secondsRemaining = order.secondsRemaining! + 300;
+      }
       saveTimerToLocalStorage();
       update();
     } catch (e) {
@@ -160,7 +168,11 @@ class OrderListController extends GetxController {
       final order = orderTimers.firstWhere(
         (order) => order.orderId == orderId,
       );
-      order.secondsRemaining -= 300;
+      if (order.secondsRemaining == null) {
+        order.secondsRemaining = 0;
+      } else {
+        order.secondsRemaining = order.secondsRemaining! - 300;
+      }
       saveTimerToLocalStorage();
       update();
     } catch (e) {
@@ -221,7 +233,12 @@ class OrderListController extends GetxController {
       if (orderIds.length != orderTimers.length) {
         for (var orderId in orderIds) {
           if (!orderTimers.any((element) => element.orderId == orderId)) {
-            orderTimers.add(OrderTimerModel(orderId: orderId, secondsRemaining: 300));
+            orderTimers.add(
+              OrderTimerModel(
+                orderId: orderId,
+                secondsRemaining: null,
+              ),
+            );
           }
         }
         saveTimerToLocalStorage();
@@ -254,10 +271,14 @@ class OrderListController extends GetxController {
         (order) => order.orderId == orderId,
       );
 
-      return (order.secondsRemaining ~/ 60); // Return minutes if found, otherwise null
+      if (order.secondsRemaining == null) {
+        return null;
+      }
+
+      return (order.secondsRemaining! ~/ 60); // Return minutes if found, otherwise null
     } catch (e) {
       logger.e("Error getting minutes remaining for order #$orderId: $e");
-      return 0;
+      return null;
     }
   }
 
@@ -365,11 +386,11 @@ class OrderListController extends GetxController {
 
 class OrderTimerModel {
   final int orderId;
-  int secondsRemaining;
+  int? secondsRemaining;
 
   OrderTimerModel({
     required this.orderId,
-    required this.secondsRemaining,
+    this.secondsRemaining,
   });
 
   OrderTimerModel copyWith({

@@ -5,11 +5,37 @@ import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/evn_constant.dart';
 import 'package:pdf_printer/service/network/network-c.dart';
+import 'package:printing/printing.dart';
 
 class StoreController extends GetxController {
   StoreModel? storeModel;
+  List<Printer> availablePrinter = [];
+  Printer? selectedPrinter;
   bool isStoreActive = false;
   final GetStorage _storage = GetStorage(); // Initialize GetStorage
+
+  setupPrinter() async {
+    availablePrinter = await Printing.listPrinters();
+    _storage.read('defalutPrinterModelAndName').then((value) {
+      if (value != null) {
+        for (var element in availablePrinter) {
+          if (element.name == value['name'] && element.model == value['model']) {
+            selectedPrinter = element;
+          }
+        }
+      }
+    });
+  }
+
+  savePrinterSettings() {
+    _storage.write(
+      'defalutPrinterModelAndName',
+      {
+        "name": selectedPrinter?.name,
+        "model": selectedPrinter?.model,
+      },
+    );
+  }
 
   final NetworkController _networkController = Get.find<NetworkController>();
 
