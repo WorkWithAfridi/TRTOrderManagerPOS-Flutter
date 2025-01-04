@@ -11,13 +11,77 @@ import 'package:printing/printing.dart';
 
 class PrinterService {
   Printer? selectedPrinter;
+  Future<pw.Document> generateSamplePagePdf() async {
+    final pdf = pw.Document();
 
-  getListOfAvailablePrinters() async {
-    final availablePrinters = await Printing.listPrinters();
-    for (var printer in availablePrinters) {
-      logger.d(
-        "Printer: ${printer.name} - ${printer.model} - ${printer.isDefault ? "Default" : ""}",
+    pw.TextStyle bodyTS = const pw.TextStyle(
+      fontSize: 10,
+    );
+    pw.TextStyle headerTS = const pw.TextStyle(
+      fontSize: 10,
+    );
+
+    StoreController storeController = Get.find<StoreController>();
+
+    pdf.addPage(
+      pw.Page(
+        clip: true,
+        pageFormat: PdfPageFormat.roll80,
+        margin: pw.EdgeInsets.only(
+          right: Get.find<StoreController>().receiptPadding,
+        ),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                """"Commodo consectetur dolore qui aliquip consequat aliquip veniam velit sunt esse occaecat proident. Dolore ex est ad pariatur aute consectetur Lorem enim ut reprehenderit non aliqua cupidatat in enim. Fugiat proident duis sunt velit cupidatat elit ad. Exercitation eu voluptate mollit. Ex amet duis aute exercitation dolor ea Lorem enim ea consequat quis do. Do reprehenderit Lorem officia veniam ullamco consectetur ut ex sint.
+
+Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet dolore adipisicing mollit fugiat. Aliquip deserunt adipisicing ullamco commodo qui commodo officia. Cillum in duis quis voluptate. Irure tempor pariatur et. Esse do ipsum in nulla excepteur deserunt ex magna qui eu dolor. Ipsum proident irure adipisicing nulla cupidatat cupidatat occaecat. Tempor commodo culpa irure amet incididunt. Excepteur amet eu adipisicing incididunt elit cupidatat nostrud in elit.
+
+Mollit officia dolor magna non velit magna id consequat. Occaecat irure cupidatat Lorem voluptate pariatur. Mollit ex labore tempor sint minim id cillum dolore velit sint do. Adipisicing commodo incididunt consectetur aute eu sunt ipsum tempor. Do tempor est qui velit veniam amet quis ullamco fugiat ipsum incididunt duis cupidatat. Incididunt ut labore commodo non incididunt. Ut duis cupidatat deserunt ipsum adipisicing duis.
+
+Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim laboris labore incididunt. Veniam officia sint et incididunt nulla reprehenderit magna occaecat. Duis non exercitation nulla adipisicing dolore amet aliqua dolore ullamco amet irure fugiat esse aliquip. Fugiat veniam pariatur eiusmod excepteur aute nostrud commodo veniam aliqua. Reprehenderit incididunt fugiat officia esse aute nulla esse ea fugiat laborum consectetur id mollit in. Cupidatat incididunt et officia dolore non ut consectetur sint ex fugiat dolore ea. Magna non exercitation amet enim proident dolor sunt. Quis sint reprehenderit exercitation consectetur anim.""",
+                style: bodyTS,
+              )
+            ],
+          );
+        },
+      ),
+    );
+
+    return pdf;
+  }
+
+  /// Prints the PDF, with web and non-web support.
+  Future<void> printSamplePage() async {
+    final pdf = await generateSamplePagePdf();
+
+    if (kIsWeb) {
+      await Printing.layoutPdf(
+        onLayout: (PdfPageFormat format) async => pdf.save(),
+        format: PdfPageFormat.roll80,
       );
+    } else {
+      final availablePrinters = await Printing.listPrinters();
+
+      for (var printer in availablePrinters) {
+        logger.d(
+          "Printer: ${printer.name} - ${printer.model} - ${printer.isDefault ? "Default" : ""}",
+        );
+      }
+
+      // Printing.pickPrinter(context: context)
+
+      if (availablePrinters.isNotEmpty) {
+        await Printing.directPrintPdf(
+          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
+          format: PdfPageFormat.roll80,
+          onLayout: (PdfPageFormat format) async => pdf.save(),
+        );
+      } else {
+        logger.d("No printer found.");
+      }
     }
   }
 
@@ -37,7 +101,9 @@ class PrinterService {
       pw.Page(
         clip: true,
         pageFormat: PdfPageFormat.roll80,
-        margin: const pw.EdgeInsets.only(right: 50),
+        margin: pw.EdgeInsets.only(
+          right: Get.find<StoreController>().receiptPadding,
+        ),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -338,7 +404,7 @@ class PrinterService {
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
           format: PdfPageFormat.roll80,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
@@ -351,10 +417,20 @@ class PrinterService {
   /// Generates a sales report PDF document
   Future<pw.Document> generateSalesReportPdf(List<SalesReportModel> reports) async {
     final pdf = pw.Document();
+    pw.TextStyle bodyTS = const pw.TextStyle(
+      fontSize: 10,
+    );
+    pw.TextStyle headerTS = const pw.TextStyle(
+      fontSize: 10,
+    );
+
+    StoreController storeController = Get.find<StoreController>();
 
     pdf.addPage(
       pw.Page(
-        margin: const pw.EdgeInsets.all(4),
+        margin: pw.EdgeInsets.only(
+          right: Get.find<StoreController>().receiptPadding,
+        ),
         pageFormat: PdfPageFormat.roll80,
         build: (pw.Context context) {
           return pw.Column(
@@ -362,7 +438,7 @@ class PrinterService {
             children: [
               pw.Text(
                 'Sales Report',
-                style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
+                style: headerTS,
               ),
               pw.SizedBox(height: 8),
 
@@ -373,7 +449,7 @@ class PrinterService {
                   children: [
                     pw.Text(
                       'Grouped By: ${report.totalsGroupedBy ?? "N/A"}',
-                      style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold),
+                      style: bodyTS,
                     ),
                     pw.SizedBox(height: 6),
                     pw.Table.fromTextArray(
@@ -393,41 +469,42 @@ class PrinterService {
                         ['Total Discount', report.totalDiscount ?? "N/A"],
                         ['Total Customers', report.totalCustomers?.toString() ?? "N/A"],
                       ],
-                      headerStyle: pw.TextStyle(fontSize: 4, fontWeight: pw.FontWeight.bold),
-                      cellStyle: const pw.TextStyle(fontSize: 4),
+                      headerStyle: bodyTS,
+                      cellStyle: bodyTS,
+                      oddCellStyle: bodyTS,
                       border: pw.TableBorder.all(width: 0.2),
                     ),
                     pw.SizedBox(height: 8),
-                    if (report.totals != null && report.totals!.isNotEmpty)
-                      pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.Text(
-                            'Totals by Group:',
-                            style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold),
-                          ),
-                          pw.SizedBox(height: 6),
-                          pw.Table.fromTextArray(
-                            headers: ['Group', 'Sales', 'Orders', 'Items', 'Tax', 'Shipping', 'Discount', 'Customers'],
-                            data: report.totals!.entries.map((entry) {
-                              final total = entry.value;
-                              return [
-                                entry.key,
-                                total.sales ?? "N/A",
-                                total.orders?.toString() ?? "N/A",
-                                total.items?.toString() ?? "N/A",
-                                total.tax ?? "N/A",
-                                total.shipping ?? "N/A",
-                                total.discount ?? "N/A",
-                                total.customers?.toString() ?? "N/A",
-                              ];
-                            }).toList(),
-                            headerStyle: pw.TextStyle(fontSize: 4, fontWeight: pw.FontWeight.bold),
-                            cellStyle: const pw.TextStyle(fontSize: 4),
-                            border: pw.TableBorder.all(width: 0.2),
-                          ),
-                        ],
-                      ),
+                    // if (report.totals != null && report.totals!.isNotEmpty)
+                    //   pw.Column(
+                    //     crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    //     children: [
+                    //       pw.Text(
+                    //         'Totals by Group:',
+                    //         style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold),
+                    //       ),
+                    //       pw.SizedBox(height: 6),
+                    //       pw.Table.fromTextArray(
+                    //         headers: ['Group', 'Sales', 'Orders', 'Items', 'Tax', 'Shipping', 'Discount', 'Customers'],
+                    //         data: report.totals!.entries.map((entry) {
+                    //           final total = entry.value;
+                    //           return [
+                    //             entry.key,
+                    //             total.sales ?? "N/A",
+                    //             total.orders?.toString() ?? "N/A",
+                    //             total.items?.toString() ?? "N/A",
+                    //             total.tax ?? "N/A",
+                    //             total.shipping ?? "N/A",
+                    //             total.discount ?? "N/A",
+                    //             total.customers?.toString() ?? "N/A",
+                    //           ];
+                    //         }).toList(),
+                    //         headerStyle: pw.TextStyle(fontSize: 4, fontWeight: pw.FontWeight.bold),
+                    //         cellStyle: const pw.TextStyle(fontSize: 4),
+                    //         border: pw.TableBorder.all(width: 0.2),
+                    //       ),
+                    //     ],
+                    //   ),
                     pw.SizedBox(height: 4),
                     pw.Container(
                       height: 0.5,
@@ -436,18 +513,14 @@ class PrinterService {
                     pw.SizedBox(height: 4),
                   ],
                 ),
+
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
-                  pw.SizedBox(height: 4),
-                  pw.Container(
-                    height: 0.5,
-                    color: PdfColor.fromHex('#000000'),
-                  ),
-                  pw.SizedBox(height: 4),
-                  pw.Text('Powered By TRT Technologies Ltd', style: const pw.TextStyle(fontSize: 4)),
+                  pw.Divider(thickness: 0.5),
+                  pw.Text('Powered By TRT Technologies Ltd', style: const pw.TextStyle(fontSize: 8)),
                   pw.SizedBox(height: 2),
-                  pw.Text('www.trttech.ca', style: const pw.TextStyle(fontSize: 4)),
+                  pw.Text('www.trttech.ca', style: const pw.TextStyle(fontSize: 8)),
                 ],
               ),
             ],
@@ -473,27 +546,13 @@ class PrinterService {
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
           format: PdfPageFormat.roll80,
           usePrinterSettings: true,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
       } else {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Text('No Printer Found'),
-            content: const Text('No printers are currently available. Please check your connection.'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
+        logger.d("No printer found.");
       }
     }
   }
