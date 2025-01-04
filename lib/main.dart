@@ -97,50 +97,46 @@ class _DashboardViewState extends State<DashboardView> {
                   height: 80,
                   width: 80,
                   child: Center(
-                    child: Align(child: CircularProgressIndicator()),
+                    child: CircularProgressIndicator(),
                   ),
                 )
               : Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: statuses.map((status) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: SizedBox(
-                        width: double.infinity, // Ensure button takes max width
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            logger.d("Selected status: $status");
-                            switch (status) {
-                              case 'Day':
-                                logger.d("Day");
-                                await salesReportController.getSalesReport(period: "day");
-                                break;
-                              case 'Week':
-                                logger.d("Week");
-                                await salesReportController.getSalesReport(period: "week");
-                                break;
-                              case 'Two Weeks':
-                                logger.d("Two Weeks");
-                                await salesReportController.getSalesReport(period: "two_weeks");
-                                break;
-                              case 'Month':
-                                logger.d("Month");
-                                await salesReportController.getSalesReport(period: "month");
-                                break;
-                            }
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        final DateTimeRange? picked = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime.now(),
+                          saveText: "Select",
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: Colors.blue, // header background color
+                                  onPrimary: Colors.white, // header text color
+                                  onSurface: Colors.black, // body text color
+                                ),
+                              ),
+                              child: child!,
+                            );
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0FCA77),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0), // Button corner styling
-                            ),
-                          ),
-                          child: Text(status),
-                        ),
+                        );
+
+                        if (picked != null) {
+                          logger.d("Selected date range: ${salesReportController.selectedDateRange?.start}, ${salesReportController.selectedDateRange?.end}");
+                          salesReportController.selectedDateRange = picked;
+                          salesReportController.getSalesReport(
+                              startDate: salesReportController.selectedDateRange!.start.toString(),
+                              endDate: salesReportController.selectedDateRange!.end.toString());
+                        }
+                      },
+                      child: const Text(
+                        "Select date range",
                       ),
-                    );
-                  }).toList(),
+                    ),
+                  ],
                 )),
           actions: [
             TextButton(
