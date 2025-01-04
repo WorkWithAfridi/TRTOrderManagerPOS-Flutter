@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:pdf_printer/controllers/product_list_controller.dart';
 
@@ -34,7 +35,7 @@ class ProductsPage extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           // Toggle the product status
-                          final newStatus = product.status == 'publish' ? 'draft' : 'publish';
+                          final newStatus = product.status == 'publish' ? 'outofstock' : 'publish';
                           controller.products.where((p) => p.id == product.id).first.status = newStatus;
                           controller.toggleProductStatus(
                             isActive: newStatus == 'publish',
@@ -114,12 +115,68 @@ class ProductsPage extends StatelessWidget {
                                             inactiveTrackColor: Colors.red,
                                             inactiveThumbColor: Colors.white,
                                             onChanged: (value) {
-                                              controller.products.where((p) => p.id == product.id).first.status = value ? 'publish' : 'draft';
-                                              controller.toggleProductStatus(
-                                                isActive: value,
-                                                productId: product.id ?? 0,
+                                              showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(16.0),
+                                                    ),
+                                                    content: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Text(
+                                                          'Are you sure you want to set product to ${product.status == 'publish' ? 'out-of-stock' : 'in-stock'}?',
+                                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 22,
+                                                              ),
+                                                        ),
+                                                        const Gap(20),
+                                                        Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            ElevatedButton(
+                                                              onPressed: () {
+                                                                Get.back();
+                                                              },
+                                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                                              child: const Padding(
+                                                                padding: EdgeInsets.all(12.0),
+                                                                child: Text(
+                                                                  'NO',
+                                                                  style: TextStyle(color: Colors.white),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            const Gap(12),
+                                                            ElevatedButton(
+                                                              onPressed: () {
+                                                                controller.products.where((p) => p.id == product.id).first.status =
+                                                                    value ? 'publish' : 'outofstock';
+                                                                controller.toggleProductStatus(
+                                                                  isActive: value,
+                                                                  productId: product.id ?? 0,
+                                                                );
+                                                                controller.update();
+                                                              },
+                                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                                              child: const Padding(
+                                                                padding: EdgeInsets.all(12.0),
+                                                                child: Text(
+                                                                  'YES',
+                                                                  style: TextStyle(color: Colors.white),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
                                               );
-                                              controller.update();
                                             },
                                           ),
                                         ],

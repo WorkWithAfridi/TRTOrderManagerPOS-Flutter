@@ -170,7 +170,7 @@ class _DashboardViewState extends State<DashboardView> {
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text("Store: ",
+                      const Text("Accepting Online Orders: ",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           )),
@@ -249,7 +249,7 @@ class _DashboardViewState extends State<DashboardView> {
                         },
                       ),
                       Text(
-                        controller.isStoreActive ? ' (open)' : ' (closed)',
+                        controller.isStoreActive ? ' (Yes)' : ' (No)',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const Gap(20),

@@ -27,7 +27,7 @@ class PrinterService {
       pw.Page(
         clip: true,
         pageFormat: PdfPageFormat.roll80,
-        margin: const pw.EdgeInsets.only(right: 65),
+        margin: const pw.EdgeInsets.only(right: 50),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -59,6 +59,14 @@ class PrinterService {
                     pw.Text(
                         'Order type: #${order.metaData?.firstWhere(
                               (e) => e.key == "exwfood_order_method",
+                              orElse: () {
+                                return OrderModelMetaDatum(id: 0, key: "", value: "");
+                              },
+                            ).value ?? ''}',
+                        style: headerTS),
+                    pw.Text(
+                        'Order type: #${order.metaData?.firstWhere(
+                              (e) => e.key == "exwfood_time_deli",
                               orElse: () {
                                 return OrderModelMetaDatum(id: 0, key: "", value: "");
                               },
@@ -309,6 +317,14 @@ class PrinterService {
       );
     } else {
       final availablePrinters = await Printing.listPrinters();
+
+      for (var printer in availablePrinters) {
+        logger.d(
+          "Printer: ${printer.name} - ${printer.model} - ${printer.isDefault ? "Default" : ""}",
+        );
+      }
+
+      // Printing.pickPrinter(context: context)
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
