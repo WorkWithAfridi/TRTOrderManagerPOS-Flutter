@@ -75,7 +75,7 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
+          printer: availablePrinters.first,
           format: PdfPageFormat.roll80,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
@@ -404,7 +404,7 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
+          printer: availablePrinters.first,
           format: PdfPageFormat.roll80,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
@@ -546,7 +546,7 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
+          printer: availablePrinters.first,
           format: PdfPageFormat.roll80,
           usePrinterSettings: true,
           onLayout: (PdfPageFormat format) async => pdf.save(),
