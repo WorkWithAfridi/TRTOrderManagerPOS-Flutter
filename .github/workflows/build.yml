@@ -61,33 +61,23 @@ jobs:
                   Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
                   Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
 
-            # - name: Prepare Icon File
-            #   shell: powershell
-            #   run: |
-            #       $iconSource = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
-            #       $iconTarget = "$env:GITHUB_WORKSPACE/build/icon.ico"
-            #       if (Test-Path $iconSource) {
-            #           Copy-Item -Path $iconSource -Destination $iconTarget
-            #       } else {
-            #           Write-Error "Icon file not found: $iconSource"
-            #       }
-
             - name: Create Inno Setup Script
               shell: powershell
               run: |
                   $scriptPath = "$env:GITHUB_WORKSPACE/build_script.iss"
                   Set-Content -Path $scriptPath -Value @"
                   ; Inno Setup Script
-                  #define MyAppName "TRTOrderManager"
                   ;#define MyAppVersion "$env:VERSION"
+                  #define MyAppName "TRTOrderManager"
                   #define MyAppPublisher "trttech.ca"
                   #define MyAppURL "https://trttech.ca"
+                  #define IconPath = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
 
                   ; the flutter executable exe name
                   #define MyAppExeName "pdf_printer.exe"
 
                   [Setup]
-                  ;SetupIconFile=build\icon.ico
+                  SetupIconFile={#IconPath}
                   AppName={#MyAppName}
                   AppVersion=1.0.0
                   AppPublisher={#MyAppPublisher}
