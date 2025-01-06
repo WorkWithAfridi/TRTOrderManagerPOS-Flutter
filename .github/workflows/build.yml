@@ -68,6 +68,17 @@ jobs:
                   Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
                   Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
 
+            - name: Prepare Icon File
+              shell: powershell
+              run: |
+                  $iconSource = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
+                  $iconTarget = "$env:GITHUB_WORKSPACE/build/icon.ico"
+                  if (Test-Path $iconSource) {
+                      Copy-Item -Path $iconSource -Destination $iconTarget
+                  } else {
+                      Write-Error "Icon file not found: $iconSource"
+                  }
+
             - name: Create Inno Setup Script
               shell: powershell
               run: |
@@ -94,7 +105,7 @@ jobs:
                   OutputDir=build\installer
                   OutputBaseFilename=TrtInstaller
                   PrivilegesRequired=lowest
-                  ;SetupIconFile=..\..\assets\icon\icon.png
+                  SetupIconFile=build\icon.ico
                   Compression=lzma
                   SolidCompression=yes
                   WizardStyle=modern
