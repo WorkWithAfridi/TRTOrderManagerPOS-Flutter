@@ -34,6 +34,7 @@ jobs:
               uses: subosito/flutter-action@v2
               with:
                   channel: stable
+                  cache: true
 
             - name: Disable Analytics & Enable Windows Builds
               shell: pwsh
@@ -41,14 +42,6 @@ jobs:
                   flutter config --no-analytics
                   flutter config --enable-windows-desktop
                   flutter --version
-
-            - name: Cache Flutter dependencies
-              uses: actions/cache@v4
-              with:
-                  path: ${{ env.PUB_CACHE }}
-                  key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pub-
 
             - name: Install Flutter Dependencies
               run: flutter pub get
@@ -68,16 +61,16 @@ jobs:
                   Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
                   Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
 
-            - name: Prepare Icon File
-              shell: powershell
-              run: |
-                  $iconSource = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
-                  $iconTarget = "$env:GITHUB_WORKSPACE/build/icon.ico"
-                  if (Test-Path $iconSource) {
-                      Copy-Item -Path $iconSource -Destination $iconTarget
-                  } else {
-                      Write-Error "Icon file not found: $iconSource"
-                  }
+            # - name: Prepare Icon File
+            #   shell: powershell
+            #   run: |
+            #       $iconSource = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
+            #       $iconTarget = "$env:GITHUB_WORKSPACE/build/icon.ico"
+            #       if (Test-Path $iconSource) {
+            #           Copy-Item -Path $iconSource -Destination $iconTarget
+            #       } else {
+            #           Write-Error "Icon file not found: $iconSource"
+            #       }
 
             - name: Create Inno Setup Script
               shell: powershell
@@ -94,7 +87,7 @@ jobs:
                   #define MyAppExeName "pdf_printer.exe"
 
                   [Setup]
-                  ;AppId={{5960F34D-1E42-402C-8C85-DE2FF24CBAE4}
+                  ;SetupIconFile=build\icon.ico
                   AppName={#MyAppName}
                   AppVersion=1.0.0
                   AppPublisher={#MyAppPublisher}
@@ -105,7 +98,6 @@ jobs:
                   OutputDir=build\installer
                   OutputBaseFilename=TrtInstaller
                   PrivilegesRequired=lowest
-                  SetupIconFile=build\icon.ico
                   Compression=lzma
                   SolidCompression=yes
                   WizardStyle=modern
@@ -115,7 +107,7 @@ jobs:
                   Name: "english"; MessagesFile: "compiler:Default.isl"
 
                   [Tasks]
-                  Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+                  Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checked
 
                   [Files]
                   Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
