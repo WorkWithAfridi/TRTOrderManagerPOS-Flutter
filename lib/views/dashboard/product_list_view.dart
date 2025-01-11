@@ -65,14 +65,6 @@ class ProductsPage extends StatelessWidget {
                                         Icons.error,
                                       ),
                                     ),
-
-                                    // CachedNetworkImage(
-                                    //   imageUrl: product.images?.first.src ?? '',
-                                    //   fit: BoxFit.cover,
-                                    //   errorWidget: (context, url, error) => const Icon(
-                                    //     Icons.error,
-                                    //   ),
-                                    // ),
                                   ),
                                 ),
                               ),
@@ -104,9 +96,12 @@ class ProductsPage extends StatelessWidget {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text(
-                                            product.status == 'publish' ? 'In-Stock' : 'Out of Stock',
-                                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                          Expanded(
+                                            child: Text(
+                                              product.status == 'publish' ? 'In-Stock' : 'Out of Stock',
+                                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                           Switch(
                                             value: product.status == 'publish',

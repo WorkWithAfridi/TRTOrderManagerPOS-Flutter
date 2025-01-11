@@ -16,6 +16,11 @@ import 'package:pdf_printer/service/printer_service.dart';
 
 class OrderListController extends GetxController {
   Timer? _timer;
+
+  var pageNo = 1.obs;
+  var lastPage = 0.obs;
+  ScrollController scrollController = ScrollController();
+
   var isLoading = false.obs;
   List<OrderModel> orderList = [];
   List<OrderModel> allOrderList = [];
@@ -37,6 +42,17 @@ class OrderListController extends GetxController {
     });
   }
 
+  void _scrollListener() {
+    //log(scrollController.position.extentAfter.toString());
+    if (scrollController.position.extentAfter == 0) {
+      logger.d("incrementing page and fetching orders");
+      pageNo.value = pageNo.value + 1;
+      getAllOrders(
+        shouldShowLoading: false,
+      );
+    }
+  }
+
   @override
   void onClose() {
     // Cancel the timer when the controller is disposed
@@ -44,8 +60,8 @@ class OrderListController extends GetxController {
     super.onClose();
   }
 
-  Future getAllOrders() async {
-    isLoading.value = true;
+  Future getAllOrders({bool shouldShowLoading = true}) async {
+    isLoading.value = shouldShowLoading;
     String? baseUrl = EvnConstant.baseUrl;
     String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
 
@@ -53,6 +69,7 @@ class OrderListController extends GetxController {
       'consumer_key': EvnConstant.consumerKey,
       'consumer_secret': EvnConstant.consumerSecret,
       'per_page': 100,
+      'page': pageNo.value,
     };
     try {
       final response = await _networkController.request(
@@ -73,6 +90,7 @@ class OrderListController extends GetxController {
     }
 
     isLoading.value = false;
+    logger.d("Total orders: ${allOrderList.length}");
     update();
   }
 
