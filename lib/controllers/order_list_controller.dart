@@ -16,7 +16,9 @@ import 'package:pdf_printer/service/printer_service.dart';
 
 class OrderListController extends GetxController {
   Timer? _timer;
+  var isLoading = false.obs;
   List<OrderModel> orderList = [];
+  List<OrderModel> allOrderList = [];
   List<int> orderIds = [];
   List<OrderTimerModel> orderTimers = [];
   final GetStorage _storage = GetStorage(); // Initialize GetStorage
@@ -42,11 +44,44 @@ class OrderListController extends GetxController {
     super.onClose();
   }
 
+  Future getAllOrders() async {
+    isLoading.value = true;
+    String? baseUrl = EvnConstant.baseUrl;
+    String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
+
+    Map<String, dynamic> params = {
+      'consumer_key': EvnConstant.consumerKey,
+      'consumer_secret': EvnConstant.consumerSecret,
+      'per_page': 100,
+    };
+    try {
+      final response = await _networkController.request(
+        url: endpoint,
+        method: Method.GET,
+        params: params,
+      );
+
+      if (response != null && response.statusCode == 200) {
+        final fetchedOrders = (response.data as List).map((order) => OrderModel.fromJson(order)).toList();
+        allOrderList.addAll(fetchedOrders);
+        update();
+      } else {
+        logger.e("Failed to fetch order list");
+      }
+    } catch (e) {
+      logger.e("Error fetching order list: $e");
+    }
+
+    isLoading.value = false;
+    update();
+  }
+
   Future<List<OrderModel>?> getOrderList(
     BuildContext context, {
     bool shouldLoadFromLocalStorage = true,
     bool fetchAllOrders = true,
   }) async {
+    isLoading.value = true;
     bool receivedNewOrders = false;
     if (shouldLoadFromLocalStorage) {
       loadOrderListFromLocalStorage();
@@ -56,12 +91,16 @@ class OrderListController extends GetxController {
     // Get today's date in ISO 8601 format
     String today = DateFormat("yyyy-MM-ddT00:00:00").format(DateTime.now());
 
-    Map<String, dynamic> params = {
-      'consumer_key': EvnConstant.consumerKey, // Replace with actual key
-      'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
-      'per_page': 100,
-    };
+// Get today's date in ISO 8601 format
+    String todayDT = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
+    Map<String, dynamic> params = {
+      'consumer_key': EvnConstant.consumerKey,
+      'consumer_secret': EvnConstant.consumerSecret,
+      'per_page': 100,
+      'after': '${todayDT}T00:00:00', // Start of today
+      'before': '${todayDT}T23:59:59', // End of today
+    };
     if (!fetchAllOrders) {
       params.assign("after", today);
     }
@@ -109,6 +148,7 @@ class OrderListController extends GetxController {
             context,
           );
         }
+        isLoading.value = false;
         return orderList;
       } else {
         logger.e("Failed to fetch order list");
@@ -116,7 +156,7 @@ class OrderListController extends GetxController {
     } catch (e) {
       logger.e("Error fetching order list: $e");
     }
-
+    isLoading.value = false;
     update();
     return null;
   }

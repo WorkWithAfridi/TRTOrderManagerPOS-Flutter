@@ -10,7 +10,7 @@ import 'package:printing/printing.dart';
 class StoreController extends GetxController {
   StoreModel? storeModel;
   List<Printer> availablePrinter = [];
-  double receiptPadding = 50.0;
+  double receiptPadding = 25.0;
   Printer? selectedPrinter;
   bool isStoreActive = false;
   final GetStorage _storage = GetStorage(); // Initialize GetStorage
