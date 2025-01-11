@@ -14,6 +14,7 @@ import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/dependency_injection_service.dart';
 import 'package:pdf_printer/service/evn_constant.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
+import 'package:pdf_printer/views/dashboard/all_orders_view.dart';
 import 'package:pdf_printer/views/dashboard/order_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_list_view.dart';
 import 'package:pdf_printer/views/dashboard/product_search_view.dart';
@@ -252,7 +253,31 @@ class _DashboardViewState extends State<DashboardView> {
                       const Gap(20),
                     ],
                   )
-                : const SizedBox.shrink(),
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Get.find<OrderListController>().getOrderList(context);
+                        },
+                        child: const Text(
+                          "Refresh",
+                        ),
+                      ),
+                      const Gap(12),
+                      ElevatedButton(
+                        onPressed: () {
+                          Get.to(
+                            () => const AllOrdersPage(),
+                          );
+                        },
+                        child: const Text(
+                          "View all orders",
+                        ),
+                      ),
+                      const Gap(20),
+                    ],
+                  ),
           )
         ],
       ),
@@ -360,7 +385,7 @@ class _DashboardViewState extends State<DashboardView> {
                 color: Colors.grey,
               ),
               title: const Text(
-                'Store Settings',
+                'Settings',
                 style: TextStyle(
                   color: Colors.grey,
                 ),
