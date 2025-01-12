@@ -30,7 +30,7 @@ jobs:
             - name: Verify WordPress Credentials
               shell: bash
               run: |
-                  API_URL="${{ env.baseurl }}/wp-json/${{ env.version }}/"
+                  API_URL="${{ env.baseurl }}/wp-json/${{ env.version }}/products"
                   STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ env.consumerkey }}:${{ env.consumersecret }}" "$API_URL")
 
                   if [ "$STATUS_CODE" -ne 200 ]; then
