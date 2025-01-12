@@ -16,6 +16,9 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
 
   @override
   void initState() {
+    controller.pageNo.value = 1;
+
+    controller.scrollController.addListener(controller.scrollListener);
     controller.getAllOrders();
     super.initState();
   }
@@ -35,7 +38,7 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
         builder: (_) {
           final orders = controller.allOrderList;
 
-          return controller.isLoading.value
+          return controller.isAllLoading.value
               ? const Center(child: CircularProgressIndicator())
               : RefreshIndicator(
                   onRefresh: () {
@@ -43,6 +46,7 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
                   },
                   child: ListView.builder(
                     controller: controller.scrollController,
+                    physics: const BouncingScrollPhysics(),
                     padding: const EdgeInsets.all(16.0),
                     itemCount: orders.length,
                     itemBuilder: (context, index) {

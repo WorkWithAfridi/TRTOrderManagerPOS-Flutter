@@ -22,6 +22,7 @@ class OrderListController extends GetxController {
   ScrollController scrollController = ScrollController();
 
   var isLoading = false.obs;
+  var isAllLoading = false.obs;
   List<OrderModel> orderList = [];
   List<OrderModel> allOrderList = [];
   List<int> orderIds = [];
@@ -42,17 +43,6 @@ class OrderListController extends GetxController {
     });
   }
 
-  void _scrollListener() {
-    //log(scrollController.position.extentAfter.toString());
-    if (scrollController.position.extentAfter == 0) {
-      logger.d("incrementing page and fetching orders");
-      pageNo.value = pageNo.value + 1;
-      getAllOrders(
-        shouldShowLoading: false,
-      );
-    }
-  }
-
   @override
   void onClose() {
     // Cancel the timer when the controller is disposed
@@ -60,8 +50,16 @@ class OrderListController extends GetxController {
     super.onClose();
   }
 
+  void scrollListener() {
+    if (scrollController.position.extentAfter == 0 && !isAllLoading.value) {
+      isAllLoading.value = true;
+      pageNo.value += 1;
+      getAllOrders(shouldShowLoading: false);
+    }
+  }
+
   Future getAllOrders({bool shouldShowLoading = true}) async {
-    isLoading.value = shouldShowLoading;
+    isAllLoading.value = shouldShowLoading;
     String? baseUrl = EvnConstant.baseUrl;
     String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
 
@@ -80,16 +78,23 @@ class OrderListController extends GetxController {
 
       if (response != null && response.statusCode == 200) {
         final fetchedOrders = (response.data as List).map((order) => OrderModel.fromJson(order)).toList();
+        if (fetchedOrders.isEmpty) {
+          pageNo.value -= 1;
+          logger.d("No more orders to load");
+          return;
+        }
         allOrderList.addAll(fetchedOrders);
         update();
       } else {
+        pageNo.value -= 1;
         logger.e("Failed to fetch order list");
       }
     } catch (e) {
+      pageNo.value -= 1;
       logger.e("Error fetching order list: $e");
     }
 
-    isLoading.value = false;
+    isAllLoading.value = false;
     logger.d("Total orders: ${allOrderList.length}");
     update();
   }
