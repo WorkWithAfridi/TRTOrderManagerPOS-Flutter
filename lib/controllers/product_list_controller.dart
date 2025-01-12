@@ -75,7 +75,7 @@ class ProductListController extends GetxController {
         params: {
           'consumer_key': EvnConstant.consumerKey, // Replace with actual key
           'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
-          'status': isActive ? 'publish' : 'outofstock', // Set status based on the toggle
+          'stock_status': isActive ? 'instock' : 'outofstock', // Set status based on the toggle
         },
       );
 
@@ -105,7 +105,7 @@ class ProductListController extends GetxController {
   Future toggleAllProductStatus() async {
     isAllProductActive = !isAllProductActive;
     for (var product in products) {
-      product.status = isAllProductActive ? 'publish' : 'outofstock';
+      product.stockStatus = isAllProductActive ? 'instock' : 'outofstock';
     }
     update();
     String? baseUrl = EvnConstant.baseUrl;
@@ -122,7 +122,7 @@ class ProductListController extends GetxController {
           "update": [
             ...products.map((product) => {
                   "id": product.id,
-                  "status": isAllProductActive ? 'publish' : 'outofstock',
+                  "stock_status": isAllProductActive ? 'instock' : 'outofstock',
                 })
           ],
         },

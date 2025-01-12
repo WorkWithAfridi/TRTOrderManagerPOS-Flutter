@@ -111,11 +111,12 @@ class OrderListController extends GetxController {
     }
     String? baseUrl = EvnConstant.baseUrl;
     String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
+
     // Get today's date in ISO 8601 format
-    String today = DateFormat("yyyy-MM-ddT00:00:00").format(DateTime.now());
+    String today = DateFormat("yyyy-MM-ddT00:00:00").format(DateTime.now().subtract(const Duration(days: 1)));
 
 // Get today's date in ISO 8601 format
-    String todayDT = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    String todayDT = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 1)));
 
     Map<String, dynamic> params = {
       'consumer_key': EvnConstant.consumerKey,

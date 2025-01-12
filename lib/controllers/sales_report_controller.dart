@@ -24,6 +24,11 @@ class SalesReportController extends GetxController {
 
     logger.d("After: $startDate, Before: $endDate");
 
+    // DateTime dateTime = DateTime.parse(endDate).add(const Duration(hours: 23, minutes: 59, seconds: 59));
+
+    startDate = startDate.substring(0, 10);
+
+    endDate = endDate.toString().substring(0, 10);
     try {
       final response = await _networkController.request(
         url: endpoint,
@@ -31,8 +36,8 @@ class SalesReportController extends GetxController {
         params: {
           'consumer_key': EvnConstant.consumerKey, // Replace with actual key
           'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
-          'date_min': startDate.substring(0, 10),
-          'date_max': endDate.substring(0, 10),
+          'date_min': startDate,
+          'date_max': endDate,
         },
       );
 
@@ -48,6 +53,8 @@ class SalesReportController extends GetxController {
         );
         return salesReportList;
       } else {
+        //show toast
+        Get.snackbar('Error', 'Failed to fetch report. Status code: ${response?.statusCode}');
         throw Exception("Failed to fetch report. Status code: ${response?.statusCode}");
       }
     } catch (e) {
@@ -57,9 +64,8 @@ class SalesReportController extends GetxController {
     }
 
     update(); // Notify UI of changes
-
     //show toast
-    Get.snackbar('Error', 'Failed to fetch report.}');
+    // Get.snackbar('Error', 'Failed to fetch report.');
 
     return [];
   }

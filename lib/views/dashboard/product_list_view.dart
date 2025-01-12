@@ -35,10 +35,10 @@ class ProductsPage extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           // Toggle the product status
-                          final newStatus = product.status == 'publish' ? 'outofstock' : 'publish';
+                          final newStatus = product.stockStatus == 'instock' ? 'outofstock' : 'instock';
                           controller.products.where((p) => p.id == product.id).first.status = newStatus;
                           controller.toggleProductStatus(
-                            isActive: newStatus == 'publish',
+                            isActive: newStatus == 'instock',
                             productId: product.id ?? 0,
                           );
                           controller.update();
@@ -98,13 +98,13 @@ class ProductsPage extends StatelessWidget {
                                         children: [
                                           Expanded(
                                             child: Text(
-                                              product.status == 'publish' ? 'In-Stock' : 'Out of Stock',
+                                              product.stockStatus == 'instock' ? 'In-Stock' : 'Out of Stock',
                                               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                           Switch(
-                                            value: product.status == 'publish',
+                                            value: product.stockStatus == 'instock',
                                             activeTrackColor: Colors.green,
                                             activeColor: Colors.white,
                                             inactiveTrackColor: Colors.red,
@@ -122,7 +122,7 @@ class ProductsPage extends StatelessWidget {
                                                       mainAxisSize: MainAxisSize.min,
                                                       children: [
                                                         Text(
-                                                          'Are you sure you want to set product to ${product.status == 'publish' ? 'out-of-stock' : 'in-stock'}?',
+                                                          'Are you sure you want to set product to ${product.stockStatus == 'instock' ? 'out-of-stock' : 'in-stock'}?',
                                                           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                                                 fontWeight: FontWeight.bold,
                                                                 fontSize: 22,
@@ -148,13 +148,14 @@ class ProductsPage extends StatelessWidget {
                                                             const Gap(12),
                                                             ElevatedButton(
                                                               onPressed: () {
-                                                                controller.products.where((p) => p.id == product.id).first.status =
-                                                                    value ? 'publish' : 'outofstock';
+                                                                controller.products.where((p) => p.id == product.id).first.stockStatus =
+                                                                    value ? 'instock' : 'outofstock';
                                                                 controller.toggleProductStatus(
                                                                   isActive: value,
                                                                   productId: product.id ?? 0,
                                                                 );
                                                                 controller.update();
+                                                                Get.back();
                                                               },
                                                               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                                                               child: const Padding(
