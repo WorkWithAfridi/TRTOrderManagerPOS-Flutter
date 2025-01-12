@@ -27,6 +27,26 @@ jobs:
             consumerkey: ${{ github.event.inputs.consumerkey }}
             consumersecret: ${{ github.event.inputs.consumersecret }}
         steps:
+            - name: Verify WordPress Credentials
+              shell: bash
+              run: |
+                  API_URL="${{ env.baseurl }}/wp-json/${{ env.version }}/products"
+                  STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ env.consumerkey }}:${{ env.consumersecret }}" "$API_URL")
+
+                  if [ "$STATUS_CODE" -ne 200 ]; then
+                      echo "**:x: WordPress Authentication Failed**" >> $GITHUB_STEP_SUMMARY
+                      echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
+                      echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
+                      echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
+                      echo "Ensure that the Consumer Key and Secret are correct and have appropriate permissions." >> $GITHUB_STEP_SUMMARY
+                      exit 1
+                  else
+                      echo "**:white_check_mark: WordPress Authentication Succeeded**" >> $GITHUB_STEP_SUMMARY
+                      echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
+                      echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
+                      echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
+                  fi
+
             - name: Checkout code
               uses: actions/checkout@v4
 
