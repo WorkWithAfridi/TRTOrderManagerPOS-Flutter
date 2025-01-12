@@ -34,6 +34,7 @@ jobs:
               uses: subosito/flutter-action@v2
               with:
                   channel: stable
+                  cache: true
 
             - name: Disable Analytics & Enable Windows Builds
               shell: pwsh
@@ -41,14 +42,6 @@ jobs:
                   flutter config --no-analytics
                   flutter config --enable-windows-desktop
                   flutter --version
-
-            - name: Cache Flutter dependencies
-              uses: actions/cache@v4
-              with:
-                  path: ${{ env.PUB_CACHE }}
-                  key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pub-
 
             - name: Install Flutter Dependencies
               run: flutter pub get
@@ -74,16 +67,17 @@ jobs:
                   $scriptPath = "$env:GITHUB_WORKSPACE/build_script.iss"
                   Set-Content -Path $scriptPath -Value @"
                   ; Inno Setup Script
-                  #define MyAppName "TRTOrderManager"
                   ;#define MyAppVersion "$env:VERSION"
+                  #define MyAppName "TRTOrderManager"
                   #define MyAppPublisher "trttech.ca"
                   #define MyAppURL "https://trttech.ca"
+                  #define IconPath = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
 
                   ; the flutter executable exe name
                   #define MyAppExeName "pdf_printer.exe"
 
                   [Setup]
-                  ;AppId={{5960F34D-1E42-402C-8C85-DE2FF24CBAE4}
+                  SetupIconFile={#IconPath}
                   AppName={#MyAppName}
                   AppVersion=1.0.0
                   AppPublisher={#MyAppPublisher}
@@ -94,7 +88,6 @@ jobs:
                   OutputDir=build\installer
                   OutputBaseFilename=TrtInstaller
                   PrivilegesRequired=lowest
-                  ;SetupIconFile=..\..\assets\icon\icon.png
                   Compression=lzma
                   SolidCompression=yes
                   WizardStyle=modern
@@ -104,7 +97,7 @@ jobs:
                   Name: "english"; MessagesFile: "compiler:Default.isl"
 
                   [Tasks]
-                  Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+                  Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
 
                   [Files]
                   Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
