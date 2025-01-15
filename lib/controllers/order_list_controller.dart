@@ -1,12 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf_printer/models/order_m.dart';
+import 'package:pdf_printer/models/order_timer_m.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/evn_constant.dart';
 import 'package:pdf_printer/service/network/network-c.dart';
@@ -442,55 +442,4 @@ class OrderListController extends GetxController {
       },
     );
   }
-}
-
-class OrderTimerModel {
-  final int orderId;
-  int? secondsRemaining;
-
-  OrderTimerModel({
-    required this.orderId,
-    this.secondsRemaining,
-  });
-
-  OrderTimerModel copyWith({
-    int? orderId,
-    int? secondsRemaining,
-  }) {
-    return OrderTimerModel(
-      orderId: orderId ?? this.orderId,
-      secondsRemaining: secondsRemaining ?? this.secondsRemaining,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'orderId': orderId,
-      'secondsRemaining': secondsRemaining,
-    };
-  }
-
-  factory OrderTimerModel.fromMap(Map<String, dynamic> map) {
-    return OrderTimerModel(
-      orderId: map['orderId'] as int,
-      secondsRemaining: map['secondsRemaining'] as int,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory OrderTimerModel.fromJson(String source) => OrderTimerModel.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() => 'OrderTimerModel(orderId: $orderId, secondsRemaining: $secondsRemaining)';
-
-  @override
-  bool operator ==(covariant OrderTimerModel other) {
-    if (identical(this, other)) return true;
-
-    return other.orderId == orderId && other.secondsRemaining == secondsRemaining;
-  }
-
-  @override
-  int get hashCode => orderId.hashCode ^ secondsRemaining.hashCode;
 }
