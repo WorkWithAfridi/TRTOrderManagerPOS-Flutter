@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/controllers/product_list_controller.dart';
 import 'package:pdf_printer/controllers/store_controller.dart';
 import 'package:pdf_printer/main.dart';
+import 'package:pdf_printer/service/first_boot_checker.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,6 +20,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    if (FirstBootChecker().isFirstBoot) {
+      GetStorage storage = GetStorage();
+      storage.erase();
+    }
     // Navigate to DashboardView after 3 seconds
     Get.find<ProductListController>().fetchAllProducts();
     Get.find<StoreController>().setupPrinter();
