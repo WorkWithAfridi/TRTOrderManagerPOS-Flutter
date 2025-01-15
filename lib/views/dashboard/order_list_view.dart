@@ -161,90 +161,173 @@ class _OrdersPageState extends State<OrdersPage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      controller.getMinutesRemaining(order.id ?? 0) == 0
-                                          ? const SizedBox.shrink()
-                                          : ElevatedButton.icon(
-                                              onPressed: () {
-                                                // controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
-                                                showDialog(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (context) {
-                                                    return AlertDialog(
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(16.0),
-                                                      ),
-                                                      content: GetBuilder<OrderListController>(
-                                                        init: controller,
-                                                        initState: (_) {},
-                                                        builder: (_) {
-                                                          return Column(
-                                                            mainAxisSize: MainAxisSize.min,
-                                                            children: [
-                                                              const Text('Update Order Status'),
-                                                              const Gap(10),
-                                                              Text(
-                                                                'Total Preparation Time: ${controller.getMinutesRemaining(order.id ?? 0) ?? 0} minutes',
-                                                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                                      fontWeight: FontWeight.bold,
-                                                                      fontSize: 22,
-                                                                    ),
+                                      // controller.getMinutesRemaining(order.id ?? 0) == 0
+                                      //     ? const SizedBox.shrink()
+                                      //     : ElevatedButton.icon(
+                                      //         onPressed: () {
+                                      //           // controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
+                                      //           showDialog(
+                                      //             context: context,
+                                      //             barrierDismissible: false,
+                                      //             builder: (context) {
+                                      //               return AlertDialog(
+                                      //                 shape: RoundedRectangleBorder(
+                                      //                   borderRadius: BorderRadius.circular(16.0),
+                                      //                 ),
+                                      //                 content: GetBuilder<OrderListController>(
+                                      //                   init: controller,
+                                      //                   initState: (_) {},
+                                      //                   builder: (_) {
+                                      //                     return Column(
+                                      //                       mainAxisSize: MainAxisSize.min,
+                                      //                       children: [
+                                      //                         const Text('Update Order Status'),
+                                      //                         const Gap(10),
+                                      //                         Text(
+                                      //                           'Total Preparation Time: ${controller.getMinutesRemaining(order.id ?? 0) ?? 0} minutes',
+                                      //                           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                      //                                 fontWeight: FontWeight.bold,
+                                      //                                 fontSize: 22,
+                                      //                               ),
+                                      //                         ),
+                                      //                         const Gap(20),
+                                      //                         Row(
+                                      //                           mainAxisSize: MainAxisSize.min,
+                                      //                           children: [
+                                      //                             ElevatedButton(
+                                      //                               onPressed: () {
+                                      //                                 controller.decreaseOrderTimerBy5Minutes(order.id ?? 0);
+                                      //                               },
+                                      //                               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                      //                               child: const Text(
+                                      //                                 '- 5 minutes',
+                                      //                                 style: TextStyle(color: Colors.white),
+                                      //                               ),
+                                      //                             ),
+                                      //                             const Gap(12),
+                                      //                             ElevatedButton(
+                                      //                               onPressed: () {
+                                      //                                 controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
+                                      //                               },
+                                      //                               style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                      //                               child: const Text(
+                                      //                                 '+ 5 minutes',
+                                      //                                 style: TextStyle(color: Colors.white),
+                                      //                               ),
+                                      //                             ),
+                                      //                           ],
+                                      //                         ),
+                                      //                         const Gap(20),
+                                      //                         ElevatedButton(
+                                      //                           onPressed: () {
+                                      //                             controller.notifyCustomerOnOrderTimerUpdate(order.id ?? 0);
+                                      //                             Get.back();
+                                      //                           },
+                                      //                           style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                                      //                           child: const Text(
+                                      //                             'Done',
+                                      //                             style: TextStyle(color: Colors.white),
+                                      //                           ),
+                                      //                         ),
+                                      //                       ],
+                                      //                     );
+                                      //                   },
+                                      //                 ),
+                                      //               );
+                                      //             },
+                                      //           );
+                                      //         },
+                                      //         label: Text(
+                                      //           controller.getMinutesRemaining(order.id ?? 0) == null ? "Set timer" : 'Update timer',
+                                      //           style: const TextStyle(color: Colors.white),
+                                      //         ),
+                                      //         style: ElevatedButton.styleFrom(
+                                      //           backgroundColor: Colors.red,
+                                      //         ),
+                                      //       ),
+                                      ElevatedButton.icon(
+                                        onPressed: () {
+                                          // controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(16.0),
+                                                ),
+                                                content: GetBuilder<OrderListController>(
+                                                  init: controller,
+                                                  initState: (_) {},
+                                                  builder: (_) {
+                                                    return Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        const Text('Update Order Status'),
+                                                        const Gap(10),
+                                                        Text(
+                                                          'Total Preparation Time: ${controller.getMinutesRemaining(order.id ?? 0) ?? 0} minutes',
+                                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 22,
                                                               ),
-                                                              const Gap(20),
-                                                              Row(
-                                                                mainAxisSize: MainAxisSize.min,
-                                                                children: [
-                                                                  ElevatedButton(
-                                                                    onPressed: () {
-                                                                      controller.decreaseOrderTimerBy5Minutes(order.id ?? 0);
-                                                                    },
-                                                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                                                    child: const Text(
-                                                                      '- 5 minutes',
-                                                                      style: TextStyle(color: Colors.white),
-                                                                    ),
-                                                                  ),
-                                                                  const Gap(12),
-                                                                  ElevatedButton(
-                                                                    onPressed: () {
-                                                                      controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
-                                                                    },
-                                                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                                                    child: const Text(
-                                                                      '+ 5 minutes',
-                                                                      style: TextStyle(color: Colors.white),
-                                                                    ),
-                                                                  ),
-                                                                ],
+                                                        ),
+                                                        const Gap(20),
+                                                        Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            ElevatedButton(
+                                                              onPressed: () {
+                                                                controller.decreaseOrderTimerBy5Minutes(order.id ?? 0);
+                                                              },
+                                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                                              child: const Text(
+                                                                '- 5 minutes',
+                                                                style: TextStyle(color: Colors.white),
                                                               ),
-                                                              const Gap(20),
-                                                              ElevatedButton(
-                                                                onPressed: () {
-                                                                  controller.notifyCustomerOnOrderTimerUpdate(order.id ?? 0);
-                                                                  Get.back();
-                                                                },
-                                                                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                                                                child: const Text(
-                                                                  'Done',
-                                                                  style: TextStyle(color: Colors.white),
-                                                                ),
+                                                            ),
+                                                            const Gap(12),
+                                                            ElevatedButton(
+                                                              onPressed: () {
+                                                                controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
+                                                              },
+                                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                                              child: const Text(
+                                                                '+ 5 minutes',
+                                                                style: TextStyle(color: Colors.white),
                                                               ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        const Gap(20),
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            controller.notifyCustomerOnOrderTimerUpdate(order.id ?? 0);
+                                                            Get.back();
+                                                          },
+                                                          style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                                                          child: const Text(
+                                                            'Done',
+                                                            style: TextStyle(color: Colors.white),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     );
                                                   },
-                                                );
-                                              },
-                                              label: Text(
-                                                controller.getMinutesRemaining(order.id ?? 0) == null ? "Set timer" : 'Update timer',
-                                                style: const TextStyle(color: Colors.white),
-                                              ),
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.red,
-                                              ),
-                                            ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        label: Text(
+                                          controller.getMinutesRemaining(order.id ?? 0) == null ? "Set timer" : 'Update timer',
+                                          style: const TextStyle(color: Colors.white),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      ),
+
                                       ElevatedButton.icon(
                                         onPressed: () {
                                           _showStatusUpdateDialog(context, order);

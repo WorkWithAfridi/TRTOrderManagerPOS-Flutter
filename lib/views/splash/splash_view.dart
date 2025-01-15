@@ -23,6 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (FirstBootChecker().isFirstBoot) {
       GetStorage storage = GetStorage();
       storage.erase();
+      FirstBootChecker().checkFirstBoot();
     }
     // Navigate to DashboardView after 3 seconds
     Get.find<ProductListController>().fetchAllProducts();

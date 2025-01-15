@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:pdf_printer/models/order_m.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/evn_constant.dart';
-import 'package:pdf_printer/service/first_boot_checker.dart';
 import 'package:pdf_printer/service/network/network-c.dart';
 import 'package:pdf_printer/service/notification_sound_player.dart';
 import 'package:pdf_printer/service/printer_service.dart';
@@ -104,7 +103,7 @@ class OrderListController extends GetxController {
     bool shouldLoadFromLocalStorage = true,
     bool fetchAllOrders = true,
   }) async {
-    isLoading.value = true;
+    // isLoading.value = true;
     bool receivedNewOrders = false;
     if (shouldLoadFromLocalStorage) {
       loadOrderListFromLocalStorage();
@@ -113,21 +112,18 @@ class OrderListController extends GetxController {
     String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
 
     // Get today's date in ISO 8601 format
-    String today = DateFormat("yyyy-MM-ddT00:00:00").format(DateTime.now().subtract(const Duration(days: 1)));
+    String today = DateFormat("yyyy-MM-ddT00:00:00").format(DateTime.now());
 
 // Get today's date in ISO 8601 format
-    String todayDT = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 1)));
+    String todayDT = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     Map<String, dynamic> params = {
       'consumer_key': EvnConstant.consumerKey,
       'consumer_secret': EvnConstant.consumerSecret,
       'per_page': 100,
-      'after': '${todayDT}T00:00:00', // Start of today
-      'before': '${todayDT}T23:59:59', // End of today
+      // 'after': '${todayDT}T00:00:00', // Start of today
+      // 'before': '${todayDT}T23:59:59', // End of today
     };
-    if (!fetchAllOrders) {
-      params.assign("after", today);
-    }
 
     try {
       final response = await _networkController.request(
@@ -147,16 +143,15 @@ class OrderListController extends GetxController {
               {
                 orderList.add(order);
                 orderIds.add(order.id ?? 0);
-                if (!FirstBootChecker().isFirstBoot) {
-                  NotificationSoundPlayer().playNotification();
-                  PrinterService().printOrderBill(
-                    order,
-                  );
-                  orderTimers.add(
-                    OrderTimerModel(orderId: order.id!, secondsRemaining: 0),
-                  );
-                  receivedNewOrders = true;
-                }
+
+                NotificationSoundPlayer().playNotification();
+                PrinterService().printOrderBill(
+                  order,
+                );
+                orderTimers.add(
+                  OrderTimerModel(orderId: order.id!, secondsRemaining: null),
+                );
+                receivedNewOrders = true;
               }
             }
           }
