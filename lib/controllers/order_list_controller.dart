@@ -37,7 +37,7 @@ class OrderListController extends GetxController {
 
     // Set up a timer to call getOrderList every 10 seconds
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      getOrderList(context);
+      getOrderList(context, shouldShowLoading: false);
       decreaseAllTimerBy1Minutes();
     });
   }
@@ -102,8 +102,9 @@ class OrderListController extends GetxController {
     BuildContext context, {
     bool shouldLoadFromLocalStorage = true,
     bool fetchAllOrders = true,
+    bool shouldShowLoading = true,
   }) async {
-    // isLoading.value = true;
+    isLoading.value = shouldShowLoading;
     bool receivedNewOrders = false;
     if (shouldLoadFromLocalStorage) {
       loadOrderListFromLocalStorage();
