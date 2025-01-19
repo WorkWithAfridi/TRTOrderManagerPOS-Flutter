@@ -127,6 +127,7 @@ String storeModelToJson(StoreModel data) => json.encode(data.toJson());
 
 class StoreModel {
   String? name;
+  String? timezone;
   String? contact;
   String? address;
   String? tagline;
@@ -139,6 +140,7 @@ class StoreModel {
     this.address,
     this.tagline,
     this.storeEnabled,
+    this.timezone,
     this.storeOpenHours,
   });
 
@@ -147,6 +149,7 @@ class StoreModel {
         contact: json["contact"],
         address: json["address"],
         tagline: json["tagline"],
+        timezone: json["timezone"],
         storeEnabled: json["store_enabled"],
         storeOpenHours: json["store_open_hours"],
       );
@@ -156,6 +159,7 @@ class StoreModel {
         "contact": contact,
         "address": address,
         "tagline": tagline,
+        "timezone": timezone,
         "store_enabled": storeEnabled,
         "store_open_hours": storeOpenHours,
       };

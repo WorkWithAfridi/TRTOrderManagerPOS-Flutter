@@ -89,7 +89,10 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                   child: const Text(
                     "Print sample page",
                   ),
-                )
+                ),
+                const Spacer(),
+                Text(
+                    "Single User Licensed:\n${controller.storeModel?.name}\n${controller.storeModel?.address}\n${controller.storeModel?.contact}\n${controller.storeModel?.timezone}"),
               ],
             ),
           );

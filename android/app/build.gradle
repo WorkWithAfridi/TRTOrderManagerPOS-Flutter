@@ -31,10 +31,20 @@ android {
     }
 
     buildTypes {
+        debug {
+            // buildConfigField "String", "BASE_URL", "\"${System.getenv('BASE_URL') ?: ''}\""
+            // buildConfigField "String", "CONSUMER_KEY", "\"${System.getenv('CONSUMER_KEY') ?: ''}\""
+            // buildConfigField "String", "CONSUMER_SECRET", "\"${System.getenv('CONSUMER_SECRET') ?: ''}\""
+            // buildConfigField "String", "VERSION", "\"${System.getenv('VERSION') ?: ''}\""
+        }
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug
+            // buildConfigField "String", "BASE_URL", "\"${System.getenv('BASE_URL') ?: ''}\""
+            // buildConfigField "String", "CONSUMER_KEY", "\"${System.getenv('CONSUMER_KEY') ?: ''}\""
+            // buildConfigField "String", "CONSUMER_SECRET", "\"${System.getenv('CONSUMER_SECRET') ?: ''}\""
+            // buildConfigField "String", "VERSION", "\"${System.getenv('VERSION') ?: ''}\""
         }
     }
 }

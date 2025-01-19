@@ -64,12 +64,14 @@ class _OrdersPageState extends State<OrdersPage> {
                               backgroundColor: controller.selectedOrderFilterStatus.value == e ? Colors.teal : Colors.white,
                               foregroundColor: controller.selectedOrderFilterStatus.value == e ? Colors.white : Colors.teal,
                             ),
-                            child: Text(e.toString()[0].toUpperCase() + e.toString().substring(1).toLowerCase()),
+                            child: Text(
+                                "${e.toString()[0].toUpperCase()}${e.toString().substring(1).toLowerCase()} (${controller.orderList.map((order) => order.status == e).toList().where((element) => element).length})"),
                           ),
                         ),
                       ),
                 ],
               ),
+              const Gap(12),
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () {

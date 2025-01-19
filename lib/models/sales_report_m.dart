@@ -47,7 +47,7 @@ class SalesReportModel {
         totalItems: json["total_items"],
         totalTax: json["total_tax"],
         totalShipping: json["total_shipping"],
-        totalRefunds: json["total_refunds"],
+        totalRefunds: double.parse((json["total_refunds"] ?? "0.0").toString()),
         totalDiscount: json["total_discount"],
         totalsGroupedBy: json["totals_grouped_by"],
         totals: Map.from(json["totals"]!).map((k, v) => MapEntry<String, Total>(k, Total.fromJson(v))),

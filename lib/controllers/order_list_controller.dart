@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:intl/intl.dart';
+import 'package:pdf_printer/controllers/store_controller.dart';
 import 'package:pdf_printer/models/order_m.dart';
 import 'package:pdf_printer/models/order_timer_m.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
@@ -12,6 +12,7 @@ import 'package:pdf_printer/service/evn_constant.dart';
 import 'package:pdf_printer/service/network/network-c.dart';
 import 'package:pdf_printer/service/notification_sound_player.dart';
 import 'package:pdf_printer/service/printer_service.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class OrderListController extends GetxController {
   Timer? _timer;
@@ -114,18 +115,20 @@ class OrderListController extends GetxController {
     String? baseUrl = EvnConstant.baseUrl;
     String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
 
-    // Get today's date in ISO 8601 format
-    String today = DateFormat("yyyy-MM-ddT00:00:00").format(DateTime.now());
+    StoreController storeController = Get.find<StoreController>();
+    // Get the location
+    final location = tz.getLocation(storeController.storeModel!.timezone!);
 
-// Get today's date in ISO 8601 format
-    String todayDT = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    // Convert a UTC DateTime to the specified time zone
+    final now = DateTime.now().toUtc();
+    final tzDateTime = tz.TZDateTime.from(now, location);
 
     Map<String, dynamic> params = {
       'consumer_key': EvnConstant.consumerKey,
       'consumer_secret': EvnConstant.consumerSecret,
       'per_page': 100,
-      'after': '${todayDT}T00:00:00', // Start of today
-      'before': '${todayDT}T23:59:59', // End of today
+      'after': "${tzDateTime.toIso8601String().substring(0, 10)}T00:00:00", // Start of today
+      'before': "${tzDateTime.toIso8601String().substring(0, 10)}T23:59:59", // End of today
     };
 
     try {

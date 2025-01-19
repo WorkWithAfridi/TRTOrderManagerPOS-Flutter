@@ -6,7 +6,6 @@ import 'package:pdf_printer/controllers/dashboard_controller.dart';
 import 'package:pdf_printer/controllers/order_list_controller.dart';
 import 'package:pdf_printer/controllers/product_list_controller.dart';
 import 'package:pdf_printer/controllers/sales_report_controller.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/views/store_settings_view.dart';
 
 class DashboardDrawer extends StatelessWidget {
@@ -18,7 +17,7 @@ class DashboardDrawer extends StatelessWidget {
   ProductListController get productListController => Get.find<ProductListController>();
 
   void _generateReport(BuildContext context) {
-    final List<String> statuses = ['Day', 'Week', 'Two Weeks', 'Month'];
+    final List<String> statuses = ["today", "week", "month", "last_month", "year"];
 
     showDialog(
       context: context,
@@ -28,52 +27,35 @@ class DashboardDrawer extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.0), // Match card corner radius
           ),
           title: const Text('Sales report'),
-          content: Obx(() => salesReportController.isLoading.value
-              ? const SizedBox(
-                  height: 80,
-                  width: 80,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        final DateTimeRange? picked = await showDateRangePicker(
-                          context: context,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime.now(),
-                          saveText: "Select",
-                          builder: (context, child) {
-                            return Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: const ColorScheme.light(
-                                  primary: Colors.blue, // header background color
-                                  onPrimary: Colors.white, // header text color
-                                  onSurface: Colors.black, // body text color
-                                ),
-                              ),
-                              child: child!,
-                            );
-                          },
-                        );
-
-                        if (picked != null) {
-                          logger.d("Selected date range: ${salesReportController.selectedDateRange?.start}, ${salesReportController.selectedDateRange?.end}");
-                          salesReportController.selectedDateRange = picked;
-                          salesReportController.getSalesReport(
-                              startDate: salesReportController.selectedDateRange!.start.toString(),
-                              endDate: salesReportController.selectedDateRange!.end.toString());
-                        }
-                      },
-                      child: const Text(
-                        "Select date range",
-                      ),
+          content: Obx(
+            () => salesReportController.isLoading.value
+                ? const SizedBox(
+                    height: 80,
+                    width: 80,
+                    child: Center(
+                      child: CircularProgressIndicator(),
                     ),
-                  ],
-                )),
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ...statuses.map(
+                        (status) {
+                          return ElevatedButton(
+                            onPressed: () async {
+                              salesReportController.getSalesReport(
+                                period: status,
+                              );
+                            },
+                            child: Text(
+                              status[0].toUpperCase() + status.substring(1, status.length).toLowerCase().replaceAll('_', " "),
+                            ),
+                          );
+                        },
+                      )
+                    ],
+                  ),
+          ),
           actions: [
             TextButton(
               onPressed: () {

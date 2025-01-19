@@ -15,30 +15,27 @@ class SalesReportController extends GetxController {
   List<SalesReportModel> salesReportList = [];
 
   // Method to fetch the sales report
-  Future<List<SalesReportModel>> getSalesReport({required String startDate, required String endDate}) async {
+  Future<List<SalesReportModel>> getSalesReport({required String period}) async {
     // period can be "day", "week", "two_weeks", or "month"
     String? baseUrl = EvnConstant.baseUrl;
     String endpoint = "$baseUrl/wp-json/wc/v3/reports/sales"; // WooCommerce Reports endpoint
 
     isLoading.value = true; // Show loading spinner
 
-    logger.d("After: $startDate, Before: $endDate");
+    Map<String, dynamic> params = {
+      'consumer_key': EvnConstant.consumerKey,
+      'consumer_secret': EvnConstant.consumerSecret,
+    };
 
-    // DateTime dateTime = DateTime.parse(endDate).add(const Duration(hours: 23, minutes: 59, seconds: 59));
+    if (period != 'today') {
+      params['period'] = period;
+    }
 
-    startDate = startDate.substring(0, 10);
-
-    endDate = endDate.toString().substring(0, 10);
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.GET,
-        params: {
-          'consumer_key': EvnConstant.consumerKey, // Replace with actual key
-          'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
-          'date_min': startDate,
-          'date_max': endDate,
-        },
+        params: params,
       );
 
       logger.d("Response data: ${response?.data}");
@@ -46,7 +43,6 @@ class SalesReportController extends GetxController {
       if (response != null && response.statusCode == 200) {
         // Parse the response into SalesReportModel
         salesReportList = (response.data as List).map((report) => SalesReportModel.fromJson(report)).toList();
-        logger.d("Fetched report successfully: $salesReportList for $startDate to $endDate");
         Get.back();
         Get.to(
           () => SalesReportScreen(),

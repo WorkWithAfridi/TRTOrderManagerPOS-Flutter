@@ -8,6 +8,12 @@ import 'package:pdf_printer/service/dependency_injection_service.dart';
 import 'package:pdf_printer/service/evn_constant.dart';
 import 'package:pdf_printer/service/first_boot_checker.dart';
 import 'package:pdf_printer/views/splash/splash_view.dart';
+import 'package:timezone/data/latest.dart' as tz;
+
+void initializeTimeZones() {
+  // Initialize time zones data
+  tz.initializeTimeZones();
+}
 
 void main() async {
   await initApp();
@@ -17,6 +23,7 @@ void main() async {
 Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+  initializeTimeZones();
 
   try {
     if (EvnConstant.consumerKey == "" || EvnConstant.consumerSecret == "" || EvnConstant.baseUrl == "") {
@@ -49,3 +56,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+// flutter run -d chrome --dart-define=BASE_URL=https://cp.trttechnologies.net --dart-define=CONSUMER_KEY=ck_bc2663992cdf540bf18572a3b8ed25527b472001 --dart-define=CONSUMER_SECRET=cs_f8dcc9937cb605113bfc0431bbe2c219d1b18ed8 --dart-define=VERSION=wc/v3
+
+
+

@@ -26,7 +26,7 @@ class ProductsPage extends StatelessWidget {
                   child: GridView.builder(
                     itemCount: products.length,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3, // Number of columns
+                      crossAxisCount: 4, // Number of columns
                       crossAxisSpacing: 8.0, // Horizontal spacing
                       mainAxisSpacing: 8.0, // Vertical spacing
                       childAspectRatio: 3 / 2, // Aspect ratio of each grid item
