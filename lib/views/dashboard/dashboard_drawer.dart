@@ -41,14 +41,17 @@ class DashboardDrawer extends StatelessWidget {
                     children: [
                       ...statuses.map(
                         (status) {
-                          return ElevatedButton(
-                            onPressed: () async {
-                              salesReportController.getSalesReport(
-                                period: status,
-                              );
-                            },
-                            child: Text(
-                              status[0].toUpperCase() + status.substring(1, status.length).toLowerCase().replaceAll('_', " "),
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                salesReportController.getSalesReport(
+                                  period: status,
+                                );
+                              },
+                              child: Text(
+                                status[0].toUpperCase() + status.substring(1, status.length).toLowerCase().replaceAll('_', " "),
+                              ),
                             ),
                           );
                         },

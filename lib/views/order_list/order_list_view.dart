@@ -75,7 +75,7 @@ class _OrdersPageState extends State<OrdersPage> {
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () {
-                    return controller.getOrderList(context);
+                    return controller.getOrderList(context, shouldLoadFromLocalStorage: false);
                   },
                   child: controller.isLoading.value
                       ? const Center(child: CircularProgressIndicator())

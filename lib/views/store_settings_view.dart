@@ -92,7 +92,12 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                 ),
                 const Spacer(),
                 Text(
-                    "Single User Licensed:\n${controller.storeModel?.name}\n${controller.storeModel?.address}\n${controller.storeModel?.contact}\n${controller.storeModel?.timezone}"),
+                  "Single User Licensed:\n${controller.storeModel?.name}\n${controller.storeModel?.address}\n${controller.storeModel?.contact}\n${controller.storeModel?.timezone}",
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
               ],
             ),
           );
