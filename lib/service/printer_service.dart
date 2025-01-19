@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:pdf_printer/controllers/order_list_controller.dart';
 import 'package:pdf_printer/controllers/store_controller.dart';
 import 'package:pdf_printer/models/order_m.dart';
 import 'package:pdf_printer/models/sales_report_m.dart';
@@ -21,8 +24,6 @@ class PrinterService {
       fontSize: 10,
     );
 
-    StoreController storeController = Get.find<StoreController>();
-
     pdf.addPage(
       pw.Page(
         clip: true,
@@ -37,11 +38,7 @@ class PrinterService {
               pw.Text(
                 """"Commodo consectetur dolore qui aliquip consequat aliquip veniam velit sunt esse occaecat proident. Dolore ex est ad pariatur aute consectetur Lorem enim ut reprehenderit non aliqua cupidatat in enim. Fugiat proident duis sunt velit cupidatat elit ad. Exercitation eu voluptate mollit. Ex amet duis aute exercitation dolor ea Lorem enim ea consequat quis do. Do reprehenderit Lorem officia veniam ullamco consectetur ut ex sint.
 
-Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet dolore adipisicing mollit fugiat. Aliquip deserunt adipisicing ullamco commodo qui commodo officia. Cillum in duis quis voluptate. Irure tempor pariatur et. Esse do ipsum in nulla excepteur deserunt ex magna qui eu dolor. Ipsum proident irure adipisicing nulla cupidatat cupidatat occaecat. Tempor commodo culpa irure amet incididunt. Excepteur amet eu adipisicing incididunt elit cupidatat nostrud in elit.
-
-Mollit officia dolor magna non velit magna id consequat. Occaecat irure cupidatat Lorem voluptate pariatur. Mollit ex labore tempor sint minim id cillum dolore velit sint do. Adipisicing commodo incididunt consectetur aute eu sunt ipsum tempor. Do tempor est qui velit veniam amet quis ullamco fugiat ipsum incididunt duis cupidatat. Incididunt ut labore commodo non incididunt. Ut duis cupidatat deserunt ipsum adipisicing duis.
-
-Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim laboris labore incididunt. Veniam officia sint et incididunt nulla reprehenderit magna occaecat. Duis non exercitation nulla adipisicing dolore amet aliqua dolore ullamco amet irure fugiat esse aliquip. Fugiat veniam pariatur eiusmod excepteur aute nostrud commodo veniam aliqua. Reprehenderit incididunt fugiat officia esse aute nulla esse ea fugiat laborum consectetur id mollit in. Cupidatat incididunt et officia dolore non ut consectetur sint ex fugiat dolore ea. Magna non exercitation amet enim proident dolor sunt. Quis sint reprehenderit exercitation consectetur anim.""",
+Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet dolore adipisicing mollit fugiat. Aliquip deserunt adipisicing ullamco commodo qui commodo officia. Cillum in duis quis voluptate. Irure tempor pariatur et. Esse do ipsum in nulla excepteur deserunt ex magna qui eu dolor. Ipsum proident irure adipisicing nulla cupidatat cupidatat occaecat. Tempor commodo culpa irure amet incididunt. Excepteur amet eu adipisicing incididunt elit cupidatat nostrud in elit.""",
                 style: bodyTS,
               )
             ],
@@ -55,6 +52,15 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
 
   /// Prints the PDF, with web and non-web support.
   Future<void> printSamplePage() async {
+    List<OrderModel> orders = Get.find<OrderListController>().orderList;
+
+    if (orders.isNotEmpty) {
+      PrinterService().printOrderBill(
+        orders[Random().nextInt(orders.length)],
+      );
+      return;
+    }
+
     final pdf = await generateSamplePagePdf();
 
     if (kIsWeb) {
@@ -97,6 +103,22 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
 
     StoreController storeController = Get.find<StoreController>();
 
+    String type = order.metaData?.firstWhere(
+          (e) => e.key == "exwfood_order_method",
+          orElse: () {
+            return OrderModelMetaDatum(id: 0, key: "", value: "");
+          },
+        ).value ??
+        '';
+
+    String timeTaken = order.metaData?.firstWhere(
+          (e) => e.key == "exwfood_time_deli",
+          orElse: () {
+            return OrderModelMetaDatum(id: 0, key: "", value: "");
+          },
+        ).value ??
+        '';
+
     pdf.addPage(
       pw.Page(
         clip: true,
@@ -132,22 +154,8 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text('Order #${order.id}', style: headerTS),
-                    pw.Text(
-                        'Order type: #${order.metaData?.firstWhere(
-                              (e) => e.key == "exwfood_order_method",
-                              orElse: () {
-                                return OrderModelMetaDatum(id: 0, key: "", value: "");
-                              },
-                            ).value ?? ''}',
-                        style: headerTS),
-                    pw.Text(
-                        'Time taken: #${order.metaData?.firstWhere(
-                              (e) => e.key == "exwfood_time_deli",
-                              orElse: () {
-                                return OrderModelMetaDatum(id: 0, key: "", value: "");
-                              },
-                            ).value ?? ''}',
-                        style: headerTS),
+                    (type != "") ? pw.Text('Order type: #$type', style: headerTS) : pw.Container(),
+                    (timeTaken != "") ? pw.Text('Time taken: #$timeTaken', style: headerTS) : pw.Container(),
                     pw.SizedBox(height: 4),
                     pw.Text(order.dateCreated.toString().substring(0, 10), style: headerTS),
                     pw.SizedBox(height: 4),
@@ -266,7 +274,7 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
               ),
 
               // Notes
-              order.customerNote != null
+              order.customerNote != null && order.customerNote!.isNotEmpty
                   ? pw.Column(
                       mainAxisAlignment: pw.MainAxisAlignment.start,
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -277,6 +285,11 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
                           '${order.customerNote}',
                           style: headerTS,
                           maxLines: 100,
+                        ),
+                        pw.SizedBox(height: 4),
+                        pw.Container(
+                          height: 0.5,
+                          color: PdfColor.fromHex('#000000'),
                         ),
                         pw.SizedBox(height: 4),
                       ],
@@ -327,12 +340,6 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.SizedBox(height: 4),
-                  pw.Container(
-                    height: 0.5,
-                    color: PdfColor.fromHex('#000000'),
-                  ),
-                  pw.SizedBox(height: 4),
                   pw.Text(
                     'Customer:',
                     style: bodyTS,
@@ -352,11 +359,15 @@ Esse velit eu dolor proident magna pariatur nisi pariatur magna veniam enim labo
                     '${order.billing?.email ?? ''}.',
                     style: bodyTS,
                   ),
-                  pw.SizedBox(height: 2),
-                  pw.Text(
-                    order.billing?.address1 ?? '',
-                    style: bodyTS,
-                  ),
+                  (order.billing?.address1 ?? '') == ''
+                      ? pw.Column(children: [
+                          pw.SizedBox(height: 2),
+                          pw.Text(
+                            order.billing?.address1 ?? '',
+                            style: bodyTS,
+                          ),
+                        ])
+                      : pw.Container(),
                   pw.SizedBox(height: 2),
                 ],
               ),
