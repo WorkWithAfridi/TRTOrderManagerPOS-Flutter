@@ -10,6 +10,7 @@ import 'package:printing/printing.dart';
 class StoreController extends GetxController {
   StoreModel? storeModel;
   List<Printer> availablePrinter = [];
+
   double receiptPadding = 25.0;
   Printer? selectedPrinter;
   bool isStoreActive = false;
@@ -32,29 +33,30 @@ class StoreController extends GetxController {
           receiptPadding = value;
         }
       });
+
       availablePrinter = await Printing.listPrinters();
-      _storage.read('defalutPrinterModelAndName').then((value) {
-        if (value != null && availablePrinter.isNotEmpty) {
-          for (var element in availablePrinter) {
-            if (element.name == value['name'] && element.model == value['model']) {
-              selectedPrinter = element;
-            }
+      selectedPrinter = availablePrinter.first;
+
+      String? selectedPrinterName = _storage.read('defalutPrinterName');
+      String? selectedPrinterModel = _storage.read('defalutPrinterModel');
+
+      if (selectedPrinterName != null && selectedPrinterModel != null) {
+        for (var element in availablePrinter) {
+          if (element.name == selectedPrinterName && element.model == selectedPrinterModel) {
+            selectedPrinter = element;
           }
         }
-      });
+      }
     } catch (e) {
       logger.e("Error fetching printer list: $e");
     }
+
+    update();
   }
 
   savePrinterSettings() {
-    _storage.write(
-      'defalutPrinterModelAndName',
-      {
-        "name": selectedPrinter?.name,
-        "model": selectedPrinter?.model,
-      },
-    );
+    _storage.write('defalutPrinterModel', selectedPrinter?.model);
+    _storage.write('defalutPrinterName', selectedPrinter?.name);
   }
 
   savePaddingSettings() {
