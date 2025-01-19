@@ -20,6 +20,8 @@ class OrderListController extends GetxController {
   var lastPage = 0.obs;
   ScrollController scrollController = ScrollController();
 
+  var selectedOrderFilterStatus = "all".obs;
+
   var isLoading = false.obs;
   var isAllLoading = false.obs;
   List<OrderModel> orderList = [];
@@ -122,8 +124,8 @@ class OrderListController extends GetxController {
       'consumer_key': EvnConstant.consumerKey,
       'consumer_secret': EvnConstant.consumerSecret,
       'per_page': 100,
-      'after': '${todayDT}T00:00:00', // Start of today
-      'before': '${todayDT}T23:59:59', // End of today
+      // 'after': '${todayDT}T00:00:00', // Start of today
+      // 'before': '${todayDT}T23:59:59', // End of today
     };
 
     try {
