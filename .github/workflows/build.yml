@@ -28,117 +28,117 @@ jobs:
             consumerkey: ${{ github.event.inputs.consumerkey }}
             consumersecret: ${{ github.event.inputs.consumersecret }}
         steps:
-            # - name: Verify WordPress Credentials
-            #   shell: bash
-            #   run: |
-            #       API_URL="${{ env.baseurl }}/wp-json/${{ env.version }}/products"
-            #       STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ env.consumerkey }}:${{ env.consumersecret }}" "$API_URL")
+            - name: Verify WordPress Credentials
+              shell: bash
+              run: |
+                  API_URL="${{ env.baseurl }}/wp-json/${{ env.version }}/products"
+                  STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ env.consumerkey }}:${{ env.consumersecret }}" "$API_URL")
 
-            #       if [ "$STATUS_CODE" -ne 200 ]; then
-            #           echo "**:x: WordPress Authentication Failed**" >> $GITHUB_STEP_SUMMARY
-            #           echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
-            #           echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
-            #           echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
-            #           echo "Ensure that the Consumer Key and Secret are correct and have appropriate permissions." >> $GITHUB_STEP_SUMMARY
-            #           exit 1
-            #       else
-            #           echo "**:white_check_mark: WordPress Authentication Succeeded**" >> $GITHUB_STEP_SUMMARY
-            #           echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
-            #           echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
-            #           echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
-            #       fi
+                  if [ "$STATUS_CODE" -ne 200 ]; then
+                      echo "**:x: WordPress Authentication Failed**" >> $GITHUB_STEP_SUMMARY
+                      echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
+                      echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
+                      echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
+                      echo "Ensure that the Consumer Key and Secret are correct and have appropriate permissions." >> $GITHUB_STEP_SUMMARY
+                      exit 1
+                  else
+                      echo "**:white_check_mark: WordPress Authentication Succeeded**" >> $GITHUB_STEP_SUMMARY
+                      echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
+                      echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
+                      echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
+                  fi
 
-            # - name: Checkout code
-            #   uses: actions/checkout@v4
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-            # - name: Install Flutter
-            #   uses: subosito/flutter-action@v2
-            #   with:
-            #       channel: stable
-            #       cache: true
+            - name: Install Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  channel: stable
+                  cache: true
 
-            # - name: Disable Analytics & Enable Windows Builds
-            #   shell: pwsh
-            #   run: |
-            #       flutter config --no-analytics
-            #       flutter config --enable-windows-desktop
-            #       flutter --version
+            - name: Disable Analytics & Enable Windows Builds
+              shell: pwsh
+              run: |
+                  flutter config --no-analytics
+                  flutter config --enable-windows-desktop
+                  flutter --version
 
-            # - name: Install Flutter Dependencies
-            #   run: flutter pub get
+            - name: Install Flutter Dependencies
+              run: flutter pub get
 
-            # - name: Build Windows
-            #   run: flutter build windows --dart-define=BASE_URL=${{ env.baseurl }} --dart-define=CONSUMER_KEY=${{ env.consumerkey }} --dart-define=CONSUMER_SECRET=${{ env.consumersecret }} --dart-define=VERSION=${{ env.version }} --release
+            - name: Build Windows
+              run: flutter build windows --dart-define=BASE_URL=${{ env.baseurl }} --dart-define=CONSUMER_KEY=${{ env.consumerkey }} --dart-define=CONSUMER_SECRET=${{ env.consumersecret }} --dart-define=VERSION=${{ env.version }} --release
 
-            # - name: Upload Windows build
-            #   uses: actions/upload-artifact@v4
-            #   with:
-            #       name: windows-portable-x64
-            #       path: build/windows/x64/runner/Release/
+            - name: Upload Windows build
+              uses: actions/upload-artifact@v4
+              with:
+                  name: windows-portable-x64
+                  path: build/windows/x64/runner/Release/
 
-            # - name: Download and Install Inno Setup
-            #   shell: powershell
-            #   run: |
-            #       Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
-            #       Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
+            - name: Download and Install Inno Setup
+              shell: powershell
+              run: |
+                  Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
+                  Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
 
-            # - name: Create Inno Setup Script
-            #   shell: powershell
-            #   run: |
-            #       $scriptPath = "$env:GITHUB_WORKSPACE/build_script.iss"
-            #       Set-Content -Path $scriptPath -Value @"
-            #       ; Inno Setup Script
-            #       ;#define MyAppVersion "$env:VERSION"
-            #       #define MyAppName "TRTOrderManager"
-            #       #define MyAppPublisher "trttech.ca"
-            #       #define MyAppURL "https://trttech.ca"
-            #       #define IconPath = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
+            - name: Create Inno Setup Script
+              shell: powershell
+              run: |
+                  $scriptPath = "$env:GITHUB_WORKSPACE/build_script.iss"
+                  Set-Content -Path $scriptPath -Value @"
+                  ; Inno Setup Script
+                  ;#define MyAppVersion "$env:VERSION"
+                  #define MyAppName "TRTOrderManager"
+                  #define MyAppPublisher "trttech.ca"
+                  #define MyAppURL "https://trttech.ca"
+                  #define IconPath = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
 
-            #       ; the flutter executable exe name
-            #       #define MyAppExeName "pdf_printer.exe"
+                  ; the flutter executable exe name
+                  #define MyAppExeName "pdf_printer.exe"
 
-            #       [Setup]
-            #       SetupIconFile={#IconPath}
-            #       AppName={#MyAppName}
-            #       AppVersion=1.0.0
-            #       AppPublisher={#MyAppPublisher}
-            #       AppPublisherURL={#MyAppURL}
-            #       AppSupportURL={#MyAppURL}
-            #       DefaultDirName={autopf}\trtordermanager
-            #       DisableProgramGroupPage=yes
-            #       OutputDir=build\installer
-            #       OutputBaseFilename=TrtInstaller
-            #       PrivilegesRequired=lowest
-            #       Compression=lzma
-            #       SolidCompression=yes
-            #       WizardStyle=modern
-            #       LanguageDetectionMethod=uilanguage
+                  [Setup]
+                  SetupIconFile={#IconPath}
+                  AppName={#MyAppName}
+                  AppVersion=1.0.0
+                  AppPublisher={#MyAppPublisher}
+                  AppPublisherURL={#MyAppURL}
+                  AppSupportURL={#MyAppURL}
+                  DefaultDirName={autopf}\trtordermanager
+                  DisableProgramGroupPage=yes
+                  OutputDir=build\installer
+                  OutputBaseFilename=TrtInstaller
+                  PrivilegesRequired=lowest
+                  Compression=lzma
+                  SolidCompression=yes
+                  WizardStyle=modern
+                  LanguageDetectionMethod=uilanguage
 
-            #       [Languages]
-            #       Name: "english"; MessagesFile: "compiler:Default.isl"
+                  [Languages]
+                  Name: "english"; MessagesFile: "compiler:Default.isl"
 
-            #       [Tasks]
-            #       Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
+                  [Tasks]
+                  Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
 
-            #       [Files]
-            #       Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
-            #       ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+                  [Files]
+                  Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+                  ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
-            #       [UninstallDelete]
-            #       Type: filesandordirs; Name: "{app}"
+                  [UninstallDelete]
+                  Type: filesandordirs; Name: "{app}"
 
-            #       [Icons]
-            #       Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-            #       Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+                  [Icons]
+                  Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+                  Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
-            #       [Run]
-            #       Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-            #       "@
+                  [Run]
+                  Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+                  "@
 
-            # - name: Run Inno Setup Compiler
-            #   shell: powershell
-            #   run: |
-            #       &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" build_script.iss
+            - name: Run Inno Setup Compiler
+              shell: powershell
+              run: |
+                  &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" build_script.iss
 
             - name: Download VC++ Redistributables
               shell: powershell
