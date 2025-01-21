@@ -1,4 +1,5 @@
 name: Build Release - Windows
+run-name: Build for ${{ github.event.inputs.baseurl }}
 
 on:
     workflow_dispatch:
@@ -27,6 +28,12 @@ jobs:
             consumerkey: ${{ github.event.inputs.consumerkey }}
             consumersecret: ${{ github.event.inputs.consumersecret }}
         steps:
+            - name: Extract Domain and Set Environment Variable
+              shell: bash
+              run: |
+                  domain=$(echo '${{ env.baseurl }}' | awk -F[/.] '{print $(NF-1)}')
+                  echo "domain=$domain" >> $GITHUB_ENV
+
             - name: Verify WordPress Credentials
               shell: bash
               run: |
@@ -34,14 +41,14 @@ jobs:
                   STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ env.consumerkey }}:${{ env.consumersecret }}" "$API_URL")
 
                   if [ "$STATUS_CODE" -ne 200 ]; then
-                      echo "**:x: WordPress Authentication Failed**" >> $GITHUB_STEP_SUMMARY
+                      echo "**:x: ${{env.domain}} Authentication Failed**" >> $GITHUB_STEP_SUMMARY
                       echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
                       echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
                       echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
                       echo "Ensure that the Consumer Key and Secret are correct and have appropriate permissions." >> $GITHUB_STEP_SUMMARY
                       exit 1
                   else
-                      echo "**:white_check_mark: WordPress Authentication Succeeded**" >> $GITHUB_STEP_SUMMARY
+                      echo "**:white_check_mark: ${{env.domain}} Authentication Succeeded**" >> $GITHUB_STEP_SUMMARY
                       echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
                       echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
                       echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
@@ -69,11 +76,11 @@ jobs:
             - name: Build Windows
               run: flutter build windows --dart-define=BASE_URL=${{ env.baseurl }} --dart-define=CONSUMER_KEY=${{ env.consumerkey }} --dart-define=CONSUMER_SECRET=${{ env.consumersecret }} --dart-define=VERSION=${{ env.version }} --release
 
-            - name: Upload Windows build
-              uses: actions/upload-artifact@v4
-              with:
-                  name: windows-portable-x64
-                  path: build/windows/x64/runner/Release/
+            # - name: Upload Windows build
+            #   uses: actions/upload-artifact@v4
+            #   with:
+            #       name: windows-portable-x64
+            #       path: build/windows/x64/runner/Release/
 
             - name: Download and Install Inno Setup
               shell: powershell
@@ -123,7 +130,6 @@ jobs:
                   Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
                   ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
-
                   [UninstallDelete]
                   Type: filesandordirs; Name: "{app}"
 
@@ -140,8 +146,14 @@ jobs:
               run: |
                   &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" build_script.iss
 
+            - name: Download VC++ Redistributables
+              shell: powershell
+              run: |
+                  Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vc_redist.x86.exe -OutFile build/installer/vc_redist.x86.exe
+                  Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile build/installer/vc_redist.x64.exe
+
             - name: Upload Installer
               uses: actions/upload-artifact@v4
               with:
-                  name: windows-installer-x64
+                  name: ${{env.DOMAIN}}
                   path: build/installer/*.exe
