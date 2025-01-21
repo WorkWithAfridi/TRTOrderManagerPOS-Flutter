@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:pdf_printer/service/debug/logger.dart';
 import 'package:pdf_printer/service/evn_constant.dart';
 import 'package:pdf_printer/service/network/network-c.dart';
+import 'package:pdf_printer/service/printer_service.dart';
 import 'package:printing/printing.dart';
 
 class StoreController extends GetxController {
@@ -28,13 +29,13 @@ class StoreController extends GetxController {
 
   setupPrinter() async {
     try {
-      _storage.read('paddingSettings').then((value) {
-        if (value != null) {
-          receiptPadding = value;
-        }
-      });
+      logger.d("Init setupPrinter");
+      double? padding = _storage.read('paddingSettings');
+      if (padding != null) {
+        receiptPadding = padding;
+      }
 
-      availablePrinter = await Printing.listPrinters();
+      availablePrinter = await PrinterService().getPrinters();
       selectedPrinter = availablePrinter.first;
 
       String? selectedPrinterName = _storage.read('defalutPrinterName');
@@ -47,6 +48,7 @@ class StoreController extends GetxController {
           }
         }
       }
+      logger.d("Setting up store printer");
     } catch (e) {
       logger.e("Error fetching printer list: $e");
     }

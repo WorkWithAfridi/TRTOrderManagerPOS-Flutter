@@ -76,6 +76,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                       width: 100,
                       child: TextField(
                         controller: paddingController,
+                        keyboardType: TextInputType.number,
                         onChanged: (value) {
                           controller.onPaddingUpdated(value);
                         },

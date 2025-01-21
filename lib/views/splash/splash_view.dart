@@ -20,6 +20,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    setUpDependencies();
+  }
+
+  Future<void> setUpDependencies() async {
     if (FirstBootChecker().isFirstBoot) {
       GetStorage storage = GetStorage();
       storage.erase();
@@ -27,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
     // Navigate to DashboardView after 3 seconds
     Get.find<ProductListController>().fetchAllProducts();
-    Get.find<StoreController>().setupPrinter();
+    await Get.find<StoreController>().setupPrinter();
     Get.find<StoreController>().getStoreDetails().then((_) {
       Timer(const Duration(seconds: 2), () {
         Navigator.pushReplacement(

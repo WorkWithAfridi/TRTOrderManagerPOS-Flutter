@@ -543,6 +543,10 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     return pdf;
   }
 
+  Future<List<Printer>> getPrinters() async {
+    return await Printing.listPrinters();
+  }
+
   /// Prints the PDF, with web and non-web support.
   Future<void> printSalesReport(BuildContext context, List<SalesReportModel> reports) async {
     final pdf = await generateSalesReportPdf(reports);
