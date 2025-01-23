@@ -81,7 +81,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
           format: PdfPageFormat.roll80,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
@@ -415,7 +415,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
           format: PdfPageFormat.roll80,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
@@ -561,7 +561,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
           format: PdfPageFormat.roll80,
           usePrinterSettings: true,
           onLayout: (PdfPageFormat format) async => pdf.save(),

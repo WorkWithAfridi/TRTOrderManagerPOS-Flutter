@@ -59,6 +59,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                             onChanged: (Printer? newValue) {
                               controller.selectedPrinter = newValue;
                               controller.savePrinterSettings();
+                              controller.update();
                             },
                           )
                         : const Text("No printer available"),
