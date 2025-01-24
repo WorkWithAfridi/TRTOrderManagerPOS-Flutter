@@ -33,6 +33,7 @@ jobs:
               run: |
                   domain=$(echo '${{ env.baseurl }}' | awk -F[/.] '{print $(NF-1)}')
                   echo "domain=$domain" >> $GITHUB_ENV
+                  echo PWD
 
             - name: Verify WordPress Credentials
               shell: bash
@@ -146,13 +147,18 @@ jobs:
               run: |
                   &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" build_script.iss
 
-            - name: Download VC++ Redistributables
-              shell: powershell
-              run: |
-                  Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile build/installer/vc_redist.x64.exe
+            # - name: Download VC++ Redistributables
+            #   shell: powershell
+            #   run: |
+            #       Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vc_redist.x64.exe -OutFile build/installer/vc_redist.x64.exe
 
             - name: Upload Installer
               uses: actions/upload-artifact@v4
               with:
                   name: ${{env.DOMAIN}}
-                  path: build/installer/*.exe
+                  if-no-files-found: 'error'
+                  retention-days: '7'
+                  overwrite: 'true'
+                  path: |
+                      build/installer/*.exe
+                      .bundle/*.exe
