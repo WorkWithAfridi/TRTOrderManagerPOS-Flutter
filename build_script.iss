@@ -4,8 +4,8 @@
 #define MyAppName "TRTOrderManager"
 #define MyAppPublisher "trttech.ca"
 #define MyAppURL "https://trttech.ca"
-#define IconPath = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
-#define BundleDirectory = "$env:GITHUB_WORKSPACE/.inno-bundle/"
+#define IconPath = "{%GITHUB_WORKSPACE|D:\a\trt-order-manager-app\trt-order-manager-app\}\assets\icon\icon.ico"
+#define BundleDirectory = "{%GITHUB_WORKSPACE|D:\a\trt-order-manager-app\trt-order-manager-app\}\.inno-bundle\"
 
 ;the flutter executable exe name
 #define MyAppExeName "pdf_printer.exe"
