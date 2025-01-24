@@ -34,64 +34,69 @@ jobs:
                   domain=$(echo '${{ env.baseurl }}' | awk -F[/.] '{print $(NF-1)}')
                   echo "domain=$domain" >> $GITHUB_ENV
 
-            - name: Verify WordPress Credentials
-              shell: bash
-              run: |
-                  API_URL="${{ env.baseurl }}/wp-json/${{ env.version }}/products"
-                  STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ env.consumerkey }}:${{ env.consumersecret }}" "$API_URL")
+            # - name: Verify WordPress Credentials
+            #   shell: bash
+            #   run: |
+            #       API_URL="${{ env.baseurl }}/wp-json/${{ env.version }}/products"
+            #       STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ env.consumerkey }}:${{ env.consumersecret }}" "$API_URL")
 
-                  if [ "$STATUS_CODE" -ne 200 ]; then
-                      echo "**:x: ${{env.domain}} Authentication Failed**" >> $GITHUB_STEP_SUMMARY
-                      echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
-                      echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
-                      echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
-                      echo "Ensure that the Consumer Key and Secret are correct and have appropriate permissions." >> $GITHUB_STEP_SUMMARY
-                      exit 1
-                  else
-                      echo "**:white_check_mark: ${{env.domain}} Authentication Succeeded**" >> $GITHUB_STEP_SUMMARY
-                      echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
-                      echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
-                      echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
-                  fi
+            #       if [ "$STATUS_CODE" -ne 200 ]; then
+            #           echo "**:x: ${{env.domain}} Authentication Failed**" >> $GITHUB_STEP_SUMMARY
+            #           echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
+            #           echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
+            #           echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
+            #           echo "Ensure that the Consumer Key and Secret are correct and have appropriate permissions." >> $GITHUB_STEP_SUMMARY
+            #           exit 1
+            #       else
+            #           echo "**:white_check_mark: ${{env.domain}} Authentication Succeeded**" >> $GITHUB_STEP_SUMMARY
+            #           echo "Base URL: \`${{ env.baseurl }}\`" >> $GITHUB_STEP_SUMMARY
+            #           echo "API Version: \`${{ env.version }}\`" >> $GITHUB_STEP_SUMMARY
+            #           echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
+            #       fi
 
-            - name: Checkout code
-              uses: actions/checkout@v4
+            # - name: Checkout code
+            #   uses: actions/checkout@v4
 
-            - name: Install Flutter
-              uses: subosito/flutter-action@v2
-              with:
-                  channel: stable
-                  cache: true
+            # - name: Install Flutter
+            #   uses: subosito/flutter-action@v2
+            #   with:
+            #       channel: stable
+            #       cache: true
 
-            - name: Disable Analytics & Enable Windows Builds
-              shell: pwsh
-              run: |
-                  flutter config --no-analytics
-                  flutter config --enable-windows-desktop
-                  flutter --version
+            # - name: Disable Analytics & Enable Windows Builds
+            #   shell: pwsh
+            #   run: |
+            #       flutter config --no-analytics
+            #       flutter config --enable-windows-desktop
+            #       flutter --version
 
-            - name: Install Flutter Dependencies
-              run: flutter pub get
+            # - name: Install Flutter Dependencies
+            #   run: flutter pub get
 
-            - name: Build Windows
-              run: flutter build windows --dart-define=BASE_URL=${{ env.baseurl }} --dart-define=CONSUMER_KEY=${{ env.consumerkey }} --dart-define=CONSUMER_SECRET=${{ env.consumersecret }} --dart-define=VERSION=${{ env.version }} --release
+            # - name: Build Windows
+            #   run: flutter build windows --dart-define=BASE_URL=${{ env.baseurl }} --dart-define=CONSUMER_KEY=${{ env.consumerkey }} --dart-define=CONSUMER_SECRET=${{ env.consumersecret }} --dart-define=VERSION=${{ env.version }} --release
 
-            - name: Download and Install Inno Setup
-              shell: powershell
-              run: |
-                  Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
-                  Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
+            # - name: Download and Install Inno Setup
+            #   shell: powershell
+            #   run: |
+            #       Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
+            #       Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
+
+            # - name: Run Inno Setup Compiler
+            #   shell: powershell
+            #   run: |
+            #       &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" $env:GITHUB_WORKSPACE/build_script.iss
 
             - name: Run Inno Setup Compiler
               shell: powershell
               run: |
                   &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" $env:GITHUB_WORKSPACE/build_script.iss
 
-            - name: Upload Installer
-              uses: actions/upload-artifact@v4
-              with:
-                  name: ${{env.DOMAIN}}
-                  if-no-files-found: 'error'
-                  retention-days: '7'
-                  overwrite: 'true'
-                  path: build/installer/*.exe
+            # - name: Upload Installer
+            #   uses: actions/upload-artifact@v4
+            #   with:
+            #       name: ${{env.DOMAIN}}
+            #       if-no-files-found: 'error'
+            #       retention-days: '7'
+            #       overwrite: 'true'
+            #       path: build/installer/*.exe

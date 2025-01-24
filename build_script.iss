@@ -4,8 +4,8 @@
 #define MyAppName "TRTOrderManager"
 #define MyAppPublisher "trttech.ca"
 #define MyAppURL "https://trttech.ca"
-#define IconPath = "{%GITHUB_WORKSPACE|D:\a\trt-order-manager-app\trt-order-manager-app\}\assets\icon\icon.ico"
-#define BundleDirectory = "{%GITHUB_WORKSPACE|D:\a\trt-order-manager-app\trt-order-manager-app\}\.inno-bundle\"
+#define IconPath = GetEnv("GITHUB_WORKSPACE")+"\assets\icon\icon.ico"
+#define BundleDirectory = GetEnv("GITHUB_WORKSPACE")+"\.inno-bundle\"
 
 ;the flutter executable exe name
 #define MyAppExeName "pdf_printer.exe"
@@ -48,5 +48,4 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 [Run]
 Filename: "{tmp}\VC_redist.x86.exe"; Parameters: "/Q"; Flags: waituntilterminated skipifdoesntexist; StatusMsg: "Installing Microsoft Visual C++ (x86) ..."
 Filename: "{tmp}\VC_redist.x64.exe"; Parameters: "/Q"; Flags: waituntilterminated skipifdoesntexist; StatusMsg: "Installing Microsoft Visual C++ (x64) ..."; Check: IsWin64
-Filename: "{tmp}\XPrinter_Driver_Setup_V8.2"; Parameters: "/SILENT"; Flags: waituntilterminated skipifdoesntexist; StatusMsg: "Installing Xprinter Driver Setup V8.2 ..."
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
