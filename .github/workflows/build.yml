@@ -84,7 +84,10 @@ jobs:
 
             - name: Copy XPrinter Driver
               shell: bash
-              run: cp $GITHUB_WORKSPACE/.inno-bundle/XPrinter_Driver_Setup_V8.2.exe build/installer/
+              working-directory: ${{ github.workspace }}
+              run: |
+                  mkdir -p build/installer/
+                  cp .inno-bundle/XPrinter_Driver_Setup_V8.2.exe build/installer/
 
             - name: Run Inno Setup Compiler
               shell: powershell
