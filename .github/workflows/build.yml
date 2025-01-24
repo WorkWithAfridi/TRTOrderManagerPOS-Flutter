@@ -54,8 +54,8 @@ jobs:
             #           echo "HTTP Status Code: \`$STATUS_CODE\`" >> $GITHUB_STEP_SUMMARY
             #       fi
 
-            # - name: Checkout code
-            #   uses: actions/checkout@v4
+            - name: Checkout code
+              uses: actions/checkout@v4
 
             # - name: Install Flutter
             #   uses: subosito/flutter-action@v2
