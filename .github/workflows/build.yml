@@ -82,12 +82,11 @@ jobs:
             #       Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
             #       Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
 
-            # - name: Run Inno Setup Compiler
-            #   shell: powershell
-            #   run: |
-            #       &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" $env:GITHUB_WORKSPACE/build_script.iss
-
+            - name: Copy XPrinter Driver
+              shell: bash
+              run: cp "$env:GITHUB_WORKSPACE/.inno-bundle/XPrinter_Driver_Setup_V8.2.exe" build/installer/
             - name: Run Inno Setup Compiler
+
               shell: powershell
               run: |
                   &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" $env:GITHUB_WORKSPACE/build_script.iss
