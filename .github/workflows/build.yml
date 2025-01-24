@@ -33,7 +33,6 @@ jobs:
               run: |
                   domain=$(echo '${{ env.baseurl }}' | awk -F[/.] '{print $(NF-1)}')
                   echo "domain=$domain" >> $GITHUB_ENV
-                  echo PWD
 
             - name: Verify WordPress Credentials
               shell: bash
@@ -83,71 +82,10 @@ jobs:
                   Invoke-WebRequest -Uri https://jrsoftware.org/download.php/is.exe -OutFile is.exe
                   Start-Process is.exe -ArgumentList '/VERYSILENT' -Wait
 
-            - name: Create Inno Setup Script
-              shell: powershell
-              run: |
-                  $scriptPath = "$env:GITHUB_WORKSPACE/build_script.iss"
-                  Set-Content -Path $scriptPath -Value @"
-                  ; Inno Setup Script
-                  ;#define MyAppVersion "$env:VERSION"
-                  #define MyAppName "TRTOrderManager"
-                  #define MyAppPublisher "trttech.ca"
-                  #define MyAppURL "https://trttech.ca"
-                  #define IconPath = "$env:GITHUB_WORKSPACE/assets/icon/icon.ico"
-
-                  ; the flutter executable exe name
-                  #define MyAppExeName "pdf_printer.exe"
-
-                  [Setup]
-                  SetupIconFile={#IconPath}
-                  AppName={#MyAppName}
-                  AppVersion=1.0.0
-                  AppPublisher={#MyAppPublisher}
-                  AppPublisherURL={#MyAppURL}
-                  AppSupportURL={#MyAppURL}
-                  DefaultDirName={autopf}\trtordermanager
-                  DisableProgramGroupPage=yes
-                  OutputDir=build\installer
-                  OutputBaseFilename=TrtInstaller
-                  PrivilegesRequired=lowest
-                  Compression=lzma
-                  SolidCompression=yes
-                  WizardStyle=modern
-                  LanguageDetectionMethod=uilanguage
-
-                  [Languages]
-                  Name: "english"; MessagesFile: "compiler:Default.isl"
-
-                  [Tasks]
-                  Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
-
-                  [Files]
-                  Source: "build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
-                  ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-
-                  [UninstallDelete]
-                  Type: filesandordirs; Name: "{app}"
-
-                  [Icons]
-                  Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-                  Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-
-                  [Run]
-                  Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-                  "@
-
             - name: Run Inno Setup Compiler
               shell: powershell
               run: |
-                  &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" build_script.iss
-
-            - name: Print Path
-              shell: bash
-              run: pwd
-
-            - name: Copy Bundling Assets
-              shell: bash
-              run: cp .bundle/  build/installer/
+                  &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" $env:GITHUB_WORKSPACE/build_script.iss
 
             - name: Upload Installer
               uses: actions/upload-artifact@v4
