@@ -21,8 +21,8 @@ class EvnConstant {
 }
 
 // class EvnConstant {
-//   static const String baseUrl = 'https://cp.trttechnologies.net';
-//   static const String consumerKey = 'ck_bc2663992cdf540bf18572a3b8ed25527b472001';
-//   static const String consumerSecret = 'cs_f8dcc9937cb605113bfc0431bbe2c219d1b18ed8';
+//   static const String baseUrl = 'https://thebiryanibox.ca/';
+//   static const String consumerKey = 'ck_e5cf8a7f769fe6561ddf099fcb2298795d36227e';
+//   static const String consumerSecret = 'cs_68511645df3e7b43c66fd5fdbc0c33e82850447e';
 //   static const String version = 'wc/v3';
 // }

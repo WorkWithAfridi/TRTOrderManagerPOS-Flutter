@@ -60,10 +60,11 @@ class ProductsPage extends StatelessWidget {
                                       bottomLeft: Radius.circular(8),
                                     ),
                                     child: CachedNetworkImage(
-                                      imageUrl: product.images?.first.src ?? '',
+                                      imageUrl: (product.images ?? []).isEmpty || product.images == null ? '' : product.images?.first.src ?? '',
                                       fit: BoxFit.cover,
                                       errorWidget: (context, url, error) => const Icon(
-                                        Icons.error,
+                                        Icons.image,
+                                        color: Colors.grey,
                                       ),
                                     ),
                                   ),

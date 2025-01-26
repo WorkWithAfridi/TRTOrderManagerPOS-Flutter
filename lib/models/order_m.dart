@@ -538,7 +538,7 @@ class OrderModelMetaDatum {
   factory OrderModelMetaDatum.fromJson(Map<String, dynamic> json) => OrderModelMetaDatum(
         id: json["id"],
         key: json["key"],
-        value: json["value"],
+        value: json["value"].toString(),
       );
 
   Map<String, dynamic> toJson() => {

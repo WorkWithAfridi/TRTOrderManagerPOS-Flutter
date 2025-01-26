@@ -71,30 +71,30 @@ class OrderListController extends GetxController {
       'per_page': 100,
       'page': pageNo.value,
     };
-    try {
-      final response = await _networkController.request(
-        url: endpoint,
-        method: Method.GET,
-        params: params,
-      );
+    // try {
+    final response = await _networkController.request(
+      url: endpoint,
+      method: Method.GET,
+      params: params,
+    );
 
-      if (response != null && response.statusCode == 200) {
-        final fetchedOrders = (response.data as List).map((order) => OrderModel.fromJson(order)).toList();
-        if (fetchedOrders.isEmpty) {
-          pageNo.value -= 1;
-          logger.d("No more orders to load");
-          return;
-        }
-        allOrderList.addAll(fetchedOrders);
-        update();
-      } else {
+    if (response != null && response.statusCode == 200) {
+      final fetchedOrders = (response.data as List).map((order) => OrderModel.fromJson(order)).toList();
+      if (fetchedOrders.isEmpty) {
         pageNo.value -= 1;
-        logger.e("Failed to fetch order list");
+        logger.d("No more orders to load");
+        return;
       }
-    } catch (e) {
+      allOrderList.addAll(fetchedOrders);
+      update();
+    } else {
       pageNo.value -= 1;
-      logger.e("Error fetching order list: $e");
+      logger.e("Failed to fetch order list");
     }
+    // } catch (e) {
+    // pageNo.value -= 1;
+    // logger.e("Error fetching order list: $e");
+    // }
 
     isAllLoading.value = false;
     logger.d("Total orders: ${allOrderList.length}");
