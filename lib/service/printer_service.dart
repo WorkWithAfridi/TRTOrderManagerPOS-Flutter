@@ -3,8 +3,8 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pdf/pdf.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf_printer/controllers/order_list_controller.dart';
 import 'package:pdf_printer/controllers/store_controller.dart';
@@ -95,7 +95,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
   Future<pw.Document> generateBillReceiptPdf(OrderModel order) async {
     final pdf = pw.Document();
 
-    pw.TextStyle bodyTS = const pw.TextStyle(
+    pw.TextStyle bodyTS = pw.TextStyle(
       fontSize: 14,
       fontWeight: pw.FontWeight.bold,
     );
@@ -160,7 +160,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                     (timeTaken != "") ? pw.Text('When: $timeTaken', style: headerTS) : pw.Container(),
                     pw.SizedBox(height: 4),
                     // pw.Text(order.dateCreated.toString().substring(0, 10), style: headerTS),
-                    pw.Text('${DateFormat('yyyy-MM-dd HH:mm').format(order.dateCreated ?? DateTime.now())}', style: headerTS),
+                    pw.Text(DateFormat('yyyy-MM-dd HH:mm').format(order.dateCreated ?? DateTime.now()), style: headerTS),
                     pw.SizedBox(height: 4),
                   ],
                 ),
@@ -364,14 +364,14 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                   ),
                   pw.SizedBox(height: 2),
                   (type == 'delivery' && (order.shipping?.address1 ?? '') != '')
-                    ? pw.Column(children: [
-                        pw.SizedBox(height: 2),
-                        pw.Text(
-                          '${order.shipping?.address1 ?? ''} ${order.shipping?.address2 ?? ''}, ${order.shipping?.city ?? ''}, ${order.shipping?.state ?? ''}, ${order.shipping?.postcode ?? ''}, ${order.shipping?.country ?? ''}',
-                          style: bodyTS,
-                        ),
-                      ])
-                    : pw.Container(),
+                      ? pw.Column(children: [
+                          pw.SizedBox(height: 2),
+                          pw.Text(
+                            '${order.shipping?.address1 ?? ''} ${order.shipping?.address2 ?? ''}, ${order.shipping?.city ?? ''}, ${order.shipping?.state ?? ''}, ${order.shipping?.postcode ?? ''}, ${order.shipping?.country ?? ''}',
+                            style: bodyTS,
+                          ),
+                        ])
+                      : pw.Container(),
                   pw.SizedBox(height: 2),
                 ],
               ),
