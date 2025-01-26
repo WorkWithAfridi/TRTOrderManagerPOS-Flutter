@@ -155,7 +155,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text('Order #${order.id}', style: headerTS),
-                    (type != "") ? pw.Text($type.toUpperCase(), style: headerTS) : pw.Container(),
+                    (type != "") ? pw.Text(type.toUpperCase(), style: headerTS) : pw.Container(),
                     (timeTaken != "") ? pw.Text('When: $timeTaken', style: headerTS) : pw.Container(),
                     pw.SizedBox(height: 4),
                     // pw.Text(order.dateCreated.toString().substring(0, 10), style: headerTS),
