@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pdf/pdf.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf_printer/controllers/order_list_controller.dart';
 import 'package:pdf_printer/controllers/store_controller.dart';
@@ -81,7 +82,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
           format: PdfPageFormat.roll80,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
@@ -95,10 +96,11 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     final pdf = pw.Document();
 
     pw.TextStyle bodyTS = const pw.TextStyle(
-      fontSize: 10,
+      fontSize: 14,
+      fontWeight: pw.FontWeight.bold,
     );
     pw.TextStyle headerTS = const pw.TextStyle(
-      fontSize: 10,
+      fontSize: 16,
     );
 
     StoreController storeController = Get.find<StoreController>();
@@ -144,20 +146,21 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                       ),
                     ),
                     pw.Text(
-                      storeController.storeModel?.address ?? "- -",
+                      storeController.storeModel?.address ?? "",
                       style: headerTS,
                       textAlign: pw.TextAlign.center,
                     ),
                     pw.Text(
-                      storeController.storeModel?.contact ?? "- -",
+                      storeController.storeModel?.contact ?? "",
                       style: headerTS,
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text('Order #${order.id}', style: headerTS),
-                    (type != "") ? pw.Text('Order type: #$type', style: headerTS) : pw.Container(),
-                    (timeTaken != "") ? pw.Text('Time taken: #$timeTaken', style: headerTS) : pw.Container(),
+                    (type != "") ? pw.Text(type.toUpperCase(), style: headerTS) : pw.Container(),
+                    (timeTaken != "") ? pw.Text('When: $timeTaken', style: headerTS) : pw.Container(),
                     pw.SizedBox(height: 4),
-                    pw.Text(order.dateCreated.toString().substring(0, 10), style: headerTS),
+                    // pw.Text(order.dateCreated.toString().substring(0, 10), style: headerTS),
+                    pw.Text('${DateFormat('yyyy-MM-dd HH:mm').format(order.dateCreated ?? DateTime.now())}', style: headerTS),
                     pw.SizedBox(height: 4),
                   ],
                 ),
@@ -359,15 +362,16 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                     '${order.billing?.email ?? ''}.',
                     style: bodyTS,
                   ),
-                  (order.billing?.address1 ?? '') == ''
-                      ? pw.Column(children: [
-                          pw.SizedBox(height: 2),
-                          pw.Text(
-                            order.billing?.address1 ?? '',
-                            style: bodyTS,
-                          ),
-                        ])
-                      : pw.Container(),
+                  pw.SizedBox(height: 2),
+                  (type == 'delivery' && (order.shipping?.address1 ?? '') != '')
+                    ? pw.Column(children: [
+                        pw.SizedBox(height: 2),
+                        pw.Text(
+                          '${order.shipping?.address1 ?? ''} ${order.shipping?.address2 ?? ''}, ${order.shipping?.city ?? ''}, ${order.shipping?.state ?? ''}, ${order.shipping?.postcode ?? ''}, ${order.shipping?.country ?? ''}',
+                          style: bodyTS,
+                        ),
+                      ])
+                    : pw.Container(),
                   pw.SizedBox(height: 2),
                 ],
               ),
@@ -415,7 +419,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
           format: PdfPageFormat.roll80,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
@@ -561,7 +565,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
           format: PdfPageFormat.roll80,
           usePrinterSettings: true,
           onLayout: (PdfPageFormat format) async => pdf.save(),
