@@ -99,6 +99,6 @@ jobs:
               with:
                   name: ${{env.DOMAIN}}
                   if-no-files-found: 'error'
-                  retention-days: '7'
+                  retention-days: '3'
                   overwrite: 'true'
                   path: build/installer/*.exe
