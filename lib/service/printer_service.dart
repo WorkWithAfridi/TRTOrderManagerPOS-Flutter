@@ -82,7 +82,8 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ??
+              availablePrinters.first,
           format: PdfPageFormat.roll80,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
@@ -95,12 +96,15 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
   Future<pw.Document> generateBillReceiptPdf(OrderModel order) async {
     final pdf = pw.Document();
 
+    pw.TextStyle headerTS = const pw.TextStyle(
+      fontSize: 14,
+    );
     pw.TextStyle bodyTS = pw.TextStyle(
       fontSize: 14,
       fontWeight: pw.FontWeight.bold,
     );
-    pw.TextStyle headerTS = const pw.TextStyle(
-      fontSize: 16,
+    pw.TextStyle footerTS = const pw.TextStyle(
+      fontSize: 14,
     );
 
     StoreController storeController = Get.find<StoreController>();
@@ -156,11 +160,24 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text('Order #${order.id}', style: headerTS),
-                    (type != "") ? pw.Text(type.toUpperCase(), style: headerTS) : pw.Container(),
-                    (timeTaken != "") ? pw.Text('When: $timeTaken', style: headerTS) : pw.Container(),
+                    (type != "")
+                        ? pw.Text(type.toUpperCase(),
+                            style: headerTS.copyWith(
+                              fontWeight: pw.FontWeight.bold,
+                            ))
+                        : pw.Container(),
+                    (timeTaken != "")
+                        ? pw.Text('When: $timeTaken',
+                            style: headerTS.copyWith(
+                              fontWeight: pw.FontWeight.bold,
+                            ))
+                        : pw.Container(),
                     pw.SizedBox(height: 4),
                     // pw.Text(order.dateCreated.toString().substring(0, 10), style: headerTS),
-                    pw.Text(DateFormat('yyyy-MM-dd HH:mm').format(order.dateCreated ?? DateTime.now()), style: headerTS),
+                    pw.Text(
+                        DateFormat('yyyy-MM-dd HH:mm')
+                            .format(order.dateCreated ?? DateTime.now()),
+                        style: headerTS),
                     pw.SizedBox(height: 4),
                   ],
                 ),
@@ -195,7 +212,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
               ),
 
               pw.TableHelper.fromTextArray(
-                headerStyle: bodyTS,
+                headerStyle: footerTS,
                 headerAlignment: pw.Alignment.centerLeft,
                 cellStyle: const pw.TextStyle(fontSize: 4, height: .8),
                 border: pw.TableBorder.all(color: PdfColors.black, width: 0.2),
@@ -208,64 +225,70 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                         crossAxisAlignment: pw.CrossAxisAlignment.start,
                         children: [
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment:
+                                pw.MainAxisAlignment.spaceBetween,
                             children: [
                               pw.Text(
                                 'Subtotal:',
-                                style: bodyTS,
+                                style: footerTS,
                               ),
                               pw.Text(
                                 '\$${(order.lineItems ?? []).fold(0.0, (sum, item) => sum + (item.quantity ?? 0) * (item.price ?? 0.0)).toStringAsFixed(2)}',
-                                style: bodyTS,
+                                style: footerTS,
                               ),
                             ],
                           ),
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment:
+                                pw.MainAxisAlignment.spaceBetween,
                             children: [
                               pw.Text(
                                 'Shipping:',
-                                style: bodyTS,
+                                style: footerTS,
                               ),
                               pw.Text(
                                 '\$${order.shippingTotal}',
-                                style: bodyTS,
+                                style: footerTS,
                               ),
                             ],
                           ),
                           ...(order.taxLines ?? []).map((e) {
                             return pw.Row(
-                              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment:
+                                  pw.MainAxisAlignment.spaceBetween,
                               children: [
                                 pw.Text(
                                   '${e.label}:',
-                                  style: bodyTS,
+                                  style: footerTS,
                                 ),
                                 pw.Text(
                                   '\$${e.taxTotal}',
-                                  style: bodyTS,
+                                  style: footerTS,
                                 ),
                               ],
                             );
                           }),
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment:
+                                pw.MainAxisAlignment.spaceBetween,
                             children: [
                               pw.Text(
                                 'Payment:',
-                                style: bodyTS,
+                                style: footerTS,
                               ),
-                              pw.Text('${order.paymentMethodTitle}', style: bodyTS),
+                              pw.Text('${order.paymentMethodTitle}',
+                                  style: footerTS),
                             ],
                           ),
                           pw.Row(
-                            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment:
+                                pw.MainAxisAlignment.spaceBetween,
                             children: [
                               pw.Text(
                                 'Total:',
-                                style: bodyTS,
+                                style: footerTS,
                               ),
-                              pw.Text('\$${order.total}', style: bodyTS),
+                              pw.Text('\$${order.total}', style: footerTS),
                             ],
                           ),
                           pw.SizedBox(height: 2),
@@ -345,22 +368,22 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                 children: [
                   pw.Text(
                     'Customer:',
-                    style: bodyTS,
+                    style: footerTS,
                   ),
                   pw.SizedBox(height: 2),
                   pw.Text(
                     '${order.billing?.firstName ?? ''} ${order.billing?.lastName ?? ''}',
-                    style: bodyTS,
+                    style: footerTS,
                   ),
                   pw.SizedBox(height: 2),
                   pw.Text(
                     order.billing?.phone ?? '',
-                    style: bodyTS,
+                    style: footerTS,
                   ),
                   pw.SizedBox(height: 2),
                   pw.Text(
                     '${order.billing?.email ?? ''}.',
-                    style: bodyTS,
+                    style: footerTS,
                   ),
                   pw.SizedBox(height: 2),
                   (type == 'delivery' && (order.shipping?.address1 ?? '') != '')
@@ -380,9 +403,11 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
                   pw.Divider(thickness: 0.5),
-                  pw.Text('Powered By TRT Technologies Ltd', style: const pw.TextStyle(fontSize: 8)),
+                  pw.Text('Powered By TRT Technologies Ltd',
+                      style: const pw.TextStyle(fontSize: 10)),
                   pw.SizedBox(height: 2),
-                  pw.Text('www.trttech.ca', style: const pw.TextStyle(fontSize: 8)),
+                  pw.Text('www.trttech.ca',
+                      style: const pw.TextStyle(fontSize: 10)),
                 ],
               ),
             ],
@@ -419,7 +444,8 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ??
+              availablePrinters.first,
           format: PdfPageFormat.roll80,
           onLayout: (PdfPageFormat format) async => pdf.save(),
         );
@@ -430,7 +456,8 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
   }
 
   /// Generates a sales report PDF document
-  Future<pw.Document> generateSalesReportPdf(List<SalesReportModel> reports) async {
+  Future<pw.Document> generateSalesReportPdf(
+      List<SalesReportModel> reports) async {
     final pdf = pw.Document();
     pw.TextStyle bodyTS = const pw.TextStyle(
       fontSize: 10,
@@ -476,13 +503,22 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                         ['Total Sales', report.totalSales ?? "N/A"],
                         ['Net Sales', report.netSales ?? "N/A"],
                         ['Average Sales', report.averageSales ?? "N/A"],
-                        ['Total Orders', report.totalOrders?.toString() ?? "N/A"],
+                        [
+                          'Total Orders',
+                          report.totalOrders?.toString() ?? "N/A"
+                        ],
                         ['Total Items', report.totalItems?.toString() ?? "N/A"],
                         ['Total Tax', report.totalTax ?? "N/A"],
                         ['Total Shipping', report.totalShipping ?? "N/A"],
-                        ['Total Refunds', report.totalRefunds?.toString() ?? "N/A"],
+                        [
+                          'Total Refunds',
+                          report.totalRefunds?.toString() ?? "N/A"
+                        ],
                         ['Total Discount', report.totalDiscount ?? "N/A"],
-                        ['Total Customers', report.totalCustomers?.toString() ?? "N/A"],
+                        [
+                          'Total Customers',
+                          report.totalCustomers?.toString() ?? "N/A"
+                        ],
                       ],
                       headerStyle: bodyTS,
                       cellStyle: bodyTS,
@@ -533,9 +569,11 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
                   pw.Divider(thickness: 0.5),
-                  pw.Text('Powered By TRT Technologies Ltd', style: const pw.TextStyle(fontSize: 8)),
+                  pw.Text('Powered By TRT Technologies Ltd',
+                      style: const pw.TextStyle(fontSize: 8)),
                   pw.SizedBox(height: 2),
-                  pw.Text('www.trttech.ca', style: const pw.TextStyle(fontSize: 8)),
+                  pw.Text('www.trttech.ca',
+                      style: const pw.TextStyle(fontSize: 8)),
                 ],
               ),
             ],
@@ -552,7 +590,8 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
   }
 
   /// Prints the PDF, with web and non-web support.
-  Future<void> printSalesReport(BuildContext context, List<SalesReportModel> reports) async {
+  Future<void> printSalesReport(
+      BuildContext context, List<SalesReportModel> reports) async {
     final pdf = await generateSalesReportPdf(reports);
 
     if (kIsWeb) {
@@ -565,7 +604,8 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
 
       if (availablePrinters.isNotEmpty) {
         await Printing.directPrintPdf(
-          printer: Get.find<StoreController>().selectedPrinter ?? availablePrinters.first,
+          printer: Get.find<StoreController>().selectedPrinter ??
+              availablePrinters.first,
           format: PdfPageFormat.roll80,
           usePrinterSettings: true,
           onLayout: (PdfPageFormat format) async => pdf.save(),
