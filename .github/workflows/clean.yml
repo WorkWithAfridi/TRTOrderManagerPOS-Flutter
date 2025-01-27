@@ -1,0 +1,13 @@
+name: Clean Repository Artifacts
+
+on:
+    workflow_dispatch:
+
+jobs:
+    clean-artifacts:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Remove old artifacts
+              uses: ./.github/actions/gha-remove-artifacts-master
+              with:
+                  age: '0 days'
