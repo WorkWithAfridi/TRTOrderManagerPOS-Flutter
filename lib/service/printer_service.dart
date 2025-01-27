@@ -97,14 +97,14 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     final pdf = pw.Document();
 
     pw.TextStyle headerTS = const pw.TextStyle(
-      fontSize: 14,
+      fontSize: 12,
     );
     pw.TextStyle bodyTS = pw.TextStyle(
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: pw.FontWeight.bold,
     );
     pw.TextStyle footerTS = const pw.TextStyle(
-      fontSize: 14,
+      fontSize: 12,
     );
 
     StoreController storeController = Get.find<StoreController>();
@@ -146,7 +146,6 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                       storeController.storeModel?.name ?? "",
                       style: headerTS.copyWith(
                         fontWeight: pw.FontWeight.bold,
-                        fontSize: 12,
                       ),
                     ),
                     pw.Text(
@@ -306,10 +305,10 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.SizedBox(height: 4),
-                        pw.Text('Notes: ', style: headerTS),
+                        pw.Text('Notes: ', style: footerTS),
                         pw.Text(
                           '${order.customerNote}',
-                          style: headerTS,
+                          style: footerTS,
                           maxLines: 100,
                         ),
                         pw.SizedBox(height: 4),
@@ -391,7 +390,9 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                           pw.SizedBox(height: 2),
                           pw.Text(
                             '${order.shipping?.address1 ?? ''} ${order.shipping?.address2 ?? ''}, ${order.shipping?.city ?? ''}, ${order.shipping?.state ?? ''}, ${order.shipping?.postcode ?? ''}, ${order.shipping?.country ?? ''}',
-                            style: bodyTS,
+                            style: footerTS.copyWith(
+                              fontWeight: pw.FontWeight.bold,
+                            ),
                           ),
                         ])
                       : pw.Container(),
