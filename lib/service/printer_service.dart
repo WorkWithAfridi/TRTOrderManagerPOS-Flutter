@@ -200,10 +200,10 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                     // pw.SizedBox(
 
                     pw.SizedBox(
-                      width: 55,
+                      width: 60,
                       child: pw.Text(
                         '\$${((item.quantity ?? 0) * (item.price ?? 0.0)).toStringAsFixed(2)}',
-                        style: bodyTS,
+                        style: footerTS,
                         textAlign: pw.TextAlign.left,
                       ),
                     ),
