@@ -125,6 +125,23 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
         ).value ??
         '';
 
+    String tipsFee = order.feeLines?.firstWhere(
+          (e) => e.key == "Tips",
+          orElse: () {
+            return FeeLinesModelDatum(id: 0, key: "", value: "");
+          },
+        ).value ??
+        '';
+
+    String deliveryFee = order.feeLines?.firstWhere(
+          (e) => e.key == "Shipping fee",
+          orElse: () {
+            return FeeLinesModelDatum(
+                id: 0, key: "Shipping fee", value: "0.00");
+          },
+        ).value ??
+        '0.00';
+
     pdf.addPage(
       pw.Page(
         clip: true,
@@ -144,9 +161,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                   children: [
                     pw.Text(
                       storeController.storeModel?.name ?? "",
-                      style: headerTS.copyWith(
-                        fontWeight: pw.FontWeight.bold,
-                      ),
+                      style: bodyTS,
                     ),
                     pw.Text(
                       storeController.storeModel?.address ?? "",
@@ -165,8 +180,8 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                               fontWeight: pw.FontWeight.bold,
                             ))
                         : pw.Container(),
-                    (timeTaken != "")
-                        ? pw.Text('When: $timeTaken',
+                    (timeTaken != "" && timeTaken != "-")
+                        ? pw.Text('Time: $timeTaken',
                             style: headerTS.copyWith(
                               fontWeight: pw.FontWeight.bold,
                             ))
@@ -174,21 +189,21 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                     pw.SizedBox(height: 4),
                     // pw.Text(order.dateCreated.toString().substring(0, 10), style: headerTS),
                     pw.Text(
-                        DateFormat('yyyy-MM-dd HH:mm')
+                        DateFormat('MMM d, yyyy hh:mm a')
                             .format(order.dateCreated ?? DateTime.now()),
                         style: headerTS),
                     pw.SizedBox(height: 4),
                   ],
                 ),
               ),
-
+              pw.SizedBox(height: 4),
               // Table Header
               pw.TableHelper.fromTextArray(
                 headerStyle: bodyTS,
                 headers: ['Item', 'Total'],
                 headerAlignment: pw.Alignment.centerLeft,
                 cellStyle: const pw.TextStyle(fontSize: 4, height: .8),
-                border: pw.TableBorder.all(color: PdfColors.black, width: 0.2),
+                border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
                 cellPadding: const pw.EdgeInsets.all(2),
                 data: (order.lineItems ?? []).map((item) {
                   return [
@@ -209,12 +224,16 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                   ];
                 }).toList(),
               ),
-
               pw.TableHelper.fromTextArray(
                 headerStyle: footerTS,
                 headerAlignment: pw.Alignment.centerLeft,
                 cellStyle: const pw.TextStyle(fontSize: 4, height: .8),
-                border: pw.TableBorder.all(color: PdfColors.black, width: 0.2),
+                border: const pw.TableBorder(
+                  top: pw.BorderSide.none,
+                  left: pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  right: pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  bottom: pw.BorderSide(color: PdfColors.black, width: 0.5),
+                ),
                 cellPadding: const pw.EdgeInsets.all(2),
                 data: [
                   [
@@ -242,15 +261,30 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                                 pw.MainAxisAlignment.spaceBetween,
                             children: [
                               pw.Text(
-                                'Shipping:',
+                                'Delivery Fee:',
                                 style: footerTS,
                               ),
                               pw.Text(
-                                '\$${order.shippingTotal}',
+                                '\$$deliveryFee',
                                 style: footerTS,
                               ),
                             ],
                           ),
+                          if (tipsFee.isNotEmpty)
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text(
+                                  'Tips:',
+                                  style: footerTS,
+                                ),
+                                pw.Text(
+                                  '\$$tipsFee',
+                                  style: footerTS,
+                                ),
+                              ],
+                            ),
                           ...(order.taxLines ?? []).map((e) {
                             return pw.Row(
                               mainAxisAlignment:
@@ -290,37 +324,41 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                               pw.Text('\$${order.total}', style: footerTS),
                             ],
                           ),
-                          pw.SizedBox(height: 2),
+                          pw.SizedBox(height: 4),
                         ],
                       ),
                     )
                   ]
                 ],
               ),
-
+              order.customerNote != null && order.customerNote!.isNotEmpty
+                  ? pw.SizedBox(height: 10)
+                  : pw.SizedBox.shrink(),
               // Notes
               order.customerNote != null && order.customerNote!.isNotEmpty
-                  ? pw.Column(
-                      mainAxisAlignment: pw.MainAxisAlignment.start,
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.SizedBox(height: 4),
-                        pw.Text('Notes: ', style: footerTS),
-                        pw.Text(
-                          '${order.customerNote}',
-                          style: footerTS,
-                          maxLines: 100,
-                        ),
-                        pw.SizedBox(height: 4),
-                        pw.Container(
-                          height: 0.5,
+                  ? pw.Container(
+                      decoration: pw.BoxDecoration(
+                        border: pw.Border.all(
                           color: PdfColor.fromHex('#000000'),
+                          width: 0.5,
                         ),
-                        pw.SizedBox(height: 4),
-                      ],
+                      ),
+                      child: pw.Column(
+                        mainAxisAlignment: pw.MainAxisAlignment.start,
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.SizedBox(height: 4),
+                          pw.Text('Notes: ', style: bodyTS),
+                          pw.Text(
+                            '${order.customerNote}',
+                            style: bodyTS,
+                            maxLines: 100,
+                          ),
+                          pw.SizedBox(height: 4),
+                        ],
+                      ),
                     )
                   : pw.SizedBox.shrink(),
-
               // pw.ListView.builder(
               //   itemCount: (order.lineItems ?? []).length,
               //   itemBuilder: (context, index) {
@@ -360,50 +398,60 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
               // pw.SizedBox(height: 4),
 
               // Subtotal, Tax, and Total
+              pw.SizedBox(height: 10),
 
-              // Customer Details
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text(
-                    'Customer:',
-                    style: footerTS,
+              pw.Container(
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(
+                    color: PdfColor.fromHex('#000000'),
+                    width: 0.5,
                   ),
-                  pw.SizedBox(height: 2),
-                  pw.Text(
-                    '${order.billing?.firstName ?? ''} ${order.billing?.lastName ?? ''}',
-                    style: footerTS,
-                  ),
-                  pw.SizedBox(height: 2),
-                  pw.Text(
-                    order.billing?.phone ?? '',
-                    style: footerTS,
-                  ),
-                  pw.SizedBox(height: 2),
-                  pw.Text(
-                    '${order.billing?.email ?? ''}.',
-                    style: footerTS,
-                  ),
-                  pw.SizedBox(height: 2),
-                  (type == 'delivery' && (order.shipping?.address1 ?? '') != '')
-                      ? pw.Column(children: [
-                          pw.SizedBox(height: 2),
-                          pw.Text(
-                            '${order.shipping?.address1 ?? ''} ${order.shipping?.address2 ?? ''}, ${order.shipping?.city ?? ''}, ${order.shipping?.state ?? ''}, ${order.shipping?.postcode ?? ''}, ${order.shipping?.country ?? ''}',
-                            style: footerTS.copyWith(
-                              fontWeight: pw.FontWeight.bold,
+                ),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.SizedBox(height: 4),
+                    pw.Text(
+                      'Customer:',
+                      style: footerTS,
+                    ),
+                    pw.SizedBox(height: 2),
+                    pw.Text(
+                      '${order.billing?.firstName ?? ''} ${order.billing?.lastName ?? ''}',
+                      style: footerTS,
+                    ),
+                    pw.SizedBox(height: 2),
+                    pw.Text(
+                      order.billing?.phone ?? '',
+                      style: footerTS,
+                    ),
+                    pw.SizedBox(height: 2),
+                    pw.Text(
+                      '${order.billing?.email ?? ''}.',
+                      style: footerTS,
+                    ),
+                    pw.SizedBox(height: 2),
+                    (type == 'delivery' &&
+                            (order.shipping?.address1 ?? '') != '')
+                        ? pw.Column(children: [
+                            pw.SizedBox(height: 2),
+                            pw.Text(
+                              '${order.shipping?.address1 ?? ''} ${order.shipping?.address2 ?? ''}, ${order.shipping?.city ?? ''}, ${order.shipping?.state ?? ''}, ${order.shipping?.postcode ?? ''}, ${order.shipping?.country ?? ''}',
+                              style: footerTS.copyWith(
+                                fontWeight: pw.FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ])
-                      : pw.Container(),
-                  pw.SizedBox(height: 2),
-                ],
+                          ])
+                        : pw.Container(),
+                    pw.SizedBox(height: 2),
+                  ],
+                ),
               ),
 
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
-                  pw.Divider(thickness: 0.5),
+                  pw.Divider(thickness: 0.1),
                   pw.Text('Powered By TRT Technologies Ltd',
                       style: const pw.TextStyle(fontSize: 10)),
                   pw.SizedBox(height: 2),

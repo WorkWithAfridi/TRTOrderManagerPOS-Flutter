@@ -142,7 +142,7 @@ class OrderModel {
         lineItems: json["line_items"] == null ? [] : List<LineItem>.from(json["line_items"]!.map((x) => LineItem.fromJson(x))),
         taxLines: json["tax_lines"] == null ? [] : List<TaxLine>.from(json["tax_lines"]!.map((x) => TaxLine.fromJson(x))),
         shippingLines: json["shipping_lines"] == null ? [] : List<dynamic>.from(json["shipping_lines"]!.map((x) => x)),
-        feeLines: json["fee_lines"] == null ? [] : List<dynamic>.from(json["fee_lines"]!.map((x) => x)),
+        feeLines: json["fee_lines"] == null ? [] : List<FeeLinesModelDatum>.from(json["fee_lines"]!.map((x) => FeeLinesModelDatum.fromJson(x))),
         couponLines: json["coupon_lines"] == null ? [] : List<dynamic>.from(json["coupon_lines"]!.map((x) => x)),
         refunds: json["refunds"] == null ? [] : List<dynamic>.from(json["refunds"]!.map((x) => x)),
         paymentUrl: json["payment_url"],
@@ -539,6 +539,31 @@ class OrderModelMetaDatum {
         id: json["id"],
         key: json["key"],
         value: json["value"].toString(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "key": key,
+        "value": value,
+      };
+}
+
+class FeeLinesModelDatum {
+  int? id;
+  String? key;
+  String? value;
+
+  FeeLinesModelDatum({
+    this.id,
+    this.key,
+    this.value,
+  });
+
+  factory FeeLinesModelDatum.fromJson(Map<String, dynamic> json) =>
+      FeeLinesModelDatum(
+        id: json["id"],
+        key: json["name"],
+        value: json["total"].toString(),
       );
 
   Map<String, dynamic> toJson() => {
