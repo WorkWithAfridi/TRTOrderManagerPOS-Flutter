@@ -360,7 +360,6 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                                       style: baseTextStyle),
                                 ],
                               ),
-                              pw.SizedBox(height: kGapSmall),
                             ],
                           ),
                         ),
