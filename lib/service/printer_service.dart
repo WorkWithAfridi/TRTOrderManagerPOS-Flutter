@@ -258,6 +258,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                           child: pw.Text(
                             "\$${((item.quantity ?? 0) * (item.price ?? 0.0)).toStringAsFixed(2)}",
                             style: baseTextStyle,
+                            textAlign: pw.TextAlign.right,
                           ),
                         ),
                       ],
@@ -373,81 +374,94 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
               if (order.customerNote?.isNotEmpty ?? false)
                 pw.SizedBox(height: kGapMed),
               if (order.customerNote?.isNotEmpty ?? false)
-                pw.Container(
-                  padding: const pw.EdgeInsets.all(4),
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border.all(
-                      color: PdfColor.fromHex('#000000'),
-                      width: kBorderWidth,
+                pw.Table(
+                  columnWidths: {
+                    0: const pw.FlexColumnWidth(1),
+                  },
+                  border: pw.TableBorder.all(
+                    color: PdfColor.fromHex('#000000'),
+                    width: kBorderWidth,
+                  ),
+                  children: [
+                    pw.TableRow(
+                      children: [
+                        pw.Container(
+                          padding: const pw.EdgeInsets.all(4),
+                          child: pw.Column(
+                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            children: [
+                              pw.SizedBox(height: kGapSmall),
+                              pw.Text('Notes:', style: largerBoldStyle),
+                              pw.Text(
+                                '${order.customerNote}',
+                                style: largerBoldStyle,
+                                maxLines: 100,
+                              ),
+                              pw.SizedBox(height: kGapSmall),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.SizedBox(height: kGapSmall),
-                      pw.Text('Notes: ', style: largerBoldStyle),
-                      pw.Text(
-                        '${order.customerNote}',
-                        style: largerBoldStyle,
-                        maxLines: 100,
-                      ),
-                      pw.SizedBox(height: kGapSmall),
-                    ],
-                  ),
+                  ],
                 ),
 
               pw.SizedBox(height: kGapMed),
 
               // ---------- CUSTOMER INFO ----------
-              pw.Container(
-                padding: const pw.EdgeInsets.all(4),
-                decoration: pw.BoxDecoration(
-                  border: pw.Border.all(
-                    color: PdfColor.fromHex('#000000'),
-                    width: kBorderWidth,
-                  ),
+              pw.Table(
+                columnWidths: {
+                  0: const pw.FlexColumnWidth(1),
+                },
+                border: pw.TableBorder.all(
+                  color: PdfColors.black,
+                  width: kBorderWidth,
                 ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.SizedBox(height: kGapSmall),
-                    pw.Text('Customer:', style: baseTextStyle),
-                    pw.SizedBox(height: kGapSmall),
-                    pw.Text(
-                      '${order.billing?.firstName ?? ''} ${order.billing?.lastName ?? ''}',
-                      style: baseTextStyle,
-                    ),
-                    pw.SizedBox(height: kGapSmall),
-                    pw.Text(
-                      order.billing?.phone ?? '',
-                      style: baseTextStyle,
-                    ),
-                    pw.SizedBox(height: kGapSmall),
-                    pw.Text(
-                      order.billing?.email ?? '',
-                      style: baseTextStyle,
-                    ),
-                    pw.SizedBox(height: kGapSmall),
-                    if (type == 'delivery' &&
-                        (order.shipping?.address1 ?? '').isNotEmpty)
-                      pw.Column(
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.SizedBox(height: kGapSmall),
-                          pw.Text(
-                            '${order.shipping?.address1 ?? ''} '
-                            '${order.shipping?.address2 ?? ''}, '
-                            '${order.shipping?.city ?? ''}, '
-                            '${order.shipping?.state ?? ''}, '
-                            '${order.shipping?.postcode ?? ''}, '
-                            '${order.shipping?.country ?? ''}',
-                            style: largerBoldStyle,
-                          ),
-                        ],
+                children: [
+                  pw.TableRow(
+                    children: [
+                      pw.Container(
+                        padding: const pw.EdgeInsets.all(4),
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text('Customer:', style: baseTextStyle),
+                            pw.Text(
+                              '${order.billing?.firstName ?? ''} '
+                              '${order.billing?.lastName ?? ''}',
+                              style: baseTextStyle,
+                            ),
+                            pw.Text(
+                              order.billing?.phone ?? '',
+                              style: baseTextStyle,
+                            ),
+                            pw.Text(
+                              order.billing?.email ?? '',
+                              style: baseTextStyle,
+                            ),
+                            if (type == 'delivery' &&
+                                (order.shipping?.address1 ?? '').isNotEmpty)
+                              pw.Column(
+                                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                                children: [
+                                  pw.Text(
+                                    '${order.shipping?.address1 ?? ''} '
+                                    '${order.shipping?.address2 ?? ''}, '
+                                    '${order.shipping?.city ?? ''}, '
+                                    '${order.shipping?.state ?? ''}, '
+                                    '${order.shipping?.postcode ?? ''}, '
+                                    '${order.shipping?.country ?? ''}',
+                                    style: largerBoldStyle,
+                                  ),
+                                ],
+                              ),
+                            pw.SizedBox(height: kGapSmall),
+                          ],
+                        ),
                       ),
-                    pw.SizedBox(height: kGapSmall),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
 
               // ---------- FOOTER ----------
