@@ -155,13 +155,11 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
             ?.trim() ??
         '0.00';
 
-    const double inch = 72.0;
-    const double mm = inch / 25.4;
     // ---------- PAGE BUILD ----------
     pdf.addPage(
       pw.Page(
         clip: false, // for continuous-roll printers
-        pageFormat: const PdfPageFormat(72 * mm, double.infinity),
+        pageFormat: const PdfPageFormat(72 * PdfPageFormat.mm, double.infinity),
         margin: const pw.EdgeInsets.only(),
         // margin: pw.EdgeInsets.only(
         //   right: Get.find<StoreController>().receiptPadding,
