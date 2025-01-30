@@ -21,7 +21,7 @@ class StoreController extends GetxController {
     try {
       receiptPadding = double.parse(x);
     } catch (e) {
-      receiptPadding = 50.0;
+      receiptPadding = 25.0;
     }
     savePaddingSettings();
     update();
