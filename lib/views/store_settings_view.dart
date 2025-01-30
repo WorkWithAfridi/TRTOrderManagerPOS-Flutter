@@ -64,11 +64,11 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                         ),
                         const Divider(),
                         _buildPaddingField("Receipt Padding (Right Side)",
-                            controller.receiptRightPadding as int, (value) {
+                            controller.receiptRightPadding, (value) {
                           controller.onPaddingUpdated(value, "right");
                         }),
                         _buildPaddingField("Receipt Padding (Left Side)",
-                            controller.receiptLeftPadding as int, (value) {
+                            controller.receiptLeftPadding, (value) {
                           controller.onPaddingUpdated(value, "left");
                         }),
                       ],
@@ -94,7 +94,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
   }
 
   Widget _buildPaddingField(
-      String label, int initialValue, Function(String) onChanged) {
+      String label, double initialValue, Function(String) onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -130,10 +130,10 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const Divider(),
-            _buildLicenseDetail("Store Name", controller.storeModel?.name),
-            _buildLicenseDetail("Address", controller.storeModel?.address),
-            _buildLicenseDetail("Contact", controller.storeModel?.contact),
-            _buildLicenseDetail("Timezone", controller.storeModel?.timezone),
+            _buildLicenseDetail("Store Name", controller.storeModel?.name ?? "N/A"),
+            _buildLicenseDetail("Address", controller.storeModel?.address ?? "N/A"),
+            _buildLicenseDetail("Contact", controller.storeModel?.contact ?? "N/A"),
+            _buildLicenseDetail("Timezone", controller.storeModel?.timezone ?? "N/A"),
           ],
         ),
       ),
