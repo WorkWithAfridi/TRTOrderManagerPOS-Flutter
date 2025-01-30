@@ -16,6 +16,13 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController rightPaddingController = TextEditingController(
+      text: controller.receiptRightPadding.toString(),
+    );
+    final TextEditingController leftPaddingController = TextEditingController(
+      text: controller.receiptLeftPadding.toString(),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Store Settings'),
@@ -37,38 +44,52 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ListTile(
-                          title: const Text("Printer",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          trailing: controller.availablePrinter.isNotEmpty
-                              ? DropdownButtonFormField<Printer>(
-                                  value: controller.selectedPrinter,
-                                  hint: const Text("Select Printer"),
-                                  items: controller.availablePrinter
-                                      .map((Printer printer) {
-                                    return DropdownMenuItem<Printer>(
-                                      value: printer,
-                                      child: Text(
-                                          "${printer.name} - ${printer.model}"),
-                                    );
-                                  }).toList(),
-                                  onChanged: (Printer? newValue) {
-                                    controller.selectedPrinter = newValue;
-                                    controller.savePrinterSettings();
-                                    controller.update();
-                                  },
-                                )
-                              : const Text("No printer available",
-                                  style: TextStyle(color: Colors.grey)),
+                        const Text(
+                          "Printer",
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
+                        const SizedBox(height: 8), // Adds spacing
+                        controller.availablePrinter.isNotEmpty
+                            ? DropdownButtonFormField<Printer>(
+                                isExpanded: true, // Ensures proper width
+                                value: controller.selectedPrinter,
+                                hint: const Text("Select Printer"),
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 10),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                items: controller.availablePrinter
+                                    .map((Printer printer) {
+                                  return DropdownMenuItem<Printer>(
+                                    value: printer,
+                                    child: Text(
+                                      "${printer.name} - ${printer.model}",
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (Printer? newValue) {
+                                  controller.selectedPrinter = newValue;
+                                  controller.savePrinterSettings();
+                                  controller.update();
+                                },
+                              )
+                            : const Text("No printer available",
+                                style: TextStyle(color: Colors.grey)),
+                        const SizedBox(height: 16),
+
                         const Divider(),
                         _buildPaddingField("Receipt Padding (Right Side)",
-                            controller.receiptRightPadding, (value) {
+                            rightPaddingController, (value) {
                           controller.onPaddingUpdated(value, "right");
                         }),
                         _buildPaddingField("Receipt Padding (Left Side)",
-                            controller.receiptLeftPadding, (value) {
+                            leftPaddingController, (value) {
                           controller.onPaddingUpdated(value, "left");
                         }),
                       ],
@@ -93,21 +114,24 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
     );
   }
 
-  Widget _buildPaddingField(
-      String label, double initialValue, Function(String) onChanged) {
+  Widget _buildPaddingField(String label, TextEditingController controller,
+      Function(String) onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(
+            child: Text(label,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+          ),
           SizedBox(
             width: 100,
             child: TextField(
+              controller: controller,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               onChanged: onChanged,
-              controller: TextEditingController(text: initialValue.toString()),
             ),
           ),
         ],
@@ -130,10 +154,14 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const Divider(),
-            _buildLicenseDetail("Store Name", controller.storeModel?.name ?? "N/A"),
-            _buildLicenseDetail("Address", controller.storeModel?.address ?? "N/A"),
-            _buildLicenseDetail("Contact", controller.storeModel?.contact ?? "N/A"),
-            _buildLicenseDetail("Timezone", controller.storeModel?.timezone ?? "N/A"),
+            _buildLicenseDetail(
+                "Store Name", controller.storeModel?.name ?? "N/A"),
+            _buildLicenseDetail(
+                "Address", controller.storeModel?.address ?? "N/A"),
+            _buildLicenseDetail(
+                "Contact", controller.storeModel?.contact ?? "N/A"),
+            _buildLicenseDetail(
+                "Timezone", controller.storeModel?.timezone ?? "N/A"),
           ],
         ),
       ),
