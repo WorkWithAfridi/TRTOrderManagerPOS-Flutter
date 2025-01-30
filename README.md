@@ -26,3 +26,7 @@ flutter run -d chrome --dart-define=BASE_URL=https://tandooripalacesk.ca --dart-
 # littlespice
 
 flutter run -d chrome --dart-define=BASE_URL=https://littlespicesaskatoon.ca --dart-define=CONSUMER_KEY=ck_ad0a4c6d5876f9cb821e5dc20e1be23545ae3483 --dart-define=CONSUMER_SECRET=cs_c4d378b65bd00e1a4123232c52de5b99434f616c --dart-define=VERSION=wc/v3
+
+# cp
+
+flutter run -d chrome --dart-define=BASE_URL=https://cp.trttechnologies.net --dart-define=VERSION=wc/v3 --dart-define=CONSUMER_KEY=ck_70df5cda3fdde3c2483c2744d06cbc187e5c715e --dart-define=CONSUMER_SECRET=cs_7a1d987a63684bf3c326f2013c4f39ae5d611db9

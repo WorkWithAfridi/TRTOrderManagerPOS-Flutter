@@ -15,6 +15,9 @@ import 'package:printing/printing.dart';
 
 class PrinterService {
   Printer? selectedPrinter;
+
+  static const roll80Format =
+      PdfPageFormat(72 * PdfPageFormat.mm, double.infinity);
   Future<pw.Document> generateSamplePagePdf() async {
     final pdf = pw.Document();
 
@@ -27,7 +30,8 @@ class PrinterService {
         clip: false,
         pageFormat: PdfPageFormat.roll80,
         margin: pw.EdgeInsets.only(
-          right: Get.find<StoreController>().receiptPadding,
+          right: Get.find<StoreController>().receiptRightPadding,
+          left: Get.find<StoreController>().receiptLeftPadding,
         ),
         build: (pw.Context context) {
           return pw.Column(
@@ -159,11 +163,12 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     pdf.addPage(
       pw.Page(
         clip: false, // for continuous-roll printers
-        pageFormat: const PdfPageFormat(72 * PdfPageFormat.mm, double.infinity),
-        margin: const pw.EdgeInsets.only(),
-        // margin: pw.EdgeInsets.only(
-        //   right: Get.find<StoreController>().receiptPadding,
-        // ),
+        pageFormat: roll80Format,
+        // margin: const pw.EdgeInsets.only(),
+        margin: pw.EdgeInsets.only(
+          right: Get.find<StoreController>().receiptRightPadding,
+          left: Get.find<StoreController>().receiptLeftPadding,
+        ),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -238,7 +243,9 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                       ),
                       pw.Container(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text('Total', style: baseTextStyle),
+                        child: pw.Text('Total',
+                            style: baseTextStyle,
+                            textAlign: pw.TextAlign.right),
                       ),
                     ],
                   ),
@@ -534,16 +541,15 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     const double kGapMed = 8;
     const double kBorderWidth = 1; // Thin table borders on receipts
 
-    final storeController = Get.find<StoreController>();
-
     // ---------- BUILD PAGE ----------
     pdf.addPage(
       pw.Page(
-        pageFormat: PdfPageFormat.roll80,
-        margin: const pw.EdgeInsets.only(),
-        // margin: pw.EdgeInsets.only(
-        //   right: storeController.receiptPadding,
-        // ),
+        pageFormat: roll80Format,
+        // margin: const pw.EdgeInsets.only(),
+        margin: pw.EdgeInsets.only(
+          right: Get.find<StoreController>().receiptRightPadding,
+          left: Get.find<StoreController>().receiptLeftPadding,
+        ),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,

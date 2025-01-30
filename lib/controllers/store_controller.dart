@@ -12,27 +12,40 @@ class StoreController extends GetxController {
   StoreModel? storeModel;
   List<Printer> availablePrinter = [];
 
-  double receiptPadding = 25.0;
+  double receiptRightPadding = 0.0;
+  double receiptLeftPadding = 0.0;
+  static const rightPaddingKey = "paddingRightKey";
+  static const leftPaddingKey = "paddingLeftKey";
   Printer? selectedPrinter;
   bool isStoreActive = false;
   final GetStorage _storage = GetStorage(); // Initialize GetStorage
 
-  onPaddingUpdated(String x) {
+  onPaddingUpdated(String x, String leftOrRight) {
     try {
-      receiptPadding = double.parse(x);
+      if (leftOrRight == "right") {
+        receiptRightPadding = double.parse(x);
+      } else {
+        receiptLeftPadding = double.parse(x);
+      }
     } catch (e) {
-      receiptPadding = 25.0;
+      receiptRightPadding = 0.0;
+      receiptLeftPadding = 0.0;
     }
-    savePaddingSettings();
+    savePaddingSettings(leftOrRight);
     update();
   }
 
   setupPrinter() async {
     try {
       logger.d("Init setupPrinter");
-      double? padding = _storage.read('paddingSettings');
-      if (padding != null) {
-        receiptPadding = padding;
+
+      double? rightPadding = _storage.read(rightPaddingKey);
+      double? leftPadding = _storage.read(leftPaddingKey);
+      if (rightPadding != null) {
+        receiptRightPadding = rightPadding;
+      }
+      if (leftPadding != null) {
+        receiptLeftPadding = leftPadding;
       }
 
       availablePrinter = await PrinterService().getPrinters();
@@ -43,7 +56,8 @@ class StoreController extends GetxController {
 
       if (selectedPrinterName != null && selectedPrinterModel != null) {
         for (var element in availablePrinter) {
-          if (element.name == selectedPrinterName && element.model == selectedPrinterModel) {
+          if (element.name == selectedPrinterName &&
+              element.model == selectedPrinterModel) {
             selectedPrinter = element;
           }
         }
@@ -61,25 +75,34 @@ class StoreController extends GetxController {
     _storage.write('defalutPrinterName', selectedPrinter?.name);
   }
 
-  savePaddingSettings() {
-    _storage.write(
-      'paddingSettings',
-      receiptPadding,
-    );
+  savePaddingSettings(String leftOrRight) {
+    if (leftOrRight == "right") {
+      _storage.write(
+        rightPaddingKey,
+        receiptRightPadding,
+      );
+    } else {
+      _storage.write(
+        leftPaddingKey,
+        receiptLeftPadding,
+      );
+    }
   }
 
   final NetworkController _networkController = Get.find<NetworkController>();
 
   Future getStoreDetails() async {
     String? baseUrl = EvnConstant.baseUrl;
-    final String endpoint = "$baseUrl/wp-json/wc/v3/trt/store/status"; // Corrected endpoint
+    final String endpoint =
+        "$baseUrl/wp-json/wc/v3/trt/store/status"; // Corrected endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.GET,
         params: {
           'consumer_key': EvnConstant.consumerKey, // Replace with actual key
-          'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
+          'consumer_secret':
+              EvnConstant.consumerSecret, // Replace with actual secret
         },
       );
 
@@ -88,7 +111,8 @@ class StoreController extends GetxController {
         isStoreActive = storeModel?.storeEnabled ?? false;
         logger.d("Response data: ${response.data}");
       } else {
-        throw Exception("Failed to fetch store details. Status code: ${response?.statusCode}");
+        throw Exception(
+            "Failed to fetch store details. Status code: ${response?.statusCode}");
       }
     } catch (e) {
       logger.e("Error fetching store details: $e");
@@ -99,14 +123,16 @@ class StoreController extends GetxController {
     isStoreActive = !isStoreActive;
     update();
     String? baseUrl = EvnConstant.baseUrl;
-    final String endpoint = "$baseUrl/wp-json/wc/v3/trt/store/toggle"; // Corrected endpoint
+    final String endpoint =
+        "$baseUrl/wp-json/wc/v3/trt/store/toggle"; // Corrected endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.POST,
         params: {
           'consumer_key': EvnConstant.consumerKey, // Replace with actual key
-          'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
+          'consumer_secret':
+              EvnConstant.consumerSecret, // Replace with actual secret
         },
         body: {
           'enabled': isStoreActive,
@@ -116,7 +142,8 @@ class StoreController extends GetxController {
       if (response != null && response.statusCode == 200) {
         logger.d("Response data: ${response.data}");
       } else {
-        throw Exception("Failed to toogle store status. Status code: ${response?.statusCode}");
+        throw Exception(
+            "Failed to toogle store status. Status code: ${response?.statusCode}");
       }
     } catch (e) {
       logger.e("Error toogling store status: $e");
@@ -125,7 +152,8 @@ class StoreController extends GetxController {
   }
 }
 
-StoreModel storeModelFromJson(String str) => StoreModel.fromJson(json.decode(str));
+StoreModel storeModelFromJson(String str) =>
+    StoreModel.fromJson(json.decode(str));
 
 String storeModelToJson(StoreModel data) => json.encode(data.toJson());
 

@@ -16,8 +16,12 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController paddingController = TextEditingController(
-      text: controller.receiptPadding.toString(),
+    TextEditingController paddingRightController = TextEditingController(
+      text: controller.receiptRightPadding.toString(),
+    );
+
+    TextEditingController paddingLeftController = TextEditingController(
+      text: controller.receiptLeftPadding.toString(),
     );
 
     return Scaffold(
@@ -50,10 +54,12 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                         ? DropdownButton<Printer>(
                             value: controller.selectedPrinter,
                             hint: const Text("Select Printer"),
-                            items: controller.availablePrinter.map((Printer printer) {
+                            items: controller.availablePrinter
+                                .map((Printer printer) {
                               return DropdownMenuItem<Printer>(
                                 value: printer,
-                                child: Text("${printer.name} - ${printer.model}"),
+                                child:
+                                    Text("${printer.name} - ${printer.model}"),
                               );
                             }).toList(),
                             onChanged: (Printer? newValue) {
@@ -65,6 +71,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                         : const Text("No printer available"),
                   ],
                 ),
+                const SizedBox(width: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -72,19 +79,41 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                       "Receipt padding (right side): ",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(width: 8),
+                    // const SizedBox(width: 8),
                     SizedBox(
                       width: 100,
                       child: TextField(
-                        controller: paddingController,
+                        controller: paddingRightController,
                         keyboardType: TextInputType.number,
                         onChanged: (value) {
-                          controller.onPaddingUpdated(value);
+                          controller.onPaddingUpdated(value, "right");
                         },
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(width: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Receipt padding (left side): ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    // const SizedBox(width: 8),
+                    SizedBox(
+                      width: 100,
+                      child: TextField(
+                        controller: paddingLeftController,
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          controller.onPaddingUpdated(value, "left");
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 12),
                 ElevatedButton(
                   onPressed: () {
                     PrinterService().printSamplePage();
