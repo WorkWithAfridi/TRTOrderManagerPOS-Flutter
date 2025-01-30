@@ -16,124 +16,149 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController paddingRightController = TextEditingController(
-      text: controller.receiptRightPadding.toString(),
-    );
-
-    TextEditingController paddingLeftController = TextEditingController(
-      text: controller.receiptLeftPadding.toString(),
-    );
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Store settings'),
-        shadowColor: Colors.transparent,
+        title: const Text('Store Settings'),
         elevation: 0,
-        surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
       ),
       body: GetBuilder<StoreController>(
         init: controller,
         builder: (_) {
-          return Container(
+          return Padding(
             padding: const EdgeInsets.all(16),
-            height: Get.height,
-            width: Get.width,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Printer: ",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 8),
-                    controller.availablePrinter.isNotEmpty
-                        ? DropdownButton<Printer>(
-                            value: controller.selectedPrinter,
-                            hint: const Text("Select Printer"),
-                            items: controller.availablePrinter
-                                .map((Printer printer) {
-                              return DropdownMenuItem<Printer>(
-                                value: printer,
-                                child:
-                                    Text("${printer.name} - ${printer.model}"),
-                              );
-                            }).toList(),
-                            onChanged: (Printer? newValue) {
-                              controller.selectedPrinter = newValue;
-                              controller.savePrinterSettings();
-                              controller.update();
-                            },
-                          )
-                        : const Text("No printer available"),
-                  ],
-                ),
-                const SizedBox(width: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Receipt padding (right side): ",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    // const SizedBox(width: 8),
-                    SizedBox(
-                      width: 100,
-                      child: TextField(
-                        controller: paddingRightController,
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: const Text("Printer",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          trailing: controller.availablePrinter.isNotEmpty
+                              ? DropdownButtonFormField<Printer>(
+                                  value: controller.selectedPrinter,
+                                  hint: const Text("Select Printer"),
+                                  items: controller.availablePrinter
+                                      .map((Printer printer) {
+                                    return DropdownMenuItem<Printer>(
+                                      value: printer,
+                                      child: Text(
+                                          "${printer.name} - ${printer.model}"),
+                                    );
+                                  }).toList(),
+                                  onChanged: (Printer? newValue) {
+                                    controller.selectedPrinter = newValue;
+                                    controller.savePrinterSettings();
+                                    controller.update();
+                                  },
+                                )
+                              : const Text("No printer available",
+                                  style: TextStyle(color: Colors.grey)),
+                        ),
+                        const Divider(),
+                        _buildPaddingField("Receipt Padding (Right Side)",
+                            controller.receiptRightPadding as int, (value) {
                           controller.onPaddingUpdated(value, "right");
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Receipt padding (left side): ",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    // const SizedBox(width: 8),
-                    SizedBox(
-                      width: 100,
-                      child: TextField(
-                        controller: paddingLeftController,
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
+                        }),
+                        _buildPaddingField("Receipt Padding (Left Side)",
+                            controller.receiptLeftPadding as int, (value) {
                           controller.onPaddingUpdated(value, "left");
-                        },
-                      ),
+                        }),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-                const SizedBox(width: 12),
-                ElevatedButton(
-                  onPressed: () {
-                    PrinterService().printSamplePage();
-                  },
-                  child: const Text(
-                    "Print sample page",
+                const SizedBox(height: 16),
+                Center(
+                  child: ElevatedButton.icon(
+                    onPressed: () => PrinterService().printSamplePage(),
+                    icon: const Icon(Icons.print),
+                    label: const Text("Print Sample Page"),
                   ),
                 ),
                 const Spacer(),
-                Text(
-                  "Single User Licensed:\n${controller.storeModel?.name}\n${controller.storeModel?.address}\n${controller.storeModel?.contact}\n${controller.storeModel?.timezone}",
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
+                _buildLicenseInfo(),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildPaddingField(
+      String label, int initialValue, Function(String) onChanged) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(
+            width: 100,
+            child: TextField(
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              onChanged: onChanged,
+              controller: TextEditingController(text: initialValue.toString()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLicenseInfo() {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.only(top: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "License Information",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+            const Divider(),
+            _buildLicenseDetail("Store Name", controller.storeModel?.name),
+            _buildLicenseDetail("Address", controller.storeModel?.address),
+            _buildLicenseDetail("Contact", controller.storeModel?.contact),
+            _buildLicenseDetail("Timezone", controller.storeModel?.timezone),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLicenseDetail(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$label: ",
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          ),
+          Expanded(
+            child: Text(
+              value ?? "N/A",
+              style: const TextStyle(fontSize: 12, color: Colors.blueGrey),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
+        ],
       ),
     );
   }
