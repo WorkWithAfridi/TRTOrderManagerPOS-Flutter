@@ -160,12 +160,13 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
       pw.Page(
         clip: false, // for continuous-roll printers
         pageFormat: PdfPageFormat.roll80,
+        margin: const pw.EdgeInsets.only(),
         // margin: pw.EdgeInsets.only(
         //   right: Get.find<StoreController>().receiptPadding,
         // ),
         build: (pw.Context context) {
           return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
               // ---------- HEADER SECTION ----------
               pw.Padding(
@@ -286,7 +287,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                         child: pw.Align(
                           alignment: pw.Alignment.centerRight,
                           child: pw.Column(
-                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            crossAxisAlignment: pw.CrossAxisAlignment.center,
                             children: [
                               // Subtotal
                               pw.Row(
@@ -545,9 +546,10 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.roll80,
-        margin: pw.EdgeInsets.only(
-          right: storeController.receiptPadding,
-        ),
+        margin: const pw.EdgeInsets.only(),
+        // margin: pw.EdgeInsets.only(
+        //   right: storeController.receiptPadding,
+        // ),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
