@@ -155,18 +155,20 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
             ?.trim() ??
         '0.00';
 
+    const double inch = 72.0;
+    const double mm = inch / 25.4;
     // ---------- PAGE BUILD ----------
     pdf.addPage(
       pw.Page(
         clip: false, // for continuous-roll printers
-        pageFormat: PdfPageFormat.roll80,
+        pageFormat: const PdfPageFormat(72 * mm, double.infinity),
         margin: const pw.EdgeInsets.only(),
         // margin: pw.EdgeInsets.only(
         //   right: Get.find<StoreController>().receiptPadding,
         // ),
         build: (pw.Context context) {
           return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
               // ---------- HEADER SECTION ----------
               pw.Padding(
@@ -284,85 +286,79 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                     children: [
                       pw.Container(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Align(
-                          alignment: pw.Alignment.centerRight,
-                          child: pw.Column(
-                            crossAxisAlignment: pw.CrossAxisAlignment.center,
-                            children: [
-                              // Subtotal
-                              pw.Row(
-                                mainAxisAlignment:
-                                    pw.MainAxisAlignment.spaceBetween,
-                                children: [
-                                  pw.Text('Subtotal:', style: baseTextStyle),
-                                  pw.Text(
-                                    '\$${(order.lineItems ?? []).fold(
-                                          0.0,
-                                          (sum, item) =>
-                                              sum +
-                                              (item.quantity ?? 0) *
-                                                  (item.price ?? 0.0),
-                                        ).toStringAsFixed(2)}',
-                                    style: baseTextStyle,
-                                  ),
-                                ],
-                              ),
-                              // Delivery Fee
-                              pw.Row(
-                                mainAxisAlignment:
-                                    pw.MainAxisAlignment.spaceBetween,
-                                children: [
-                                  pw.Text('Delivery Fee:',
-                                      style: baseTextStyle),
-                                  pw.Text('\$$deliveryFee',
-                                      style: baseTextStyle),
-                                ],
-                              ),
-                              // Tips (if present)
-                              if (tipsFee.isNotEmpty)
-                                pw.Row(
-                                  mainAxisAlignment:
-                                      pw.MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    pw.Text('Tips:', style: baseTextStyle),
-                                    pw.Text('\$$tipsFee', style: baseTextStyle),
-                                  ],
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            // Subtotal
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text('Subtotal:', style: baseTextStyle),
+                                pw.Text(
+                                  '\$${(order.lineItems ?? []).fold(
+                                        0.0,
+                                        (sum, item) =>
+                                            sum +
+                                            (item.quantity ?? 0) *
+                                                (item.price ?? 0.0),
+                                      ).toStringAsFixed(2)}',
+                                  style: baseTextStyle,
                                 ),
-                              // Tax lines
-                              ...(order.taxLines ?? []).map((e) {
-                                return pw.Row(
-                                  mainAxisAlignment:
-                                      pw.MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    pw.Text('${e.label}:',
-                                        style: baseTextStyle),
-                                    pw.Text('\$${e.taxTotal}',
-                                        style: baseTextStyle),
-                                  ],
-                                );
-                              }),
-                              // Payment
+                              ],
+                            ),
+                            // Delivery Fee
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text('Delivery Fee:', style: baseTextStyle),
+                                pw.Text('\$$deliveryFee', style: baseTextStyle),
+                              ],
+                            ),
+                            // Tips (if present)
+                            if (tipsFee.isNotEmpty)
                               pw.Row(
                                 mainAxisAlignment:
                                     pw.MainAxisAlignment.spaceBetween,
                                 children: [
-                                  pw.Text('Payment:', style: baseTextStyle),
-                                  pw.Text('${order.paymentMethodTitle}',
-                                      style: baseTextStyle),
+                                  pw.Text('Tips:', style: baseTextStyle),
+                                  pw.Text('\$$tipsFee', style: baseTextStyle),
                                 ],
                               ),
-                              // Total
-                              pw.Row(
+                            // Tax lines
+                            ...(order.taxLines ?? []).map((e) {
+                              return pw.Row(
                                 mainAxisAlignment:
                                     pw.MainAxisAlignment.spaceBetween,
                                 children: [
-                                  pw.Text('Total:', style: baseTextStyle),
-                                  pw.Text('\$${order.total}',
+                                  pw.Text('${e.label}:', style: baseTextStyle),
+                                  pw.Text('\$${e.taxTotal}',
                                       style: baseTextStyle),
                                 ],
-                              ),
-                            ],
-                          ),
+                              );
+                            }),
+                            // Payment
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text('Payment:', style: baseTextStyle),
+                                pw.Text('${order.paymentMethodTitle}',
+                                    style: baseTextStyle),
+                              ],
+                            ),
+                            // Total
+                            pw.Row(
+                              mainAxisAlignment:
+                                  pw.MainAxisAlignment.spaceBetween,
+                              children: [
+                                pw.Text('Total:', style: baseTextStyle),
+                                pw.Text('\$${order.total}',
+                                    style: baseTextStyle),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],
