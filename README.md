@@ -22,3 +22,7 @@ flutter run -d chrome --dart-define=BASE_URL=https://thebiryanibox.ca --dart-def
 # tandoori
 
 flutter run -d chrome --dart-define=BASE_URL=https://tandooripalacesk.ca --dart-define=CONSUMER_KEY=ck_21e4bfa13775c98415c0441684b011663e9a5288 --dart-define=CONSUMER_SECRET=cs_f3962cf0cc63ac6fbe62ef54d074d99d7ab41aae --dart-define=VERSION=wc/v3
+
+# littlespice
+
+flutter run -d chrome --dart-define=BASE_URL=https://littlespicesaskatoon.ca --dart-define=CONSUMER_KEY=ck_ad0a4c6d5876f9cb821e5dc20e1be23545ae3483 --dart-define=CONSUMER_SECRET=cs_c4d378b65bd00e1a4123232c52de5b99434f616c --dart-define=VERSION=wc/v3

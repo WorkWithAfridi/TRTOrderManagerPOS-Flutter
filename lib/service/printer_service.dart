@@ -528,47 +528,60 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
   /// Generates a sales report PDF document
   Future<pw.Document> generateSalesReportPdf(
       List<SalesReportModel> reports) async {
+    // Create the PDF document
     final pdf = pw.Document();
-    pw.TextStyle bodyTS = const pw.TextStyle(
-      fontSize: 10,
-    );
-    pw.TextStyle headerTS = const pw.TextStyle(
-      fontSize: 10,
-    );
 
-    StoreController storeController = Get.find<StoreController>();
+    // ---------- STYLES & SPACING ----------
+    const double kFontSize = 10;
+    const baseTextStyle = pw.TextStyle(fontSize: kFontSize);
 
+    const double kGapSmall = 4;
+    const double kGapMed = 8;
+    const double kBorderWidth = 1; // Thin table borders on receipts
+
+    final storeController = Get.find<StoreController>();
+
+    // ---------- BUILD PAGE ----------
     pdf.addPage(
       pw.Page(
-        margin: pw.EdgeInsets.only(
-          right: Get.find<StoreController>().receiptPadding,
-        ),
         pageFormat: PdfPageFormat.roll80,
+        margin: pw.EdgeInsets.only(
+          right: storeController.receiptPadding,
+        ),
         build: (pw.Context context) {
           return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
-              pw.Text(
-                'Sales Report',
-                style: headerTS,
-              ),
-              pw.SizedBox(height: 8),
+              // ---------- HEADER ----------
+              pw.Text('Sales Report',
+                  style: baseTextStyle, textAlign: pw.TextAlign.center),
+              pw.SizedBox(height: kGapMed),
 
-              // Add a table for each report
-              for (var report in reports)
+              // ---------- REPORTS LOOP ----------
+              for (final report in reports)
                 pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  crossAxisAlignment: pw.CrossAxisAlignment.center,
                   children: [
+                    // Grouped by
                     pw.Text(
-                      'Grouped By: ${report.totalsGroupedBy ?? "N/A"}',
-                      style: bodyTS,
-                    ),
-                    pw.SizedBox(height: 6),
-                    pw.Table.fromTextArray(
-                      headers: [
-                        'Metric',
-                        'Value',
-                      ],
+                        'Duration: ${report.totalsGroupedBy?.capitalize ?? "N/A"}',
+                        style: baseTextStyle,
+                        textAlign: pw.TextAlign.center),
+                    pw.SizedBox(height: kGapSmall),
+
+                    // Table of Key Metrics
+                    pw.TableHelper.fromTextArray(
+                      headerStyle: baseTextStyle,
+                      cellStyle: baseTextStyle,
+                      oddCellStyle: baseTextStyle,
+                      border: pw.TableBorder.all(width: kBorderWidth),
+                      // (Optional) Let both columns share width equally
+                      // or adjust if you need one column wider than the other:
+                      columnWidths: {
+                        0: const pw.FlexColumnWidth(1),
+                        1: const pw.FlexColumnWidth(1),
+                      },
+                      headers: ['Metric', 'Value'],
                       data: [
                         ['Total Sales', report.totalSales ?? "N/A"],
                         ['Net Sales', report.netSales ?? "N/A"],
@@ -590,30 +603,25 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                           report.totalCustomers?.toString() ?? "N/A"
                         ],
                       ],
-                      headerStyle: bodyTS,
-                      cellStyle: bodyTS,
-                      oddCellStyle: bodyTS,
-                      border: pw.TableBorder.all(width: 0.2),
                     ),
-                    pw.SizedBox(height: 8),
-                    pw.SizedBox(height: 4),
-                    pw.Container(
-                      height: 0.5,
-                      color: PdfColor.fromHex('#000000'),
-                    ),
-                    pw.SizedBox(height: 4),
+                    pw.SizedBox(height: kGapSmall),
                   ],
                 ),
 
+              // ---------- FOOTER ----------
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
-                  pw.Divider(thickness: 0.5),
-                  pw.Text('Powered By TRT Technologies Ltd',
-                      style: const pw.TextStyle(fontSize: 8)),
-                  pw.SizedBox(height: 2),
-                  pw.Text('www.trttech.ca',
-                      style: const pw.TextStyle(fontSize: 8)),
+                  pw.Divider(thickness: kBorderWidth),
+                  pw.Text(
+                    'Powered By TRT Technologies Ltd',
+                    style: baseTextStyle.copyWith(fontSize: 8),
+                  ),
+                  pw.SizedBox(height: kGapSmall),
+                  pw.Text(
+                    'www.trttech.ca',
+                    style: baseTextStyle.copyWith(fontSize: 8),
+                  ),
                 ],
               ),
             ],
