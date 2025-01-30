@@ -91,57 +91,74 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
   }
 
   Future<pw.Document> generateBillReceiptPdf(OrderModel order) async {
+    // Create the PDF document
     final pdf = pw.Document();
 
-    pw.TextStyle headerTS = const pw.TextStyle(
-      fontSize: 12,
-    );
-    pw.TextStyle bodyTS = pw.TextStyle(
+    // ---------- STYLES & SPACING ----------
+    // Define consistent text styles
+    const double kFontSize = 12;
+    const baseTextStyle = pw.TextStyle(fontSize: kFontSize);
+    final boldTextStyle =
+        baseTextStyle.copyWith(fontWeight: pw.FontWeight.bold);
+    final largerBoldStyle = boldTextStyle.copyWith(
       fontSize: 13,
-      fontWeight: pw.FontWeight.bold,
-    );
-    pw.TextStyle footerTS = const pw.TextStyle(
-      fontSize: 12,
     );
 
-    StoreController storeController = Get.find<StoreController>();
+    // Define a set of spacing constants for uniform layout
+    const double kGapSmall = 4;
+    const double kGapMed = 8;
 
-    String type = order.metaData?.firstWhere(
-          (e) => e.key == "exwfood_order_method",
-          orElse: () {
-            return OrderModelMetaDatum(id: 0, key: "", value: "");
-          },
-        ).value ??
+    // Define a consistent border width
+    const double kBorderWidth = 1;
+
+    // ---------- DATA EXTRACTION ----------
+    final storeController = Get.find<StoreController>();
+
+    // Pull out order metadata with safe defaults
+    final type = order.metaData
+            ?.firstWhere(
+              (e) => e.key == "exwfood_order_method",
+              orElse: () => OrderModelMetaDatum(id: 0, key: "", value: ""),
+            )
+            .value
+            ?.trim() ??
         '';
 
-    String timeTaken = order.metaData?.firstWhere(
-          (e) => e.key == "exwfood_time_deli",
-          orElse: () {
-            return OrderModelMetaDatum(id: 0, key: "", value: "");
-          },
-        ).value ??
+    final timeTaken = order.metaData
+            ?.firstWhere(
+              (e) => e.key == "exwfood_time_deli",
+              orElse: () => OrderModelMetaDatum(id: 0, key: "", value: ""),
+            )
+            .value
+            ?.trim() ??
         '';
 
-    String tipsFee = order.feeLines?.firstWhere(
-          (e) => e.key == "Tips",
-          orElse: () {
-            return FeeLinesModelDatum(id: 0, key: "", value: "");
-          },
-        ).value ??
+    final tipsFee = order.feeLines
+            ?.firstWhere(
+              (e) => e.key == "Tips",
+              orElse: () => FeeLinesModelDatum(id: 0, key: "", value: ""),
+            )
+            .value
+            ?.trim() ??
         '';
 
-    String deliveryFee = order.feeLines?.firstWhere(
-          (e) => e.key == "Shipping fee",
-          orElse: () {
-            return FeeLinesModelDatum(
-                id: 0, key: "Shipping fee", value: "0.00");
-          },
-        ).value ??
+    final deliveryFee = order.feeLines
+            ?.firstWhere(
+              (e) => e.key == "Shipping fee",
+              orElse: () => FeeLinesModelDatum(
+                id: 0,
+                key: "Shipping fee",
+                value: "0.00",
+              ),
+            )
+            .value
+            ?.trim() ??
         '0.00';
 
+    // ---------- PAGE BUILD ----------
     pdf.addPage(
       pw.Page(
-        clip: false,
+        clip: false, // for continuous-roll printers
         pageFormat: PdfPageFormat.roll80,
         // margin: pw.EdgeInsets.only(
         //   right: Get.find<StoreController>().receiptPadding,
@@ -150,7 +167,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              // Header Section
+              // ---------- HEADER SECTION ----------
               pw.Padding(
                 padding: const pw.EdgeInsets.symmetric(horizontal: 12),
                 child: pw.Column(
@@ -158,65 +175,72 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                   children: [
                     pw.Text(
                       storeController.storeModel?.name ?? "",
-                      style: bodyTS,
+                      style: largerBoldStyle,
                     ),
                     pw.Text(
                       storeController.storeModel?.address ?? "",
-                      style: headerTS,
+                      style: baseTextStyle,
                       textAlign: pw.TextAlign.center,
                     ),
                     pw.Text(
                       storeController.storeModel?.contact ?? "",
-                      style: headerTS,
+                      style: baseTextStyle,
                     ),
-                    pw.SizedBox(height: 4),
-                    pw.Text('Order #${order.id}', style: headerTS),
-                    (type != "")
-                        ? pw.Text(type.toUpperCase(),
-                            style: headerTS.copyWith(
-                              fontWeight: pw.FontWeight.bold,
-                            ))
-                        : pw.Container(),
-                    (timeTaken != "" && timeTaken != "-")
-                        ? pw.Text('Time: $timeTaken',
-                            style: headerTS.copyWith(
-                              fontWeight: pw.FontWeight.bold,
-                            ))
-                        : pw.Container(),
-                    pw.SizedBox(height: 4),
-                    // pw.Text(order.dateCreated.toString().substring(0, 10), style: headerTS),
+                    pw.SizedBox(height: kGapSmall),
+                    pw.Text('Order #${order.id}', style: baseTextStyle),
+
+                    // Order method
+                    if (type.isNotEmpty)
+                      pw.Text(
+                        type.toUpperCase(),
+                        style: baseTextStyle.copyWith(
+                            fontWeight: pw.FontWeight.bold),
+                      ),
+
+                    // Time Taken
+                    if (timeTaken.isNotEmpty && timeTaken != "-")
+                      pw.Text(
+                        'Time: $timeTaken',
+                        style: baseTextStyle.copyWith(
+                            fontWeight: pw.FontWeight.bold),
+                      ),
+
+                    pw.SizedBox(height: kGapSmall),
+                    // Date/Time
                     pw.Text(
-                        DateFormat('MMM d, yyyy hh:mm a')
-                            .format(order.dateCreated ?? DateTime.now()),
-                        style: headerTS),
-                    pw.SizedBox(height: 4),
+                      DateFormat('MMM d, yyyy hh:mm a')
+                          .format(order.dateCreated ?? DateTime.now()),
+                      style: baseTextStyle,
+                    ),
+                    pw.SizedBox(height: kGapSmall),
                   ],
                 ),
               ),
-              pw.SizedBox(height: 4),
 
-              // Table Header your 'Item'/'Total' table
+              pw.SizedBox(height: kGapSmall),
+
+              // ---------- ITEMS TABLE ----------
               pw.Table(
                 columnWidths: {
                   0: const pw.FlexColumnWidth(4.5),
                   1: const pw.FlexColumnWidth(1.5),
                 },
-                border: pw.TableBorder.all(color: PdfColors.black, width: 1),
+                border: pw.TableBorder.all(
+                    color: PdfColors.black, width: kBorderWidth),
                 children: [
-                  // Header row
+                  // Table header row
                   pw.TableRow(
                     children: [
                       pw.Container(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text('Item', style: headerTS),
+                        child: pw.Text('Item', style: baseTextStyle),
                       ),
                       pw.Container(
                         padding: const pw.EdgeInsets.all(4),
-                        child: pw.Text('Total', style: headerTS),
+                        child: pw.Text('Total', style: baseTextStyle),
                       ),
                     ],
                   ),
-
                   // Dynamically build rows for each line item
                   ...(order.lineItems ?? []).map((item) {
                     return pw.TableRow(
@@ -225,16 +249,15 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                           padding: const pw.EdgeInsets.all(4),
                           child: pw.Text(
                             "${item.name} x${item.quantity ?? 0}"
-                            // Example for variations or metadata
                             "${(item.metaData ?? []).map((e) => e.key == '_exoptions' ? '' : '\n - ${e.displayValue}').join('')}",
-                            style: bodyTS,
+                            style: largerBoldStyle,
                           ),
                         ),
                         pw.Container(
                           padding: const pw.EdgeInsets.all(4),
                           child: pw.Text(
                             "\$${((item.quantity ?? 0) * (item.price ?? 0.0)).toStringAsFixed(2)}",
-                            style: headerTS,
+                            style: baseTextStyle,
                           ),
                         ),
                       ],
@@ -243,15 +266,18 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                 ],
               ),
 
+              // ---------- TOTALS TABLE ----------
               pw.Table(
                 border: const pw.TableBorder(
                   top: pw.BorderSide.none,
-                  left: pw.BorderSide(color: PdfColors.black, width: 1),
-                  right: pw.BorderSide(color: PdfColors.black, width: 1),
-                  bottom: pw.BorderSide(color: PdfColors.black, width: 1),
+                  left: pw.BorderSide(
+                      color: PdfColors.black, width: kBorderWidth),
+                  right: pw.BorderSide(
+                      color: PdfColors.black, width: kBorderWidth),
+                  bottom: pw.BorderSide(
+                      color: PdfColors.black, width: kBorderWidth),
                 ),
                 children: [
-                  // We only have one row, which contains all the totals in a single cell
                   pw.TableRow(
                     children: [
                       pw.Container(
@@ -261,62 +287,79 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                           child: pw.Column(
                             crossAxisAlignment: pw.CrossAxisAlignment.start,
                             children: [
+                              // Subtotal
                               pw.Row(
                                 mainAxisAlignment:
                                     pw.MainAxisAlignment.spaceBetween,
                                 children: [
-                                  pw.Text('Subtotal:', style: footerTS),
+                                  pw.Text('Subtotal:', style: baseTextStyle),
                                   pw.Text(
-                                    '\$${(order.lineItems ?? []).fold(0.0, (sum, item) => sum + (item.quantity ?? 0) * (item.price ?? 0.0)).toStringAsFixed(2)}',
-                                    style: footerTS,
+                                    '\$${(order.lineItems ?? []).fold(
+                                          0.0,
+                                          (sum, item) =>
+                                              sum +
+                                              (item.quantity ?? 0) *
+                                                  (item.price ?? 0.0),
+                                        ).toStringAsFixed(2)}',
+                                    style: baseTextStyle,
                                   ),
                                 ],
                               ),
+                              // Delivery Fee
                               pw.Row(
                                 mainAxisAlignment:
                                     pw.MainAxisAlignment.spaceBetween,
                                 children: [
-                                  pw.Text('Delivery Fee:', style: footerTS),
-                                  pw.Text('\$$deliveryFee', style: footerTS),
+                                  pw.Text('Delivery Fee:',
+                                      style: baseTextStyle),
+                                  pw.Text('\$$deliveryFee',
+                                      style: baseTextStyle),
                                 ],
                               ),
+                              // Tips (if present)
                               if (tipsFee.isNotEmpty)
                                 pw.Row(
                                   mainAxisAlignment:
                                       pw.MainAxisAlignment.spaceBetween,
                                   children: [
-                                    pw.Text('Tips:', style: footerTS),
-                                    pw.Text('\$$tipsFee', style: footerTS),
+                                    pw.Text('Tips:', style: baseTextStyle),
+                                    pw.Text('\$$tipsFee', style: baseTextStyle),
                                   ],
                                 ),
+                              // Tax lines
                               ...(order.taxLines ?? []).map((e) {
                                 return pw.Row(
                                   mainAxisAlignment:
                                       pw.MainAxisAlignment.spaceBetween,
                                   children: [
-                                    pw.Text('${e.label}:', style: footerTS),
-                                    pw.Text('\$${e.taxTotal}', style: footerTS),
+                                    pw.Text('${e.label}:',
+                                        style: baseTextStyle),
+                                    pw.Text('\$${e.taxTotal}',
+                                        style: baseTextStyle),
                                   ],
                                 );
                               }),
+                              // Payment
                               pw.Row(
                                 mainAxisAlignment:
                                     pw.MainAxisAlignment.spaceBetween,
                                 children: [
-                                  pw.Text('Payment:', style: footerTS),
+                                  pw.Text('Payment:', style: baseTextStyle),
                                   pw.Text('${order.paymentMethodTitle}',
-                                      style: footerTS),
+                                      style: baseTextStyle),
                                 ],
                               ),
+                              // Total
                               pw.Row(
                                 mainAxisAlignment:
                                     pw.MainAxisAlignment.spaceBetween,
                                 children: [
-                                  pw.Text('Total:', style: footerTS),
-                                  pw.Text('\$${order.total}', style: footerTS),
+                                  pw.Text('Total:', style: baseTextStyle),
+                                  pw.Text('\$${order.total}',
+                                      style: baseTextStyle),
                                 ],
                               ),
-                              pw.SizedBox(height: 4),
+                              pw.SizedBox(height: kGapSmall),
                             ],
                           ),
                         ),
@@ -326,97 +369,101 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                 ],
               ),
 
-              order.customerNote != null && order.customerNote!.isNotEmpty
-                  ? pw.SizedBox(height: 10)
-                  : pw.SizedBox.shrink(),
-              // Notes
-              order.customerNote != null && order.customerNote!.isNotEmpty
-                  ? pw.Container(
-                      padding: const pw.EdgeInsets.all(4),
-                      decoration: pw.BoxDecoration(
-                        border: pw.Border.all(
-                          color: PdfColor.fromHex('#000000'),
-                          width: 1,
-                        ),
+              // ---------- NOTES ----------
+              if (order.customerNote?.isNotEmpty ?? false)
+                pw.SizedBox(height: kGapMed),
+              if (order.customerNote?.isNotEmpty ?? false)
+                pw.Container(
+                  padding: const pw.EdgeInsets.all(4),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(
+                      color: PdfColor.fromHex('#000000'),
+                      width: kBorderWidth,
+                    ),
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.SizedBox(height: kGapSmall),
+                      pw.Text('Notes: ', style: largerBoldStyle),
+                      pw.Text(
+                        '${order.customerNote}',
+                        style: largerBoldStyle,
+                        maxLines: 100,
                       ),
-                      child: pw.Column(
-                        mainAxisAlignment: pw.MainAxisAlignment.start,
-                        crossAxisAlignment: pw.CrossAxisAlignment.start,
-                        children: [
-                          pw.SizedBox(height: 4),
-                          pw.Text('Notes: ', style: bodyTS),
-                          pw.Text(
-                            '${order.customerNote}',
-                            style: bodyTS,
-                            maxLines: 100,
-                          ),
-                          pw.SizedBox(height: 4),
-                        ],
-                      ),
-                    )
-                  : pw.SizedBox.shrink(),
+                      pw.SizedBox(height: kGapSmall),
+                    ],
+                  ),
+                ),
 
-              // Subtotal, Tax, and Total
-              pw.SizedBox(height: 10),
+              pw.SizedBox(height: kGapMed),
 
+              // ---------- CUSTOMER INFO ----------
               pw.Container(
                 padding: const pw.EdgeInsets.all(4),
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(
                     color: PdfColor.fromHex('#000000'),
-                    width: 1,
+                    width: kBorderWidth,
                   ),
                 ),
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.SizedBox(height: 4),
-                    pw.Text(
-                      'Customer:',
-                      style: footerTS,
-                    ),
-                    pw.SizedBox(height: 2),
+                    pw.SizedBox(height: kGapSmall),
+                    pw.Text('Customer:', style: baseTextStyle),
+                    pw.SizedBox(height: kGapSmall),
                     pw.Text(
                       '${order.billing?.firstName ?? ''} ${order.billing?.lastName ?? ''}',
-                      style: footerTS,
+                      style: baseTextStyle,
                     ),
-                    pw.SizedBox(height: 2),
+                    pw.SizedBox(height: kGapSmall),
                     pw.Text(
                       order.billing?.phone ?? '',
-                      style: footerTS,
+                      style: baseTextStyle,
                     ),
-                    pw.SizedBox(height: 2),
+                    pw.SizedBox(height: kGapSmall),
                     pw.Text(
-                      '${order.billing?.email ?? ''}.',
-                      style: footerTS,
+                      order.billing?.email ?? '',
+                      style: baseTextStyle,
                     ),
-                    pw.SizedBox(height: 2),
-                    (type == 'delivery' &&
-                            (order.shipping?.address1 ?? '') != '')
-                        ? pw.Column(children: [
-                            pw.SizedBox(height: 2),
-                            pw.Text(
-                              '${order.shipping?.address1 ?? ''} ${order.shipping?.address2 ?? ''}, ${order.shipping?.city ?? ''}, ${order.shipping?.state ?? ''}, ${order.shipping?.postcode ?? ''}, ${order.shipping?.country ?? ''}',
-                              style: footerTS.copyWith(
-                                fontWeight: pw.FontWeight.bold,
-                              ),
-                            ),
-                          ])
-                        : pw.Container(),
-                    pw.SizedBox(height: 2),
+                    pw.SizedBox(height: kGapSmall),
+                    if (type == 'delivery' &&
+                        (order.shipping?.address1 ?? '').isNotEmpty)
+                      pw.Column(
+                        crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        children: [
+                          pw.SizedBox(height: kGapSmall),
+                          pw.Text(
+                            '${order.shipping?.address1 ?? ''} '
+                            '${order.shipping?.address2 ?? ''}, '
+                            '${order.shipping?.city ?? ''}, '
+                            '${order.shipping?.state ?? ''}, '
+                            '${order.shipping?.postcode ?? ''}, '
+                            '${order.shipping?.country ?? ''}',
+                            style: largerBoldStyle,
+                          ),
+                        ],
+                      ),
+                    pw.SizedBox(height: kGapSmall),
                   ],
                 ),
               ),
 
+              // ---------- FOOTER ----------
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
-                  pw.Divider(thickness: 0.1),
-                  pw.Text('Powered By TRT Technologies Ltd',
-                      style: const pw.TextStyle(fontSize: 10)),
-                  pw.SizedBox(height: 2),
-                  pw.Text('www.trttech.ca',
-                      style: const pw.TextStyle(fontSize: 10)),
+                  pw.Divider(thickness: kBorderWidth),
+                  pw.Text(
+                    'Powered By TRT Technologies Ltd',
+                    style: baseTextStyle.copyWith(fontSize: 10),
+                  ),
+                  pw.SizedBox(height: kGapSmall),
+                  pw.Text(
+                    'www.trttech.ca',
+                    style: baseTextStyle.copyWith(fontSize: 10),
+                  ),
                 ],
               ),
             ],
