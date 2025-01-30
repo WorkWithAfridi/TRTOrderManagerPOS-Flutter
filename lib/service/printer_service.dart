@@ -21,9 +21,6 @@ class PrinterService {
     pw.TextStyle bodyTS = const pw.TextStyle(
       fontSize: 10,
     );
-    pw.TextStyle headerTS = const pw.TextStyle(
-      fontSize: 10,
-    );
 
     pdf.addPage(
       pw.Page(
@@ -107,8 +104,6 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
       fontSize: 12,
     );
 
-    const double cellPaddingValue = 4;
-
     StoreController storeController = Get.find<StoreController>();
 
     String type = order.metaData?.firstWhere(
@@ -148,9 +143,9 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
       pw.Page(
         clip: false,
         pageFormat: PdfPageFormat.roll80,
-        margin: pw.EdgeInsets.only(
-          right: Get.find<StoreController>().receiptPadding,
-        ),
+        // margin: pw.EdgeInsets.only(
+        //   right: Get.find<StoreController>().receiptPadding,
+        // ),
         build: (pw.Context context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -200,8 +195,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
               ),
               pw.SizedBox(height: 4),
 
-              // Table Header
-              // Example replacement for your 'Item'/'Total' table
+              // Table Header your 'Item'/'Total' table
               pw.Table(
                 columnWidths: {
                   0: const pw.FlexColumnWidth(4.5),
