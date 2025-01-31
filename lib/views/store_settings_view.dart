@@ -68,7 +68,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                                   return DropdownMenuItem<Printer>(
                                     value: printer,
                                     child: Text(
-                                      "${printer.name} - ${printer.model}",
+                                      "${printer.name}",
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   );

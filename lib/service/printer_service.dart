@@ -28,7 +28,7 @@ class PrinterService {
     pdf.addPage(
       pw.Page(
         clip: false,
-        pageFormat: PdfPageFormat.roll80,
+        pageFormat: roll80Format,
         margin: pw.EdgeInsets.only(
           right: Get.find<StoreController>().receiptRightPadding,
           left: Get.find<StoreController>().receiptLeftPadding,
