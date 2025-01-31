@@ -18,5 +18,5 @@
     "titleBar.inactiveBackground": "#1d1e2799",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "dart.flutterSdkPath": ".fvm/versions/3.27.1"
+  // "dart.flutterSdkPath": ".fvm/versions/3.27.1"
 }

@@ -1,32 +1,20 @@
-# pdf_printer
+# TRT Order Manager
 
-A new Flutter project.
+This repository contains the cross platform code of trt order manager for wordpress woocommerce apis'
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
--   [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
--   [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-# biriyani box
-
-flutter run -d chrome --dart-define=BASE_URL=https://thebiryanibox.ca --dart-define=CONSUMER_KEY=ck_e5cf8a7f769fe6561ddf099fcb2298795d36227e --dart-define=CONSUMER_SECRET=cs_68511645df3e7b43c66fd5fdbc0c33e82850447e --dart-define=VERSION=wc/v3
-
-# tandoori
-
-flutter run -d chrome --dart-define=BASE_URL=https://tandooripalacesk.ca --dart-define=CONSUMER_KEY=ck_21e4bfa13775c98415c0441684b011663e9a5288 --dart-define=CONSUMER_SECRET=cs_f3962cf0cc63ac6fbe62ef54d074d99d7ab41aae --dart-define=VERSION=wc/v3
-
-# littlespice
-
-flutter run -d chrome --dart-define=BASE_URL=https://littlespicesaskatoon.ca --dart-define=CONSUMER_KEY=ck_ad0a4c6d5876f9cb821e5dc20e1be23545ae3483 --dart-define=CONSUMER_SECRET=cs_c4d378b65bd00e1a4123232c52de5b99434f616c --dart-define=VERSION=wc/v3
-
-# cp
+## running on cp
 
 flutter run -d chrome --dart-define=BASE_URL=https://cp.trttechnologies.net --dart-define=VERSION=wc/v3 --dart-define=CONSUMER_KEY=ck_70df5cda3fdde3c2483c2744d06cbc187e5c715e --dart-define=CONSUMER_SECRET=cs_7a1d987a63684bf3c326f2013c4f39ae5d611db9
+
+flutter run -d linux --dart-define=BASE_URL=https://cp.trttechnologies.net --dart-define=VERSION=wc/v3 --dart-define=CONSUMER_KEY=ck_70df5cda3fdde3c2483c2744d06cbc187e5c715e --dart-define=CONSUMER_SECRET=cs_7a1d987a63684bf3c326f2013c4f39ae5d611db9
+
+## audioplayer cmake issue
+
+sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+
+## Deployment List
+
+-   Ensure timezone format of `<country>/<city>`, i.e. `America/Regina`
+-   Install the TRT Order Manager Api plugin
+-   Enable online orders from plugin in `Woocommerce -> TRT Config`
+-   Check Address at `Woocommerce -> Settings -> General`
