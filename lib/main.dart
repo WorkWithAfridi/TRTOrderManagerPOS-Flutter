@@ -28,9 +28,9 @@ Future<void> initApp() async {
   initializeTimeZones();
 
   try {
-    if (EvnConstant.consumerKey == "" ||
-        EvnConstant.consumerSecret == "" ||
-        EvnConstant.baseUrl == "") {
+    if (EvnConstant.consumerKey.isEmpty ||
+        EvnConstant.consumerSecret.isEmpty ||
+        EvnConstant.baseUrl.isEmpty) {
       throw Exception("Environment variables are not set");
     }
   } catch (e) {
@@ -41,28 +41,20 @@ Future<void> initApp() async {
   DependencyInjection.init();
   FirstBootChecker().checkFirstBoot();
 
-  // If running on Windows or Linux, initialize the window to start hidden.
+  // Initialize window manager for Windows and Linux.
   if (Platform.isWindows || Platform.isLinux) {
-    // Ensure window_manager is initialized.
     await windowManager.ensureInitialized();
-    // Set up window options: size, centering, title, and hide on startup.
     WindowOptions windowOptions = const WindowOptions(
       size: Size(1280, 720),
       center: true,
       title: "Order Manager",
-      skipTaskbar: true,
-      alwaysOnTop: true,
-      
     );
-    // When ready, hide the window (minimized to the tray).
     windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.hide();
+      await windowManager.hide(); // Start hidden in the tray.
     });
   }
 }
 
-/// The main application widget is wrapped in a [TrayManagerHandler]
-/// so that tray initialization and events are available throughout the app.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -84,8 +76,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// A widget that sets up and manages tray functionality.
-/// It initializes the tray icon, context menu, and handles tray events.
 class TrayManagerHandler extends StatefulWidget {
   final Widget child;
 
@@ -96,45 +86,30 @@ class TrayManagerHandler extends StatefulWidget {
 }
 
 class _TrayManagerHandlerState extends State<TrayManagerHandler>
-    with TrayListener {
+    with TrayListener, WindowListener {
   @override
   void initState() {
     super.initState();
-    // Only initialize tray functionality on Windows and Linux.
     if (Platform.isWindows || Platform.isLinux) {
       initTray();
+      windowManager.addListener(this);
     }
   }
 
-  /// Initializes the tray:
-  /// - Sets the tray icon (ensure the asset exists and is declared in pubspec.yaml).
-  /// - Defines a context menu with options to show, hide, or quit the app.
-  /// - Adds this widget as a listener to tray events.
   Future<void> initTray() async {
     await trayManager.setIcon('assets/icon/icon.png');
 
-    final List<MenuItem> menuItems = [
-      MenuItem(
-        key: 'show',
-        label: 'Show',
-      ),
-      MenuItem(
-        key: 'hide',
-        label: 'Hide',
-      ),
-      MenuItem(
-        key: 'quit',
-        label: 'Quit',
-      ),
+    final menuItems = [
+      MenuItem(key: 'show', label: 'Show'),
+      MenuItem(key: 'hide', label: 'Hide'),
+      MenuItem(key: 'quit', label: 'Quit'),
     ];
 
     await trayManager.setContextMenu(Menu(items: menuItems));
-
+    await windowManager.setPreventClose(true);
     trayManager.addListener(this);
   }
 
-  /// Handles clicks on the tray icon itself.
-  /// If the window is visible, hide it; if hidden, show and focus it.
   @override
   void onTrayIconMouseDown() async {
     bool isVisible = await windowManager.isVisible();
@@ -146,39 +121,47 @@ class _TrayManagerHandlerState extends State<TrayManagerHandler>
     }
   }
 
-  /// Handles clicks on tray menu items.
-  /// - 'show': Shows and focuses the window.
-  /// - 'hide': Hides the window.
-  /// - 'quit': Closes the window (and thus quits the app).
   @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
+  void onTrayMenuItemClick(MenuItem menuItem) async {
     switch (menuItem.key) {
       case 'show':
-        windowManager.show();
-        windowManager.focus();
+        await windowManager.restore();
+        await windowManager.show();
+        await windowManager.focus();
         break;
       case 'hide':
-        windowManager.hide();
+        await windowManager.hide();
         break;
       case 'quit':
-        windowManager.close();
-        break;
+        await windowManager.destroy();
+        exit(0); // Ensure the app fully exits.
       default:
         break;
     }
   }
 
   @override
+  Future<bool> onWindowClose() async {
+    await windowManager.hide();
+    return true; // Prevent default close behavior
+  }
+
+  @override
+  void onWindowMinimize() async {
+    await windowManager.hide(); // Hide instead of minimizing.
+  }
+
+  @override
   void dispose() {
     if (Platform.isWindows || Platform.isLinux) {
       trayManager.removeListener(this);
+      windowManager.removeListener(this);
     }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Simply return the wrapped child widget.
     return widget.child;
   }
 }
