@@ -8,7 +8,7 @@
 #define BundleDirectory = GetEnv("GITHUB_WORKSPACE")+"\.inno-bundle\"
 
 ;the flutter executable exe name
-#define MyAppExeName "pdf_printer.exe"
+#define MyAppExeName "order_manager.exe"
 
 [Setup]
 SetupIconFile={#IconPath}

@@ -1,6 +1,6 @@
 {
-    "name": "pdf_printer",
-    "short_name": "pdf_printer",
+    "name": "order_manager",
+    "short_name": "order_manager",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

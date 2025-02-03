@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:pdf_printer/controllers/dashboard_controller.dart';
-import 'package:pdf_printer/controllers/order_list_controller.dart';
-import 'package:pdf_printer/controllers/product_list_controller.dart';
-import 'package:pdf_printer/controllers/sales_report_controller.dart';
-import 'package:pdf_printer/controllers/store_controller.dart';
-import 'package:pdf_printer/views/dashboard/dashboard_drawer.dart';
-import 'package:pdf_printer/views/order_list/all_orders_view.dart';
-import 'package:pdf_printer/views/order_list/order_list_view.dart';
-import 'package:pdf_printer/views/product_list/product_list_view.dart';
-import 'package:pdf_printer/views/product_list/product_search_view.dart';
+import 'package:order_manager/controllers/dashboard_controller.dart';
+import 'package:order_manager/controllers/order_list_controller.dart';
+import 'package:order_manager/controllers/product_list_controller.dart';
+import 'package:order_manager/controllers/sales_report_controller.dart';
+import 'package:order_manager/controllers/store_controller.dart';
+import 'package:order_manager/views/dashboard/dashboard_drawer.dart';
+import 'package:order_manager/views/order_list/all_orders_view.dart';
+import 'package:order_manager/views/order_list/order_list_view.dart';
+import 'package:order_manager/views/product_list/product_list_view.dart';
+import 'package:order_manager/views/product_list/product_search_view.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
@@ -20,11 +20,15 @@ class DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<DashboardView> {
-  SalesReportController get salesReportController => Get.find<SalesReportController>();
+  SalesReportController get salesReportController =>
+      Get.find<SalesReportController>();
 
-  DashboardController get dashboardController => Get.find<DashboardController>();
-  OrderListController get orderListController => Get.find<OrderListController>();
-  ProductListController get productListController => Get.find<ProductListController>();
+  DashboardController get dashboardController =>
+      Get.find<DashboardController>();
+  OrderListController get orderListController =>
+      Get.find<OrderListController>();
+  ProductListController get productListController =>
+      Get.find<ProductListController>();
 
   @override
   void initState() {
@@ -41,7 +45,8 @@ class _DashboardViewState extends State<DashboardView> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        title: Obx(() => Text('TRT Order Manager - ${dashboardController.isProductTabSelected.value ? 'Store' : 'Orders'}')),
+        title: Obx(() => Text(
+            'TRT Order Manager - ${dashboardController.isProductTabSelected.value ? 'Store' : 'Orders'}')),
         actions: [
           Obx(
             () => dashboardController.isProductTabSelected.value
@@ -76,7 +81,10 @@ class _DashboardViewState extends State<DashboardView> {
                                       children: [
                                         Text(
                                           'Are you sure you want to ${controller.isStoreActive ? 'stop receiving online orders' : 'start receiving online orders'}?',
-                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .copyWith(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 22,
                                               ),
@@ -84,18 +92,21 @@ class _DashboardViewState extends State<DashboardView> {
                                         const Gap(20),
                                         Row(
                                           mainAxisSize: MainAxisSize.min,
-                                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
                                           children: [
                                             ElevatedButton(
                                               onPressed: () {
                                                 Get.back();
                                               },
-                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.red),
                                               child: const Padding(
                                                 padding: EdgeInsets.all(12.0),
                                                 child: Text(
                                                   'NO',
-                                                  style: TextStyle(color: Colors.white),
+                                                  style: TextStyle(
+                                                      color: Colors.white),
                                                 ),
                                               ),
                                             ),
@@ -106,12 +117,15 @@ class _DashboardViewState extends State<DashboardView> {
 
                                                 Get.back();
                                               },
-                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Colors.green),
                                               child: const Padding(
                                                 padding: EdgeInsets.all(12.0),
                                                 child: Text(
                                                   'YES',
-                                                  style: TextStyle(color: Colors.white),
+                                                  style: TextStyle(
+                                                      color: Colors.white),
                                                 ),
                                               ),
                                             ),
@@ -169,7 +183,8 @@ class _DashboardViewState extends State<DashboardView> {
               ? Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                      padding:
+                          const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -181,7 +196,8 @@ class _DashboardViewState extends State<DashboardView> {
                                 children: [
                                   const Text("All products: "),
                                   Switch(
-                                    value: productListController.isAllProductActive,
+                                    value: productListController
+                                        .isAllProductActive,
                                     activeTrackColor: Colors.green,
                                     activeColor: Colors.white,
                                     inactiveTrackColor: Colors.red,
@@ -193,47 +209,66 @@ class _DashboardViewState extends State<DashboardView> {
                                         builder: (context) {
                                           return AlertDialog(
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(16.0),
+                                              borderRadius:
+                                                  BorderRadius.circular(16.0),
                                             ),
                                             content: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
                                                   'Are you sure you want to set all products ${productListController.isAllProductActive ? 'out-of-stock' : 'in-stock'}?',
-                                                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                        fontWeight: FontWeight.bold,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyLarge!
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         fontSize: 22,
                                                       ),
                                                 ),
                                                 const Gap(20),
                                                 Row(
-                                                  mainAxisSize: MainAxisSize.min,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: [
                                                     ElevatedButton(
                                                       onPressed: () {
                                                         Get.back();
                                                       },
-                                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                              backgroundColor:
+                                                                  Colors.red),
                                                       child: const Padding(
-                                                        padding: EdgeInsets.all(12.0),
+                                                        padding: EdgeInsets.all(
+                                                            12.0),
                                                         child: Text(
                                                           'NO',
-                                                          style: TextStyle(color: Colors.white),
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
                                                         ),
                                                       ),
                                                     ),
                                                     const Gap(12),
                                                     ElevatedButton(
                                                       onPressed: () {
-                                                        productListController.toggleAllProductStatus();
+                                                        productListController
+                                                            .toggleAllProductStatus();
                                                         Get.back();
                                                       },
-                                                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                              backgroundColor:
+                                                                  Colors.green),
                                                       child: const Padding(
-                                                        padding: EdgeInsets.all(12.0),
+                                                        padding: EdgeInsets.all(
+                                                            12.0),
                                                         child: Text(
                                                           'YES',
-                                                          style: TextStyle(color: Colors.white),
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
                                                         ),
                                                       ),
                                                     ),
@@ -247,8 +282,11 @@ class _DashboardViewState extends State<DashboardView> {
                                     },
                                   ),
                                   Text(
-                                    productListController.isAllProductActive ? ' (in-stock)' : ' (out-of-stock)',
-                                    style: const TextStyle(fontWeight: FontWeight.bold),
+                                    productListController.isAllProductActive
+                                        ? ' (in-stock)'
+                                        : ' (out-of-stock)',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
                                   )
                                 ],
                               );
@@ -259,8 +297,10 @@ class _DashboardViewState extends State<DashboardView> {
                               ElevatedButton(
                                 onPressed: () async {
                                   productListController.isLoading.value = true;
-                                  await productListController.fetchAllProducts();
-                                  await Get.find<StoreController>().getStoreDetails();
+                                  await productListController
+                                      .fetchAllProducts();
+                                  await Get.find<StoreController>()
+                                      .getStoreDetails();
                                   productListController.isLoading.value = false;
                                 },
                                 child: const Padding(

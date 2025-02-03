@@ -6,11 +6,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf_printer/controllers/order_list_controller.dart';
-import 'package:pdf_printer/controllers/store_controller.dart';
-import 'package:pdf_printer/models/order_m.dart';
-import 'package:pdf_printer/models/sales_report_m.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
+import 'package:order_manager/controllers/order_list_controller.dart';
+import 'package:order_manager/controllers/store_controller.dart';
+import 'package:order_manager/models/order_m.dart';
+import 'package:order_manager/models/sales_report_m.dart';
+import 'package:order_manager/service/debug/logger.dart';
 import 'package:printing/printing.dart';
 
 class PrinterService {

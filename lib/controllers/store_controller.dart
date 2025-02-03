@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
-import 'package:pdf_printer/service/evn_constant.dart';
-import 'package:pdf_printer/service/network/network-c.dart';
-import 'package:pdf_printer/service/printer_service.dart';
+import 'package:order_manager/service/debug/logger.dart';
+import 'package:order_manager/service/evn_constant.dart';
+import 'package:order_manager/service/network/network-c.dart';
+import 'package:order_manager/service/printer_service.dart';
 import 'package:printing/printing.dart';
 
 class StoreController extends GetxController {

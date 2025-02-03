@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pdf_printer/controllers/product_list_controller.dart';
-import 'package:pdf_printer/controllers/store_controller.dart';
-import 'package:pdf_printer/service/first_boot_checker.dart';
-import 'package:pdf_printer/views/dashboard/dashboard_view.dart';
+import 'package:order_manager/controllers/product_list_controller.dart';
+import 'package:order_manager/controllers/store_controller.dart';
+import 'package:order_manager/service/first_boot_checker.dart';
+import 'package:order_manager/views/dashboard/dashboard_view.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -47,7 +47,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0FCA77), // Splash screen background color
+      backgroundColor:
+          const Color(0xFF0FCA77), // Splash screen background color
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

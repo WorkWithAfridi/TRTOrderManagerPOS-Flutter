@@ -1,5 +1,5 @@
 import 'package:get_storage/get_storage.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
+import 'package:order_manager/service/debug/logger.dart';
 
 class FirstBootChecker {
   // Singleton instance

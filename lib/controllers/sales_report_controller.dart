@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pdf_printer/models/sales_report_m.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
-import 'package:pdf_printer/service/evn_constant.dart';
-import 'package:pdf_printer/views/report/report_view.dart';
+import 'package:order_manager/models/sales_report_m.dart';
+import 'package:order_manager/service/debug/logger.dart';
+import 'package:order_manager/service/evn_constant.dart';
+import 'package:order_manager/views/report/report_view.dart';
 
 import '../service/network/network-c.dart';
 
@@ -15,10 +15,12 @@ class SalesReportController extends GetxController {
   List<SalesReportModel> salesReportList = [];
 
   // Method to fetch the sales report
-  Future<List<SalesReportModel>> getSalesReport({required String period}) async {
+  Future<List<SalesReportModel>> getSalesReport(
+      {required String period}) async {
     // period can be "day", "week", "two_weeks", or "month"
     String? baseUrl = EvnConstant.baseUrl;
-    String endpoint = "$baseUrl/wp-json/wc/v3/reports/sales"; // WooCommerce Reports endpoint
+    String endpoint =
+        "$baseUrl/wp-json/wc/v3/reports/sales"; // WooCommerce Reports endpoint
 
     isLoading.value = true; // Show loading spinner
 
@@ -42,7 +44,9 @@ class SalesReportController extends GetxController {
 
       if (response != null && response.statusCode == 200) {
         // Parse the response into SalesReportModel
-        salesReportList = (response.data as List).map((report) => SalesReportModel.fromJson(report)).toList();
+        salesReportList = (response.data as List)
+            .map((report) => SalesReportModel.fromJson(report))
+            .toList();
         Get.back();
         Get.to(
           () => SalesReportScreen(),
@@ -50,8 +54,10 @@ class SalesReportController extends GetxController {
         return salesReportList;
       } else {
         //show toast
-        Get.snackbar('Error', 'Failed to fetch report. Status code: ${response?.statusCode}');
-        throw Exception("Failed to fetch report. Status code: ${response?.statusCode}");
+        Get.snackbar('Error',
+            'Failed to fetch report. Status code: ${response?.statusCode}');
+        throw Exception(
+            "Failed to fetch report. Status code: ${response?.statusCode}");
       }
     } catch (e) {
       logger.e("Error fetching report: $e");

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pdf_printer/controllers/store_controller.dart';
-import 'package:pdf_printer/service/printer_service.dart';
+import 'package:order_manager/controllers/store_controller.dart';
+import 'package:order_manager/service/printer_service.dart';
 import 'package:printing/printing.dart';
 
 class StoreSettingsView extends StatefulWidget {

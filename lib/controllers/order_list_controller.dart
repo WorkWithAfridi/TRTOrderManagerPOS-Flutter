@@ -4,14 +4,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pdf_printer/controllers/store_controller.dart';
-import 'package:pdf_printer/models/order_m.dart';
-import 'package:pdf_printer/models/order_timer_m.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
-import 'package:pdf_printer/service/evn_constant.dart';
-import 'package:pdf_printer/service/network/network-c.dart';
-import 'package:pdf_printer/service/notification_sound_player.dart';
-import 'package:pdf_printer/service/printer_service.dart';
+import 'package:order_manager/controllers/store_controller.dart';
+import 'package:order_manager/models/order_m.dart';
+import 'package:order_manager/models/order_timer_m.dart';
+import 'package:order_manager/service/debug/logger.dart';
+import 'package:order_manager/service/evn_constant.dart';
+import 'package:order_manager/service/network/network-c.dart';
+import 'package:order_manager/service/notification_sound_player.dart';
+import 'package:order_manager/service/printer_service.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class OrderListController extends GetxController {
@@ -63,7 +63,8 @@ class OrderListController extends GetxController {
   Future getAllOrders({bool shouldShowLoading = true}) async {
     isAllLoading.value = shouldShowLoading;
     String? baseUrl = EvnConstant.baseUrl;
-    String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
+    String endpoint =
+        "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
 
     Map<String, dynamic> params = {
       'consumer_key': EvnConstant.consumerKey,
@@ -79,7 +80,9 @@ class OrderListController extends GetxController {
     );
 
     if (response != null && response.statusCode == 200) {
-      final fetchedOrders = (response.data as List).map((order) => OrderModel.fromJson(order)).toList();
+      final fetchedOrders = (response.data as List)
+          .map((order) => OrderModel.fromJson(order))
+          .toList();
       if (fetchedOrders.isEmpty) {
         pageNo.value -= 1;
         logger.d("No more orders to load");
@@ -113,7 +116,8 @@ class OrderListController extends GetxController {
       loadOrderListFromLocalStorage();
     }
     String? baseUrl = EvnConstant.baseUrl;
-    String endpoint = "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
+    String endpoint =
+        "$baseUrl/wp-json/wc/v3/orders"; // WooCommerce Products endpoint
 
     StoreController storeController = Get.find<StoreController>();
     // Get the location
@@ -127,8 +131,10 @@ class OrderListController extends GetxController {
       'consumer_key': EvnConstant.consumerKey,
       'consumer_secret': EvnConstant.consumerSecret,
       'per_page': 100,
-      'after': "${tzDateTime.toIso8601String().substring(0, 10)}T00:00:00", // Start of today
-      'before': "${tzDateTime.toIso8601String().substring(0, 10)}T23:59:59", // End of today
+      'after':
+          "${tzDateTime.toIso8601String().substring(0, 10)}T00:00:00", // Start of today
+      'before':
+          "${tzDateTime.toIso8601String().substring(0, 10)}T23:59:59", // End of today
     };
 
     try {
@@ -142,7 +148,9 @@ class OrderListController extends GetxController {
 
       if (response != null && response.statusCode == 200) {
         // Parse response to list of OrderModel
-        final fetchedOrders = (response.data as List).map((order) => OrderModel.fromJson(order)).toList();
+        final fetchedOrders = (response.data as List)
+            .map((order) => OrderModel.fromJson(order))
+            .toList();
         for (var order in fetchedOrders) {
           if (order.id != null) {
             if (!orderIds.contains(order.id!)) {
@@ -188,7 +196,8 @@ class OrderListController extends GetxController {
 
   void decreaseAllTimerBy1Minutes() {
     for (var order in orderTimers) {
-      logger.d("Timer: Current order id: ${order.orderId}, seconds remaining: ${order.secondsRemaining}");
+      logger.d(
+          "Timer: Current order id: ${order.orderId}, seconds remaining: ${order.secondsRemaining}");
       if (order.secondsRemaining != null) {
         if (order.secondsRemaining! > 0) {
           order.secondsRemaining = order.secondsRemaining! - 60;
@@ -255,7 +264,8 @@ class OrderListController extends GetxController {
   void saveOrderListToLocalStorage() {
     try {
       // Serialize orderList to JSON
-      final List<Map<String, dynamic>> jsonOrderList = orderList.map((order) => order.toJson()).toList();
+      final List<Map<String, dynamic>> jsonOrderList =
+          orderList.map((order) => order.toJson()).toList();
 
       // logger.d("Order list to be saved to local storage: $jsonOrderList");
 
@@ -271,9 +281,11 @@ class OrderListController extends GetxController {
 
   void loadOrderListFromLocalStorage() {
     try {
-      final List<dynamic>? jsonOrderList = _storage.read<List<dynamic>>('orderList');
+      final List<dynamic>? jsonOrderList =
+          _storage.read<List<dynamic>>('orderList');
       if (jsonOrderList != null) {
-        orderList = jsonOrderList.map((json) => OrderModel.fromJson(json)).toList();
+        orderList =
+            jsonOrderList.map((json) => OrderModel.fromJson(json)).toList();
         orderIds = orderList.map((order) => order.id!).toList();
         logger.d("OrderIds: $orderIds");
       }
@@ -286,10 +298,14 @@ class OrderListController extends GetxController {
 
   void loadTimerListFromLocalStorage() {
     try {
-      final List<dynamic>? jsonTimerList = _storage.read<List<dynamic>>('timerList');
-      logger.d("Timer list loaded from local storage. - ${jsonTimerList?.length}");
+      final List<dynamic>? jsonTimerList =
+          _storage.read<List<dynamic>>('timerList');
+      logger.d(
+          "Timer list loaded from local storage. - ${jsonTimerList?.length}");
       if (jsonTimerList != null) {
-        orderTimers = jsonTimerList.map((json) => OrderTimerModel.fromJson(json)).toList();
+        orderTimers = jsonTimerList
+            .map((json) => OrderTimerModel.fromJson(json))
+            .toList();
         update();
         // logger.d("Loaded timerlist from local storage : $jsonTimerList");
         // logger.d("Timer list loaded from local storage. - ${orderTimers.length}");
@@ -316,7 +332,8 @@ class OrderListController extends GetxController {
   void saveTimerToLocalStorage() {
     try {
       // Serialize orderList to JSON
-      final List<dynamic> jsonTimerList = orderTimers.map((timer) => timer.toJson()).toList();
+      final List<dynamic> jsonTimerList =
+          orderTimers.map((timer) => timer.toJson()).toList();
 
       // logger.d("Timer list to be saved to local storage: $jsonTimerList");
 
@@ -340,7 +357,8 @@ class OrderListController extends GetxController {
         return null;
       }
 
-      return (order.secondsRemaining! ~/ 60); // Return minutes if found, otherwise null
+      return (order.secondsRemaining! ~/
+          60); // Return minutes if found, otherwise null
     } catch (e) {
       logger.e("Error getting minutes remaining for order #$orderId: $e");
       return null;
@@ -352,14 +370,16 @@ class OrderListController extends GetxController {
     String status,
   ) async {
     String? baseUrl = EvnConstant.baseUrl;
-    final String endpoint = "$baseUrl/wp-json/wc/v3/orders/$orderId"; // Corrected endpoint
+    final String endpoint =
+        "$baseUrl/wp-json/wc/v3/orders/$orderId"; // Corrected endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.PUT,
         params: {
           'consumer_key': EvnConstant.consumerKey, // Replace with actual key
-          'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
+          'consumer_secret':
+              EvnConstant.consumerSecret, // Replace with actual secret
           'status': status, // Only updating the status field
         },
       );
@@ -368,7 +388,8 @@ class OrderListController extends GetxController {
         logger.d("Order status updated successfully. Status: $status");
         return true;
       } else {
-        throw Exception("Failed to update order status. Status code: ${response?.statusCode}");
+        throw Exception(
+            "Failed to update order status. Status code: ${response?.statusCode}");
       }
     } catch (e) {
       logger.e("Error updating status for order #$orderId: $e");
@@ -380,14 +401,16 @@ class OrderListController extends GetxController {
     int orderId,
   ) async {
     String? baseUrl = EvnConstant.baseUrl;
-    final String endpoint = "$baseUrl/wp-json/wc/v3/trt/order/email"; // Corrected endpoint
+    final String endpoint =
+        "$baseUrl/wp-json/wc/v3/trt/order/email"; // Corrected endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.POST,
         params: {
           'consumer_key': EvnConstant.consumerKey, // Replace with actual key
-          'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
+          'consumer_secret':
+              EvnConstant.consumerSecret, // Replace with actual secret
         },
         body: {
           'order_id': orderId,
@@ -399,7 +422,8 @@ class OrderListController extends GetxController {
         logger.d("Notification sent successfully.");
         return true;
       } else {
-        throw Exception("Failed to notify customer. Status code: ${response?.statusCode}");
+        throw Exception(
+            "Failed to notify customer. Status code: ${response?.statusCode}");
       }
     } catch (e) {
       logger.e("Error notifying customer for order #$orderId: $e");

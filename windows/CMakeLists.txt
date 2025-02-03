@@ -1,6 +1,6 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
-project(pdf_printer LANGUAGES CXX)
+project(order_manager LANGUAGES CXX)
 
 # Set PDFium version and architecture for the printing package
 set(PDFIUM_VERSION "4929" CACHE STRING "" FORCE)
@@ -8,7 +8,7 @@ set(PDFIUM_ARCH "x64" CACHE STRING "" FORCE)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "pdf_printer")
+set(BINARY_NAME "order_manager")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

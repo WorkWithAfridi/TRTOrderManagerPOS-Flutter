@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.trttech.ordermanager.pdf_printer"
+    namespace = "com.trttech.ordermanager.order_manager"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
