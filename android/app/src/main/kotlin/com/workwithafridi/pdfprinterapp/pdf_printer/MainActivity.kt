@@ -1,4 +1,4 @@
-package com.workwithafridi.pdfprinterapp.pdf_printer
+package com.trttech.ordermanager.pdf_printer
 
 import io.flutter.embedding.android.FlutterActivity
 

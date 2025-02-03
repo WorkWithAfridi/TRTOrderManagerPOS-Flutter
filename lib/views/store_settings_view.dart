@@ -68,7 +68,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                                   return DropdownMenuItem<Printer>(
                                     value: printer,
                                     child: Text(
-                                      "${printer.name}",
+                                      printer.name,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   );
@@ -150,7 +150,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "License Information",
+              "Single User Licensed to",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const Divider(),

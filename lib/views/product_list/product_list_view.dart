@@ -37,7 +37,7 @@ class ProductsPage extends StatelessWidget {
                         onTap: () {
                           // Toggle the product status
                           final newStatus = product.stockStatus == 'instock' ? 'outofstock' : 'instock';
-                          controller.products.where((p) => p.id == product.id).first.status = newStatus;
+                          controller.products.where((p) => p.id == product.id).first.stockStatus = newStatus;
                           controller.toggleProductStatus(
                             isActive: newStatus == 'instock',
                             productId: product.id ?? 0,
