@@ -360,7 +360,7 @@ class OrderListController extends GetxController {
       return (order.secondsRemaining! ~/
           60); // Return minutes if found, otherwise null
     } catch (e) {
-      logger.e("Error getting minutes remaining for order #$orderId: $e");
+      logger.w("Error getting minutes remaining for order #$orderId: $e");
       return null;
     }
   }
