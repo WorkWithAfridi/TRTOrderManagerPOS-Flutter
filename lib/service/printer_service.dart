@@ -440,7 +440,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                               order.billing?.email ?? '',
                               style: baseTextStyle,
                             ),
-                            if (type == 'delivery' &&
+                            if (type.toLowerCase() == 'delivery' &&
                                 (order.shipping?.address1 ?? '').isNotEmpty)
                               pw.Column(
                                 crossAxisAlignment: pw.CrossAxisAlignment.start,
