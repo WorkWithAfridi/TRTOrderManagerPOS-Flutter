@@ -1,7 +1,7 @@
 ;Inno Setup Script
 ;#define MyAppVersion "$env:VERSION"
 
-#define MyAppName "TRTOrderManager"
+#define MyAppName "TRT Order Manager"
 #define MyAppPublisher "trttech.ca"
 #define MyAppURL "https://trttech.ca"
 #define IconPath = GetEnv("GITHUB_WORKSPACE")+"\assets\icon\icon.ico"

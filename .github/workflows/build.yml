@@ -18,6 +18,10 @@ on:
             consumersecret:
                 description: 'Define consumer secret'
                 required: true
+            bundleXprinter:
+                description: 'Bundle Xprinter Drivers'
+                type: boolean
+                default: false
 
 jobs:
     build-windows-release:
@@ -87,7 +91,8 @@ jobs:
               run: |
                   &"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" $env:GITHUB_WORKSPACE/build_script.iss
 
-            - name: Copy XPrinter Driver & Util
+            - if: ${{ github.event.inputs.bundleXprinter == 'true' }}
+              name: Copy XPrinter Driver & Util
               shell: bash
               working-directory: ${{ github.workspace }}
               run: |
