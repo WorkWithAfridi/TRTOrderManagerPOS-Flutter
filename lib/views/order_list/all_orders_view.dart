@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:pdf_printer/controllers/order_list_controller.dart';
-import 'package:pdf_printer/service/printer_service.dart';
+import 'package:order_manager/controllers/order_list_controller.dart';
+import 'package:order_manager/service/printer_service.dart';
 
 class AllOrdersPage extends StatefulWidget {
   const AllOrdersPage({super.key});
@@ -66,20 +66,29 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
                             children: [
                               // Order ID and Status
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Order #${order.id} : ${order.billing?.firstName} ${order.billing?.lastName}',
-                                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(
                                           fontWeight: FontWeight.bold,
                                         ),
                                   ),
                                   Chip(
                                     label: Text(
-                                      (order.status ?? "NO-STATUS")[0].toUpperCase() + (order.status ?? "NO-STATUS").substring(1),
-                                      style: const TextStyle(color: Colors.white),
+                                      (order.status ?? "NO-STATUS")[0]
+                                              .toUpperCase() +
+                                          (order.status ?? "NO-STATUS")
+                                              .substring(1),
+                                      style:
+                                          const TextStyle(color: Colors.white),
                                     ),
-                                    backgroundColor: _getStatusColor(order.status ?? 'NO-STATUS'),
+                                    backgroundColor: _getStatusColor(
+                                        order.status ?? 'NO-STATUS'),
                                   ),
                                 ],
                               ),
@@ -95,7 +104,10 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
 
                               Text(
                                 'Items:',
-                                style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
 
@@ -104,22 +116,28 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: (order.lineItems ?? []).length,
                                 itemBuilder: (context, productIndex) {
-                                  final product = order.lineItems?[productIndex];
+                                  final product =
+                                      order.lineItems?[productIndex];
                                   return Padding(
                                     padding: const EdgeInsets.only(bottom: 4),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.check_circle, size: 20, color: Colors.green),
+                                        const Icon(Icons.check_circle,
+                                            size: 20, color: Colors.green),
                                         const SizedBox(width: 8),
                                         Expanded(
                                           child: Text(
                                             '${product?.name} x${product?.quantity}',
-                                            style: Theme.of(context).textTheme.bodyMedium,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
                                           ),
                                         ),
                                         Text(
                                           '\$${((product?.price ?? 0) * (product?.quantity ?? 0)).toStringAsFixed(2)}',
-                                          style: Theme.of(context).textTheme.bodyMedium,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium,
                                         ),
                                       ],
                                     ),
@@ -203,15 +221,21 @@ class _AllOrdersPageState extends State<AllOrdersPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      order.status = status.toLowerCase(); // Use lowercase to match API convention
+                      order.status = status
+                          .toLowerCase(); // Use lowercase to match API convention
 
-                      controller.updateOrderStatus(order.id, status.toLowerCase());
+                      controller.updateOrderStatus(
+                          order.id, status.toLowerCase());
                     });
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: order.status == status.toLowerCase() ? Colors.blueAccent : Colors.grey[300],
-                    foregroundColor: order.status == status.toLowerCase() ? Colors.white : Colors.black,
+                    backgroundColor: order.status == status.toLowerCase()
+                        ? Colors.blueAccent
+                        : Colors.grey[300],
+                    foregroundColor: order.status == status.toLowerCase()
+                        ? Colors.white
+                        : Colors.black,
                   ),
                   child: Text(status),
                 ),

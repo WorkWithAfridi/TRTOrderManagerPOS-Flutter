@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pdf_printer/models/product_m.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
-import 'package:pdf_printer/service/evn_constant.dart';
+import 'package:order_manager/models/product_m.dart';
+import 'package:order_manager/service/debug/logger.dart';
+import 'package:order_manager/service/evn_constant.dart';
 
 import '../service/network/network-c.dart';
 
@@ -20,14 +20,16 @@ class ProductListController extends GetxController {
   Future<List<ProductModel>?> fetchAllProducts() async {
     checkIfAllProductActive();
     String? baseUrl = EvnConstant.baseUrl;
-    String endpoint = "$baseUrl/wp-json/wc/v3/products"; // WooCommerce Products endpoint
+    String endpoint =
+        "$baseUrl/wp-json/wc/v3/products"; // WooCommerce Products endpoint
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.GET,
         params: {
           'consumer_key': EvnConstant.consumerKey, // Replace with actual key
-          'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
+          'consumer_secret':
+              EvnConstant.consumerSecret, // Replace with actual secret
           'per_page': 100,
           'page': currentPage,
         },
@@ -36,7 +38,9 @@ class ProductListController extends GetxController {
       // logger.d("Response data: ${response?.data}");
 
       if (response != null && response.statusCode == 200) {
-        List<ProductModel> fetchedProducts = (response.data as List).map((product) => ProductModel.fromJson(product)).toList();
+        List<ProductModel> fetchedProducts = (response.data as List)
+            .map((product) => ProductModel.fromJson(product))
+            .toList();
         for (var product in fetchedProducts) {
           if (product.id != null) {
             if (!productIds.contains(product.id!)) {
@@ -53,7 +57,8 @@ class ProductListController extends GetxController {
         update();
         return products;
       } else {
-        throw Exception("Failed to fetch products. Status code: ${response?.statusCode}");
+        throw Exception(
+            "Failed to fetch products. Status code: ${response?.statusCode}");
       }
     } catch (e) {
       logger.e("Error fetching products: $e");
@@ -67,15 +72,19 @@ class ProductListController extends GetxController {
     required bool isActive, // true for publish, false for deactivate
   }) async {
     String? baseUrl = EvnConstant.baseUrl;
-    final String endpoint = "$baseUrl/wp-json/wc/v3/products/$productId"; // Endpoint for updating product
+    final String endpoint =
+        "$baseUrl/wp-json/wc/v3/products/$productId"; // Endpoint for updating product
     try {
       final response = await _networkController.request(
         url: endpoint,
         method: Method.PUT,
         params: {
           'consumer_key': EvnConstant.consumerKey, // Replace with actual key
-          'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
-          'stock_status': isActive ? 'instock' : 'outofstock', // Set status based on the toggle
+          'consumer_secret':
+              EvnConstant.consumerSecret, // Replace with actual secret
+          'stock_status': isActive
+              ? 'instock'
+              : 'outofstock', // Set status based on the toggle
         },
       );
 
@@ -83,7 +92,8 @@ class ProductListController extends GetxController {
         // fetchAllProducts();
         return true;
       } else {
-        throw Exception("Failed to update product. Status code: ${response?.statusCode}");
+        throw Exception(
+            "Failed to update product. Status code: ${response?.statusCode}");
       }
     } catch (e) {
       logger.e("Error updating product: $e");
@@ -109,7 +119,8 @@ class ProductListController extends GetxController {
     }
     update();
     String? baseUrl = EvnConstant.baseUrl;
-    final String endpoint = "$baseUrl/wp-json/wc/v3/products/batch"; // Endpoint for updating product
+    final String endpoint =
+        "$baseUrl/wp-json/wc/v3/products/batch"; // Endpoint for updating product
 
     try {
       final response = await _networkController.request(
@@ -117,7 +128,8 @@ class ProductListController extends GetxController {
         method: Method.PUT,
         params: {
           'consumer_key': EvnConstant.consumerKey, // Replace with actual key
-          'consumer_secret': EvnConstant.consumerSecret, // Replace with actual secret
+          'consumer_secret':
+              EvnConstant.consumerSecret, // Replace with actual secret
 
           "update": [
             ...products.map((product) => {
@@ -133,7 +145,8 @@ class ProductListController extends GetxController {
         fetchAllProducts();
         return true;
       } else {
-        throw Exception("Failed to update batch products. Status code: ${response?.statusCode}");
+        throw Exception(
+            "Failed to update batch products. Status code: ${response?.statusCode}");
       }
     } catch (e) {
       logger.e("Error updating product: $e");

@@ -1,9 +1,10 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
+import 'package:order_manager/service/debug/logger.dart';
 
 class NotificationSoundPlayer {
   // Singleton instance
-  static final NotificationSoundPlayer _instance = NotificationSoundPlayer._internal();
+  static final NotificationSoundPlayer _instance =
+      NotificationSoundPlayer._internal();
 
   // Private constructor
   NotificationSoundPlayer._internal();

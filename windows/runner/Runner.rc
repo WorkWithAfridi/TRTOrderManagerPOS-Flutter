@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.workwithafridi.pdfprinterapp" "\0"
-            VALUE "FileDescription", "pdf_printer" "\0"
+            VALUE "CompanyName", "com.trttech.ordermanager" "\0"
+            VALUE "FileDescription", "trt_order_manager" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "com.workwithafridi.trtordermanager" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.workwithafridi.pdfprinterapp. All rights reserved." "\0"
-            VALUE "OriginalFilename", "pdf_printer.exe" "\0"
-            VALUE "ProductName", "pdf_printer" "\0"
+            VALUE "InternalName", "com.trttech.ordermanager" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 com.trttech.ordermanager. All rights reserved." "\0"
+            VALUE "OriginalFilename", "trt_order_manager.exe" "\0"
+            VALUE "ProductName", "trt_order_manager" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

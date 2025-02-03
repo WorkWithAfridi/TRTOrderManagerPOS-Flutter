@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:pdf_printer/controllers/product_list_controller.dart';
+import 'package:order_manager/controllers/product_list_controller.dart';
 
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
@@ -25,7 +25,8 @@ class ProductsPage extends StatelessWidget {
                   },
                   child: GridView.builder(
                     itemCount: products.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4, // Number of columns
                       crossAxisSpacing: 8.0, // Horizontal spacing
                       mainAxisSpacing: 8.0, // Vertical spacing
@@ -36,8 +37,13 @@ class ProductsPage extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           // Toggle the product status
-                          final newStatus = product.stockStatus == 'instock' ? 'outofstock' : 'instock';
-                          controller.products.where((p) => p.id == product.id).first.status = newStatus;
+                          final newStatus = product.stockStatus == 'instock'
+                              ? 'outofstock'
+                              : 'instock';
+                          controller.products
+                              .where((p) => p.id == product.id)
+                              .first
+                              .stockStatus = newStatus;
                           controller.toggleProductStatus(
                             isActive: newStatus == 'instock',
                             productId: product.id ?? 0,
@@ -60,9 +66,14 @@ class ProductsPage extends StatelessWidget {
                                       bottomLeft: Radius.circular(8),
                                     ),
                                     child: CachedNetworkImage(
-                                      imageUrl: (product.images ?? []).isEmpty || product.images == null ? '' : product.images?.first.src ?? '',
+                                      imageUrl:
+                                          (product.images ?? []).isEmpty ||
+                                                  product.images == null
+                                              ? ''
+                                              : product.images?.first.src ?? '',
                                       fit: BoxFit.cover,
-                                      errorWidget: (context, url, error) => const Icon(
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(
                                         Icons.image,
                                         color: Colors.grey,
                                       ),
@@ -80,11 +91,13 @@ class ProductsPage extends StatelessWidget {
                                     right: 12,
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '#${product.id ?? ''}',
-                                        style: const TextStyle(fontWeight: FontWeight.normal),
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.normal),
                                       ),
                                       const SizedBox(height: 8.0),
                                       Text(
@@ -96,17 +109,23 @@ class ProductsPage extends StatelessWidget {
                                       ),
                                       const Spacer(),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
                                             child: Text(
-                                              product.stockStatus == 'instock' ? 'In-Stock' : 'Out of Stock',
-                                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                              product.stockStatus == 'instock'
+                                                  ? 'In-Stock'
+                                                  : 'Out of Stock',
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                           Switch(
-                                            value: product.stockStatus == 'instock',
+                                            value: product.stockStatus ==
+                                                'instock',
                                             activeTrackColor: Colors.green,
                                             activeColor: Colors.white,
                                             inactiveTrackColor: Colors.red,
@@ -117,54 +136,100 @@ class ProductsPage extends StatelessWidget {
                                                 barrierDismissible: false,
                                                 builder: (context) {
                                                   return AlertDialog(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(16.0),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16.0),
                                                     ),
                                                     content: Column(
-                                                      mainAxisSize: MainAxisSize.min,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
                                                       children: [
                                                         Text(
                                                           'Are you sure you want to set product to ${product.stockStatus == 'instock' ? 'out-of-stock' : 'in-stock'}?',
-                                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 22,
-                                                              ),
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodyLarge!
+                                                                  .copyWith(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        22,
+                                                                  ),
                                                         ),
                                                         const Gap(20),
                                                         Row(
-                                                          mainAxisSize: MainAxisSize.min,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
                                                           children: [
                                                             ElevatedButton(
                                                               onPressed: () {
                                                                 Get.back();
                                                               },
-                                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                                              child: const Padding(
-                                                                padding: EdgeInsets.all(12.0),
+                                                              style: ElevatedButton
+                                                                  .styleFrom(
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .red),
+                                                              child:
+                                                                  const Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            12.0),
                                                                 child: Text(
                                                                   'NO',
-                                                                  style: TextStyle(color: Colors.white),
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
                                                                 ),
                                                               ),
                                                             ),
                                                             const Gap(12),
                                                             ElevatedButton(
                                                               onPressed: () {
-                                                                controller.products.where((p) => p.id == product.id).first.stockStatus =
-                                                                    value ? 'instock' : 'outofstock';
-                                                                controller.toggleProductStatus(
-                                                                  isActive: value,
-                                                                  productId: product.id ?? 0,
+                                                                controller
+                                                                        .products
+                                                                        .where((p) =>
+                                                                            p.id ==
+                                                                            product
+                                                                                .id)
+                                                                        .first
+                                                                        .stockStatus =
+                                                                    value
+                                                                        ? 'instock'
+                                                                        : 'outofstock';
+                                                                controller
+                                                                    .toggleProductStatus(
+                                                                  isActive:
+                                                                      value,
+                                                                  productId:
+                                                                      product.id ??
+                                                                          0,
                                                                 );
-                                                                controller.update();
+                                                                controller
+                                                                    .update();
                                                                 Get.back();
                                                               },
-                                                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                                              child: const Padding(
-                                                                padding: EdgeInsets.all(12.0),
+                                                              style: ElevatedButton
+                                                                  .styleFrom(
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .green),
+                                                              child:
+                                                                  const Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            12.0),
                                                                 child: Text(
                                                                   'YES',
-                                                                  style: TextStyle(color: Colors.white),
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
                                                                 ),
                                                               ),
                                                             ),

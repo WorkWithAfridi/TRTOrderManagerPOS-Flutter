@@ -8,7 +8,7 @@
 PRODUCT_NAME = TRT Order Manager
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.workwithafridi.trtordermanager
+PRODUCT_BUNDLE_IDENTIFIER = com.trttech.ordermanager
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2024 com.workwithafridi.pdfprinterapp. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024 com.trttech.ordermanager. All rights reserved.

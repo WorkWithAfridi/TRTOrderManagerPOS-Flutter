@@ -1,14 +1,14 @@
 ;Inno Setup Script
 ;#define MyAppVersion "$env:VERSION"
 
-#define MyAppName "TRTOrderManager"
+#define MyAppName "TRT Order Manager"
 #define MyAppPublisher "trttech.ca"
 #define MyAppURL "https://trttech.ca"
 #define IconPath = GetEnv("GITHUB_WORKSPACE")+"\assets\icon\icon.ico"
 #define BundleDirectory = GetEnv("GITHUB_WORKSPACE")+"\.inno-bundle\"
 
 ;the flutter executable exe name
-#define MyAppExeName "pdf_printer.exe"
+#define MyAppExeName "order_manager.exe"
 
 [Setup]
 SetupIconFile={#IconPath}

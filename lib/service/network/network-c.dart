@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide FormData, Response;
-import 'package:pdf_printer/service/api/api_endpoints.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
+import 'package:order_manager/service/api/api_endpoints.dart';
+import 'package:order_manager/service/debug/logger.dart';
 
 enum Method { POST, GET, PUT, DELETE, PATCH }
 
@@ -48,12 +48,14 @@ class NetworkController extends GetxController {
     _dio!.interceptors.add(
       InterceptorsWrapper(
         onRequest: (requestOptions, handler) {
-          logger.d("REQUEST[${requestOptions.method}] => PATH: ${requestOptions.path}"
+          logger.d(
+              "REQUEST[${requestOptions.method}] => PATH: ${requestOptions.path}"
               "=> REQUEST VALUES: ${requestOptions.queryParameters} => HEADERS: ${requestOptions.headers}");
           return handler.next(requestOptions);
         },
         onResponse: (response, handler) {
-          logger.d("RESPONSE[${response.statusCode}] => DATA: ${response.data}");
+          logger
+              .d("RESPONSE[${response.statusCode}] => DATA: ${response.data}");
           return handler.next(response);
         },
         onError: (err, handler) {

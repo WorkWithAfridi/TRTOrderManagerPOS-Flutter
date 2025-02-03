@@ -3,19 +3,21 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
-import 'package:pdf_printer/service/dependency_injection_service.dart';
-import 'package:pdf_printer/service/evn_constant.dart';
-import 'package:pdf_printer/service/first_boot_checker.dart';
-import 'package:pdf_printer/views/splash/splash_view.dart';
+import 'package:order_manager/service/debug/logger.dart';
+import 'package:order_manager/service/dependency_injection_service.dart';
+import 'package:order_manager/service/evn_constant.dart';
+import 'package:order_manager/service/first_boot_checker.dart';
+import 'package:order_manager/views/splash/splash_view.dart';
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:window_manager/window_manager.dart';
+import 'package:tray_manager/tray_manager.dart';
 
+/// Initialize timezone data.
 void initializeTimeZones() {
-  // Initialize time zones data
   tz.initializeTimeZones();
 }
 
-void main() async {
+Future<void> main() async {
   await initApp();
   runApp(const MyApp());
 }
@@ -26,7 +28,9 @@ Future<void> initApp() async {
   initializeTimeZones();
 
   try {
-    if (EvnConstant.consumerKey == "" || EvnConstant.consumerSecret == "" || EvnConstant.baseUrl == "") {
+    if (EvnConstant.consumerKey.isEmpty ||
+        EvnConstant.consumerSecret.isEmpty ||
+        EvnConstant.baseUrl.isEmpty) {
       throw Exception("Environment variables are not set");
     }
   } catch (e) {
@@ -36,6 +40,19 @@ Future<void> initApp() async {
 
   DependencyInjection.init();
   FirstBootChecker().checkFirstBoot();
+
+  // Initialize window manager for Windows and Linux.
+  if (Platform.isWindows || Platform.isLinux) {
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = const WindowOptions(
+      size: Size(1280, 720),
+      center: true,
+      title: "Order Manager",
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.hide(); // Start hidden in the tray.
+    });
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -43,20 +60,108 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Order Manager',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0FCA77),
+    return TrayManagerHandler(
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Order Manager',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF0FCA77),
+          ),
+          useMaterial3: true,
         ),
-        useMaterial3: true,
+        home: const SplashScreen(),
       ),
-      home: const SplashScreen(),
     );
   }
 }
-// flutter run -d chrome --dart-define=BASE_URL=https://cp.trttechnologies.net --dart-define=CONSUMER_KEY=ck_bc2663992cdf540bf18572a3b8ed25527b472001 --dart-define=CONSUMER_SECRET=cs_f8dcc9937cb605113bfc0431bbe2c219d1b18ed8 --dart-define=VERSION=wc/v3
 
+class TrayManagerHandler extends StatefulWidget {
+  final Widget child;
 
+  const TrayManagerHandler({super.key, required this.child});
 
+  @override
+  _TrayManagerHandlerState createState() => _TrayManagerHandlerState();
+}
+
+class _TrayManagerHandlerState extends State<TrayManagerHandler>
+    with TrayListener, WindowListener {
+  @override
+  void initState() {
+    super.initState();
+    if (Platform.isWindows || Platform.isLinux) {
+      initTray();
+      windowManager.addListener(this);
+    }
+  }
+
+  Future<void> initTray() async {
+    await trayManager.setIcon('assets/icon/icon.png');
+
+    final menuItems = [
+      MenuItem(key: 'show', label: 'Show'),
+      MenuItem(key: 'hide', label: 'Hide'),
+      MenuItem(key: 'quit', label: 'Quit'),
+    ];
+
+    await trayManager.setContextMenu(Menu(items: menuItems));
+    await windowManager.setPreventClose(true);
+    trayManager.addListener(this);
+  }
+
+  @override
+  void onTrayIconMouseDown() async {
+    bool isVisible = await windowManager.isVisible();
+    if (isVisible) {
+      await windowManager.hide();
+    } else {
+      await windowManager.show();
+      await windowManager.focus();
+    }
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) async {
+    switch (menuItem.key) {
+      case 'show':
+        await windowManager.restore();
+        await windowManager.show();
+        await windowManager.focus();
+        break;
+      case 'hide':
+        await windowManager.hide();
+        break;
+      case 'quit':
+        await windowManager.destroy();
+        exit(0); // Ensure the app fully exits.
+      default:
+        break;
+    }
+  }
+
+  @override
+  Future<bool> onWindowClose() async {
+    await windowManager.hide();
+    return true; // Prevent default close behavior
+  }
+
+  @override
+  void onWindowMinimize() async {
+    await windowManager.hide(); // Hide instead of minimizing.
+  }
+
+  @override
+  void dispose() {
+    if (Platform.isWindows || Platform.isLinux) {
+      trayManager.removeListener(this);
+      windowManager.removeListener(this);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:pdf_printer/controllers/order_list_controller.dart';
-import 'package:pdf_printer/service/printer_service.dart';
+import 'package:order_manager/controllers/order_list_controller.dart';
+import 'package:order_manager/service/printer_service.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -46,23 +46,42 @@ class _OrdersPageState extends State<OrdersPage> {
                       controller.update();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: controller.selectedOrderFilterStatus.value == "all" ? Colors.teal : Colors.white,
-                      foregroundColor: controller.selectedOrderFilterStatus.value == "all" ? Colors.white : Colors.teal,
+                      backgroundColor:
+                          controller.selectedOrderFilterStatus.value == "all"
+                              ? Colors.teal
+                              : Colors.white,
+                      foregroundColor:
+                          controller.selectedOrderFilterStatus.value == "all"
+                              ? Colors.white
+                              : Colors.teal,
                     ),
                     child: const Text("All"),
                   ),
                   const Gap(8),
-                  ...controller.orderList.map((order) => order.status).toList().toSet().map(
+                  ...controller.orderList
+                      .map((order) => order.status)
+                      .toList()
+                      .toSet()
+                      .map(
                         (e) => Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: ElevatedButton(
                             onPressed: () {
-                              controller.selectedOrderFilterStatus.value = e ?? "all";
+                              controller.selectedOrderFilterStatus.value =
+                                  e ?? "all";
                               controller.update();
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: controller.selectedOrderFilterStatus.value == e ? Colors.teal : Colors.white,
-                              foregroundColor: controller.selectedOrderFilterStatus.value == e ? Colors.white : Colors.teal,
+                              backgroundColor:
+                                  controller.selectedOrderFilterStatus.value ==
+                                          e
+                                      ? Colors.teal
+                                      : Colors.white,
+                              foregroundColor:
+                                  controller.selectedOrderFilterStatus.value ==
+                                          e
+                                      ? Colors.white
+                                      : Colors.teal,
                             ),
                             child: Text(
                                 "${e.toString()[0].toUpperCase()}${e.toString().substring(1).toLowerCase()} (${controller.orderList.map((order) => order.status == e).toList().where((element) => element).length})"),
@@ -75,7 +94,8 @@ class _OrdersPageState extends State<OrdersPage> {
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () {
-                    return controller.getOrderList(context, shouldLoadFromLocalStorage: false);
+                    return controller.getOrderList(context,
+                        shouldLoadFromLocalStorage: false);
                   },
                   child: controller.isLoading.value
                       ? const Center(child: CircularProgressIndicator())
@@ -87,7 +107,12 @@ class _OrdersPageState extends State<OrdersPage> {
                               itemBuilder: (context, index) {
                                 final order = orders[index];
 
-                                if (controller.selectedOrderFilterStatus.value != "all" && order.status != controller.selectedOrderFilterStatus.value) {
+                                if (controller
+                                            .selectedOrderFilterStatus.value !=
+                                        "all" &&
+                                    order.status !=
+                                        controller
+                                            .selectedOrderFilterStatus.value) {
                                   return const SizedBox.shrink();
                                 }
 
@@ -101,24 +126,35 @@ class _OrdersPageState extends State<OrdersPage> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         // Order ID and Status
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Text(
                                               'Order #${order.id} : ${order.billing?.firstName} ${order.billing?.lastName}',
-                                              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium!
+                                                  .copyWith(
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                             ),
                                             Chip(
                                               label: Text(
-                                                (order.status ?? "NO-STATUS")[0].toUpperCase() + (order.status ?? "NO-STATUS").substring(1),
-                                                style: const TextStyle(color: Colors.white),
+                                                (order.status ?? "NO-STATUS")[0]
+                                                        .toUpperCase() +
+                                                    (order.status ??
+                                                            "NO-STATUS")
+                                                        .substring(1),
+                                                style: const TextStyle(
+                                                    color: Colors.white),
                                               ),
-                                              backgroundColor: _getStatusColor(order.status ?? 'NO-STATUS'),
+                                              backgroundColor: _getStatusColor(
+                                                  order.status ?? 'NO-STATUS'),
                                             ),
                                           ],
                                         ),
@@ -128,7 +164,9 @@ class _OrdersPageState extends State<OrdersPage> {
                                         // Order Creation Time
                                         Text(
                                           'Created: ${DateFormat('yyyy-MM-dd HH:mm').format(order.dateCreated ?? DateTime.now())}',
-                                          style: Theme.of(context).textTheme.bodySmall,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall,
                                         ),
 
                                         const Divider(height: 20, thickness: 1),
@@ -136,31 +174,45 @@ class _OrdersPageState extends State<OrdersPage> {
                                         // Order Details
                                         Text(
                                           'Items:',
-                                          style: Theme.of(context).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.bold),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall!
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold),
                                         ),
                                         const SizedBox(height: 8),
 
                                         ListView.builder(
                                           shrinkWrap: true,
-                                          physics: const NeverScrollableScrollPhysics(),
-                                          itemCount: (order.lineItems ?? []).length,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount:
+                                              (order.lineItems ?? []).length,
                                           itemBuilder: (context, productIndex) {
-                                            final product = order.lineItems?[productIndex];
+                                            final product =
+                                                order.lineItems?[productIndex];
                                             return Padding(
-                                              padding: const EdgeInsets.only(bottom: 4),
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 4),
                                               child: Row(
                                                 children: [
-                                                  const Icon(Icons.check_circle, size: 20, color: Colors.green),
+                                                  const Icon(Icons.check_circle,
+                                                      size: 20,
+                                                      color: Colors.green),
                                                   const SizedBox(width: 8),
                                                   Expanded(
                                                     child: Text(
                                                       '${product?.name} x${product?.quantity}',
-                                                      style: Theme.of(context).textTheme.bodyMedium,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium,
                                                     ),
                                                   ),
                                                   Text(
                                                     '\$${((product?.price ?? 0) * (product?.quantity ?? 0)).toStringAsFixed(2)}',
-                                                    style: Theme.of(context).textTheme.bodyMedium,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium,
                                                   ),
                                                 ],
                                               ),
@@ -187,15 +239,26 @@ class _OrdersPageState extends State<OrdersPage> {
                                         // const Divider(height: 20, thickness: 1),
 
                                         // Total Preparation Time
-                                        controller.getMinutesRemaining(order.id ?? 0) == null
+                                        controller.getMinutesRemaining(
+                                                    order.id ?? 0) ==
+                                                null
                                             ? const SizedBox.shrink()
                                             : Column(
                                                 children: [
                                                   Text(
-                                                    controller.getMinutesRemaining(order.id ?? 0) == 0
+                                                    controller.getMinutesRemaining(
+                                                                order.id ??
+                                                                    0) ==
+                                                            0
                                                         ? "Timer ended"
                                                         : 'Total Preparation Time: ${controller.getMinutesRemaining(order.id ?? 0) ?? 0} minutes',
-                                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold),
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium!
+                                                        .copyWith(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
                                                   ),
                                                   const SizedBox(height: 16),
                                                 ],
@@ -203,7 +266,8 @@ class _OrdersPageState extends State<OrdersPage> {
 
                                         // Buttons
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             // controller.getMinutesRemaining(order.id ?? 0) == 0
                                             //     ? const SizedBox.shrink()
@@ -297,48 +361,80 @@ class _OrdersPageState extends State<OrdersPage> {
                                                   barrierDismissible: false,
                                                   builder: (context) {
                                                     return AlertDialog(
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(16.0),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16.0),
                                                       ),
-                                                      content: GetBuilder<OrderListController>(
+                                                      content: GetBuilder<
+                                                          OrderListController>(
                                                         init: controller,
                                                         initState: (_) {},
                                                         builder: (_) {
                                                           return Column(
-                                                            mainAxisSize: MainAxisSize.min,
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
                                                             children: [
-                                                              const Text('Update Order Status'),
+                                                              const Text(
+                                                                  'Update Order Status'),
                                                               const Gap(10),
                                                               Text(
                                                                 'Total Preparation Time: ${controller.getMinutesRemaining(order.id ?? 0) ?? 0} minutes',
-                                                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                                      fontWeight: FontWeight.bold,
-                                                                      fontSize: 22,
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodyLarge!
+                                                                    .copyWith(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          22,
                                                                     ),
                                                               ),
                                                               const Gap(20),
                                                               Row(
-                                                                mainAxisSize: MainAxisSize.min,
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
                                                                 children: [
                                                                   ElevatedButton(
-                                                                    onPressed: () {
-                                                                      controller.decreaseOrderTimerBy5Minutes(order.id ?? 0);
+                                                                    onPressed:
+                                                                        () {
+                                                                      controller.decreaseOrderTimerBy5Minutes(
+                                                                          order.id ??
+                                                                              0);
                                                                     },
-                                                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                                                    child: const Text(
+                                                                    style: ElevatedButton.styleFrom(
+                                                                        backgroundColor:
+                                                                            Colors.red),
+                                                                    child:
+                                                                        const Text(
                                                                       '- 5 minutes',
-                                                                      style: TextStyle(color: Colors.white),
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.white),
                                                                     ),
                                                                   ),
                                                                   const Gap(12),
                                                                   ElevatedButton(
-                                                                    onPressed: () {
-                                                                      controller.increaseOrderTimerBy5Minutes(order.id ?? 0);
+                                                                    onPressed:
+                                                                        () {
+                                                                      controller.increaseOrderTimerBy5Minutes(
+                                                                          order.id ??
+                                                                              0);
                                                                     },
-                                                                    style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                                                                    child: const Text(
+                                                                    style: ElevatedButton.styleFrom(
+                                                                        backgroundColor:
+                                                                            Colors.green),
+                                                                    child:
+                                                                        const Text(
                                                                       '+ 5 minutes',
-                                                                      style: TextStyle(color: Colors.white),
+                                                                      style: TextStyle(
+                                                                          color:
+                                                                              Colors.white),
                                                                     ),
                                                                   ),
                                                                 ],
@@ -346,13 +442,22 @@ class _OrdersPageState extends State<OrdersPage> {
                                                               const Gap(20),
                                                               ElevatedButton(
                                                                 onPressed: () {
-                                                                  controller.notifyCustomerOnOrderTimerUpdate(order.id ?? 0);
+                                                                  controller
+                                                                      .notifyCustomerOnOrderTimerUpdate(
+                                                                          order.id ??
+                                                                              0);
                                                                   Get.back();
                                                                 },
-                                                                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                                                                child: const Text(
+                                                                style: ElevatedButton
+                                                                    .styleFrom(
+                                                                        backgroundColor:
+                                                                            Colors.black),
+                                                                child:
+                                                                    const Text(
                                                                   'Done',
-                                                                  style: TextStyle(color: Colors.white),
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
                                                                 ),
                                                               ),
                                                             ],
@@ -364,8 +469,13 @@ class _OrdersPageState extends State<OrdersPage> {
                                                 );
                                               },
                                               label: Text(
-                                                controller.getMinutesRemaining(order.id ?? 0) == null ? "Set timer" : 'Update timer',
-                                                style: const TextStyle(color: Colors.white),
+                                                controller.getMinutesRemaining(
+                                                            order.id ?? 0) ==
+                                                        null
+                                                    ? "Set timer"
+                                                    : 'Update timer',
+                                                style: const TextStyle(
+                                                    color: Colors.white),
                                               ),
                                               style: ElevatedButton.styleFrom(
                                                 backgroundColor: Colors.red,
@@ -374,17 +484,21 @@ class _OrdersPageState extends State<OrdersPage> {
 
                                             ElevatedButton.icon(
                                               onPressed: () {
-                                                _showStatusUpdateDialog(context, order);
+                                                _showStatusUpdateDialog(
+                                                    context, order);
                                               },
                                               icon: const Icon(Icons.update),
-                                              label: const Text('Update Status'),
+                                              label:
+                                                  const Text('Update Status'),
                                             ),
                                             ElevatedButton.icon(
                                               onPressed: () {
-                                                PrinterService().printOrderBill(order);
+                                                PrinterService()
+                                                    .printOrderBill(order);
                                               },
                                               icon: const Icon(Icons.print),
-                                              label: const Text('Print Receipt'),
+                                              label:
+                                                  const Text('Print Receipt'),
                                               // style: ElevatedButton.styleFrom(
                                               //   backgroundColor: Colors.green,
                                               // ),
@@ -458,15 +572,21 @@ class _OrdersPageState extends State<OrdersPage> {
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      order.status = status.toLowerCase(); // Use lowercase to match API convention
+                      order.status = status
+                          .toLowerCase(); // Use lowercase to match API convention
 
-                      controller.updateOrderStatus(order.id, status.toLowerCase());
+                      controller.updateOrderStatus(
+                          order.id, status.toLowerCase());
                     });
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: order.status == status.toLowerCase() ? Colors.blueAccent : Colors.grey[300],
-                    foregroundColor: order.status == status.toLowerCase() ? Colors.white : Colors.black,
+                    backgroundColor: order.status == status.toLowerCase()
+                        ? Colors.blueAccent
+                        : Colors.grey[300],
+                    foregroundColor: order.status == status.toLowerCase()
+                        ? Colors.white
+                        : Colors.black,
                   ),
                   child: Text(status),
                 ),

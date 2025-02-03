@@ -2,29 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:pdf_printer/controllers/dashboard_controller.dart';
-import 'package:pdf_printer/controllers/order_list_controller.dart';
-import 'package:pdf_printer/controllers/product_list_controller.dart';
-import 'package:pdf_printer/controllers/sales_report_controller.dart';
-import 'package:pdf_printer/views/store_settings_view.dart';
+import 'package:order_manager/controllers/dashboard_controller.dart';
+import 'package:order_manager/controllers/order_list_controller.dart';
+import 'package:order_manager/controllers/product_list_controller.dart';
+import 'package:order_manager/controllers/sales_report_controller.dart';
+import 'package:order_manager/views/store_settings_view.dart';
 
 class DashboardDrawer extends StatelessWidget {
   const DashboardDrawer({super.key});
 
-  SalesReportController get salesReportController => Get.find<SalesReportController>();
-  DashboardController get dashboardController => Get.find<DashboardController>();
-  OrderListController get orderListController => Get.find<OrderListController>();
-  ProductListController get productListController => Get.find<ProductListController>();
+  SalesReportController get salesReportController =>
+      Get.find<SalesReportController>();
+  DashboardController get dashboardController =>
+      Get.find<DashboardController>();
+  OrderListController get orderListController =>
+      Get.find<OrderListController>();
+  ProductListController get productListController =>
+      Get.find<ProductListController>();
 
   void _generateReport(BuildContext context) {
-    final List<String> statuses = ["today", "week", "month", "last_month", "year"];
+    final List<String> statuses = [
+      "today",
+      "week",
+      "month",
+      "last_month",
+      "year"
+    ];
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0), // Match card corner radius
+            borderRadius:
+                BorderRadius.circular(16.0), // Match card corner radius
           ),
           title: const Text('Sales report'),
           content: Obx(
@@ -50,7 +61,11 @@ class DashboardDrawer extends StatelessWidget {
                                 );
                               },
                               child: Text(
-                                status[0].toUpperCase() + status.substring(1, status.length).toLowerCase().replaceAll('_', " "),
+                                status[0].toUpperCase() +
+                                    status
+                                        .substring(1, status.length)
+                                        .toLowerCase()
+                                        .replaceAll('_', " "),
                               ),
                             ),
                           );
@@ -114,12 +129,16 @@ class DashboardDrawer extends StatelessWidget {
           Obx(() => ListTile(
                 leading: Icon(
                   Icons.receipt,
-                  color: !dashboardController.isProductTabSelected.value ? Colors.green : Colors.grey,
+                  color: !dashboardController.isProductTabSelected.value
+                      ? Colors.green
+                      : Colors.grey,
                 ),
                 title: Text(
                   'Orders',
                   style: TextStyle(
-                    color: !dashboardController.isProductTabSelected.value ? Colors.black : Colors.grey,
+                    color: !dashboardController.isProductTabSelected.value
+                        ? Colors.black
+                        : Colors.grey,
                   ),
                 ),
                 onTap: () {
@@ -134,12 +153,16 @@ class DashboardDrawer extends StatelessWidget {
           Obx(() => ListTile(
                 leading: Icon(
                   Icons.fastfood_rounded,
-                  color: dashboardController.isProductTabSelected.value ? Colors.green : Colors.grey,
+                  color: dashboardController.isProductTabSelected.value
+                      ? Colors.green
+                      : Colors.grey,
                 ),
                 title: Text(
                   'Store',
                   style: TextStyle(
-                    color: dashboardController.isProductTabSelected.value ? Colors.black : Colors.grey,
+                    color: dashboardController.isProductTabSelected.value
+                        ? Colors.black
+                        : Colors.grey,
                   ),
                 ),
                 onTap: () {

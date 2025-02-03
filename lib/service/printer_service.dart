@@ -6,18 +6,16 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf_printer/controllers/order_list_controller.dart';
-import 'package:pdf_printer/controllers/store_controller.dart';
-import 'package:pdf_printer/models/order_m.dart';
-import 'package:pdf_printer/models/sales_report_m.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
+import 'package:order_manager/controllers/order_list_controller.dart';
+import 'package:order_manager/controllers/store_controller.dart';
+import 'package:order_manager/models/order_m.dart';
+import 'package:order_manager/models/sales_report_m.dart';
+import 'package:order_manager/service/debug/logger.dart';
 import 'package:printing/printing.dart';
 
 class PrinterService {
   Printer? selectedPrinter;
 
-  static const roll80Format =
-      PdfPageFormat(72 * PdfPageFormat.mm, double.infinity);
   Future<pw.Document> generateSamplePagePdf() async {
     final pdf = pw.Document();
 
@@ -28,7 +26,9 @@ class PrinterService {
     pdf.addPage(
       pw.Page(
         clip: false,
-        pageFormat: roll80Format,
+        pageFormat: PdfPageFormat(
+            Get.find<StoreController>().receiptWidth * PdfPageFormat.mm,
+            double.infinity),
         margin: pw.EdgeInsets.only(
           right: Get.find<StoreController>().receiptRightPadding,
           left: Get.find<StoreController>().receiptLeftPadding,
@@ -163,7 +163,9 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     pdf.addPage(
       pw.Page(
         clip: false, // for continuous-roll printers
-        pageFormat: roll80Format,
+        pageFormat: PdfPageFormat(
+            Get.find<StoreController>().receiptWidth * PdfPageFormat.mm,
+            double.infinity),
         // margin: const pw.EdgeInsets.only(),
         margin: pw.EdgeInsets.only(
           right: Get.find<StoreController>().receiptRightPadding,
@@ -440,7 +442,7 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
                               order.billing?.email ?? '',
                               style: baseTextStyle,
                             ),
-                            if (type == 'delivery' &&
+                            if (type.toLowerCase() == 'delivery' &&
                                 (order.shipping?.address1 ?? '').isNotEmpty)
                               pw.Column(
                                 crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -544,7 +546,9 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     // ---------- BUILD PAGE ----------
     pdf.addPage(
       pw.Page(
-        pageFormat: roll80Format,
+        pageFormat: PdfPageFormat(
+            Get.find<StoreController>().receiptWidth * PdfPageFormat.mm,
+            double.infinity),
         // margin: const pw.EdgeInsets.only(),
         margin: pw.EdgeInsets.only(
           right: Get.find<StoreController>().receiptRightPadding,

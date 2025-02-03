@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pdf_printer/controllers/store_controller.dart';
-import 'package:pdf_printer/service/printer_service.dart';
+import 'package:order_manager/controllers/store_controller.dart';
+import 'package:order_manager/service/printer_service.dart';
 import 'package:printing/printing.dart';
 
 class StoreSettingsView extends StatefulWidget {
@@ -21,6 +21,9 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
     );
     final TextEditingController leftPaddingController = TextEditingController(
       text: controller.receiptLeftPadding.toString(),
+    );
+    final TextEditingController receiptWidthController = TextEditingController(
+      text: controller.receiptWidth.toString(),
     );
 
     return Scaffold(
@@ -68,7 +71,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                                   return DropdownMenuItem<Printer>(
                                     value: printer,
                                     child: Text(
-                                      "${printer.name}",
+                                      printer.name,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   );
@@ -84,13 +87,17 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                         const SizedBox(height: 16),
 
                         const Divider(),
-                        _buildPaddingField("Receipt Padding (Right Side)",
-                            rightPaddingController, (value) {
-                          controller.onPaddingUpdated(value, "right");
+                        _buildPaddingField("Receipt Width ( Default: 72mm )",
+                            receiptWidthController, (value) {
+                          controller.onReceiptWidthUpdated(value);
                         }),
                         _buildPaddingField("Receipt Padding (Left Side)",
                             leftPaddingController, (value) {
                           controller.onPaddingUpdated(value, "left");
+                        }),
+                        _buildPaddingField("Receipt Padding (Right Side)",
+                            rightPaddingController, (value) {
+                          controller.onPaddingUpdated(value, "right");
                         }),
                       ],
                     ),
@@ -150,7 +157,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "License Information",
+              "Single User Licensed to",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const Divider(),

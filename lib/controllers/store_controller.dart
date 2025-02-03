@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:pdf_printer/service/debug/logger.dart';
-import 'package:pdf_printer/service/evn_constant.dart';
-import 'package:pdf_printer/service/network/network-c.dart';
-import 'package:pdf_printer/service/printer_service.dart';
+import 'package:order_manager/service/debug/logger.dart';
+import 'package:order_manager/service/evn_constant.dart';
+import 'package:order_manager/service/network/network-c.dart';
+import 'package:order_manager/service/printer_service.dart';
 import 'package:printing/printing.dart';
 
 class StoreController extends GetxController {
@@ -16,6 +16,10 @@ class StoreController extends GetxController {
   double receiptLeftPadding = 0.0;
   static const rightPaddingKey = "paddingRightKey";
   static const leftPaddingKey = "paddingLeftKey";
+
+  static const receiptWidthKey = "paperReceiptWidth";
+  double receiptWidth = 72.0;
+
   Printer? selectedPrinter;
   bool isStoreActive = false;
   final GetStorage _storage = GetStorage(); // Initialize GetStorage
@@ -32,6 +36,16 @@ class StoreController extends GetxController {
       receiptLeftPadding = 0.0;
     }
     savePaddingSettings(leftOrRight);
+    update();
+  }
+
+  onReceiptWidthUpdated(String x) {
+    try {
+      receiptWidth = double.parse(x);
+    } catch (e) {
+      receiptWidth = 72.0;
+    }
+    saveReceiptWidth();
     update();
   }
 
@@ -87,6 +101,10 @@ class StoreController extends GetxController {
         receiptLeftPadding,
       );
     }
+  }
+
+  saveReceiptWidth() {
+    _storage.write(receiptWidthKey, receiptWidth);
   }
 
   final NetworkController _networkController = Get.find<NetworkController>();
