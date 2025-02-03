@@ -22,6 +22,9 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
     final TextEditingController leftPaddingController = TextEditingController(
       text: controller.receiptLeftPadding.toString(),
     );
+    final TextEditingController receiptWidthController = TextEditingController(
+      text: controller.receiptWidth.toString(),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -84,13 +87,17 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                         const SizedBox(height: 16),
 
                         const Divider(),
-                        _buildPaddingField("Receipt Padding (Right Side)",
-                            rightPaddingController, (value) {
-                          controller.onPaddingUpdated(value, "right");
+                        _buildPaddingField("Receipt Width ( Default: 72mm )",
+                            receiptWidthController, (value) {
+                          controller.onPaddingUpdated(value, "left");
                         }),
                         _buildPaddingField("Receipt Padding (Left Side)",
                             leftPaddingController, (value) {
                           controller.onPaddingUpdated(value, "left");
+                        }),
+                        _buildPaddingField("Receipt Padding (Right Side)",
+                            rightPaddingController, (value) {
+                          controller.onPaddingUpdated(value, "right");
                         }),
                       ],
                     ),

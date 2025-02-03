@@ -16,6 +16,10 @@ class StoreController extends GetxController {
   double receiptLeftPadding = 0.0;
   static const rightPaddingKey = "paddingRightKey";
   static const leftPaddingKey = "paddingLeftKey";
+
+  static const receiptWidthKey = "paperReceiptWidth";
+  double receiptWidth = 72.0;
+
   Printer? selectedPrinter;
   bool isStoreActive = false;
   final GetStorage _storage = GetStorage(); // Initialize GetStorage
@@ -32,6 +36,16 @@ class StoreController extends GetxController {
       receiptLeftPadding = 0.0;
     }
     savePaddingSettings(leftOrRight);
+    update();
+  }
+
+  onReceiptWidthUpdated(String x) {
+    try {
+      receiptWidth = double.parse(x);
+    } catch (e) {
+      receiptWidth = 72.0;
+    }
+    saveReceiptWidth();
     update();
   }
 
@@ -87,6 +101,10 @@ class StoreController extends GetxController {
         receiptLeftPadding,
       );
     }
+  }
+
+  saveReceiptWidth() {
+    _storage.write(receiptWidthKey, receiptWidth);
   }
 
   final NetworkController _networkController = Get.find<NetworkController>();

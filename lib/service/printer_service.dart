@@ -16,8 +16,9 @@ import 'package:printing/printing.dart';
 class PrinterService {
   Printer? selectedPrinter;
 
-  static const roll80Format =
-      PdfPageFormat(72 * PdfPageFormat.mm, double.infinity);
+  static final roll80Format = PdfPageFormat(
+      Get.find<StoreController>().receiptWidth * PdfPageFormat.mm,
+      double.infinity);
   Future<pw.Document> generateSamplePagePdf() async {
     final pdf = pw.Document();
 
