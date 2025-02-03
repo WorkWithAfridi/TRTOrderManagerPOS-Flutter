@@ -89,7 +89,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                         const Divider(),
                         _buildPaddingField("Receipt Width ( Default: 72mm )",
                             receiptWidthController, (value) {
-                          controller.onPaddingUpdated(value, "left");
+                          controller.onReceiptWidthUpdated(value);
                         }),
                         _buildPaddingField("Receipt Padding (Left Side)",
                             leftPaddingController, (value) {

@@ -16,9 +16,6 @@ import 'package:printing/printing.dart';
 class PrinterService {
   Printer? selectedPrinter;
 
-  static final roll80Format = PdfPageFormat(
-      Get.find<StoreController>().receiptWidth * PdfPageFormat.mm,
-      double.infinity);
   Future<pw.Document> generateSamplePagePdf() async {
     final pdf = pw.Document();
 
@@ -29,7 +26,9 @@ class PrinterService {
     pdf.addPage(
       pw.Page(
         clip: false,
-        pageFormat: roll80Format,
+        pageFormat: PdfPageFormat(
+            Get.find<StoreController>().receiptWidth * PdfPageFormat.mm,
+            double.infinity),
         margin: pw.EdgeInsets.only(
           right: Get.find<StoreController>().receiptRightPadding,
           left: Get.find<StoreController>().receiptLeftPadding,
@@ -164,7 +163,9 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     pdf.addPage(
       pw.Page(
         clip: false, // for continuous-roll printers
-        pageFormat: roll80Format,
+        pageFormat: PdfPageFormat(
+            Get.find<StoreController>().receiptWidth * PdfPageFormat.mm,
+            double.infinity),
         // margin: const pw.EdgeInsets.only(),
         margin: pw.EdgeInsets.only(
           right: Get.find<StoreController>().receiptRightPadding,
@@ -545,7 +546,9 @@ Id adipisicing eu ullamco deserunt sint irure excepteur Lorem magna magna amet d
     // ---------- BUILD PAGE ----------
     pdf.addPage(
       pw.Page(
-        pageFormat: roll80Format,
+        pageFormat: PdfPageFormat(
+            Get.find<StoreController>().receiptWidth * PdfPageFormat.mm,
+            double.infinity),
         // margin: const pw.EdgeInsets.only(),
         margin: pw.EdgeInsets.only(
           right: Get.find<StoreController>().receiptRightPadding,
