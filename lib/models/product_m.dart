@@ -171,7 +171,7 @@ class ProductModel {
         priceHtml: json["price_html"],
         onSale: json["on_sale"],
         purchasable: json["purchasable"],
-        totalSales: json["total_sales"],
+        totalSales: int.parse((json["total_sales"] ?? "0").toString()),
         virtual: json["virtual"],
         downloadable: json["downloadable"],
         downloads: json["downloads"] == null ? [] : List<dynamic>.from(json["downloads"]!.map((x) => x)),

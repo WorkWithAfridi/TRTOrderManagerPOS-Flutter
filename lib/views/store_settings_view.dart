@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:order_manager/controllers/store_controller.dart';
 import 'package:order_manager/service/printer_service.dart';
 import 'package:printing/printing.dart';
@@ -31,6 +33,31 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
         title: const Text('Store Settings'),
         elevation: 0,
         backgroundColor: Colors.transparent,
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              GetStorage storage = GetStorage();
+              storage.erase();
+              Get.snackbar("Cache cleared successfully", "Please restart the app.");
+            },
+            child: Row(
+              children: [
+                Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
+                Gap(8),
+                const Text(
+                  "Clear Cache",
+                  style: TextStyle(
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Gap(20),
+        ],
       ),
       body: GetBuilder<StoreController>(
         init: controller,
@@ -42,8 +69,7 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
               children: [
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -60,14 +86,12 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                                 value: controller.selectedPrinter,
                                 hint: const Text("Select Printer"),
                                 decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 10),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                items: controller.availablePrinter
-                                    .map((Printer printer) {
+                                items: controller.availablePrinter.map((Printer printer) {
                                   return DropdownMenuItem<Printer>(
                                     value: printer,
                                     child: Text(
@@ -82,21 +106,17 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
                                   controller.update();
                                 },
                               )
-                            : const Text("No printer available",
-                                style: TextStyle(color: Colors.grey)),
+                            : const Text("No printer available", style: TextStyle(color: Colors.grey)),
                         const SizedBox(height: 16),
 
                         const Divider(),
-                        _buildPaddingField("Receipt Width ( Default: 72mm )",
-                            receiptWidthController, (value) {
+                        _buildPaddingField("Receipt Width ( Default: 72mm )", receiptWidthController, (value) {
                           controller.onReceiptWidthUpdated(value);
                         }),
-                        _buildPaddingField("Receipt Padding (Left Side)",
-                            leftPaddingController, (value) {
+                        _buildPaddingField("Receipt Padding (Left Side)", leftPaddingController, (value) {
                           controller.onPaddingUpdated(value, "left");
                         }),
-                        _buildPaddingField("Receipt Padding (Right Side)",
-                            rightPaddingController, (value) {
+                        _buildPaddingField("Receipt Padding (Right Side)", rightPaddingController, (value) {
                           controller.onPaddingUpdated(value, "right");
                         }),
                       ],
@@ -121,16 +141,14 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
     );
   }
 
-  Widget _buildPaddingField(String label, TextEditingController controller,
-      Function(String) onChanged) {
+  Widget _buildPaddingField(String label, TextEditingController controller, Function(String) onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Text(label,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
           SizedBox(
             width: 100,
@@ -161,14 +179,10 @@ class _StoreSettingsViewState extends State<StoreSettingsView> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const Divider(),
-            _buildLicenseDetail(
-                "Store Name", controller.storeModel?.name ?? "N/A"),
-            _buildLicenseDetail(
-                "Address", controller.storeModel?.address ?? "N/A"),
-            _buildLicenseDetail(
-                "Contact", controller.storeModel?.contact ?? "N/A"),
-            _buildLicenseDetail(
-                "Timezone", controller.storeModel?.timezone ?? "N/A"),
+            _buildLicenseDetail("Store Name", controller.storeModel?.name ?? "N/A"),
+            _buildLicenseDetail("Address", controller.storeModel?.address ?? "N/A"),
+            _buildLicenseDetail("Contact", controller.storeModel?.contact ?? "N/A"),
+            _buildLicenseDetail("Timezone", controller.storeModel?.timezone ?? "N/A"),
           ],
         ),
       ),
