@@ -97,22 +97,33 @@ class _TrayManagerHandlerState extends State<TrayManagerHandler>
   }
 
   Future<void> initTray() async {
-    await trayManager.setIcon('assets/icon/icon.png');
+    try {
+      if (Platform.isWindows) {
+        await trayManager
+            .setIcon('assets/icon/icon.ico'); // Use .ico for Windows
+      } else if (Platform.isLinux) {
+        await trayManager.setIcon('assets/icon/icon.png'); // Use .png for Linux
+      }
 
-    final menuItems = [
-      MenuItem(key: 'show', label: 'Show'),
-      MenuItem(key: 'hide', label: 'Hide'),
-      MenuItem(key: 'quit', label: 'Quit'),
-    ];
+      final menuItems = [
+        MenuItem(key: 'show', label: 'Show'),
+        MenuItem(key: 'quit', label: 'Quit'),
+      ];
 
-    await trayManager.setContextMenu(Menu(items: menuItems));
-    await windowManager.setPreventClose(true);
-    trayManager.addListener(this);
+      await trayManager.setContextMenu(Menu(items: menuItems));
+      logger.i("Tray menu set successfully");
+
+      await windowManager.setPreventClose(true);
+      trayManager.addListener(this);
+    } catch (e) {
+      logger.e("Error initializing tray: $e");
+    }
   }
 
   @override
   void onTrayIconMouseDown() async {
     bool isVisible = await windowManager.isVisible();
+
     if (isVisible) {
       await windowManager.hide();
     } else {
@@ -122,15 +133,17 @@ class _TrayManagerHandlerState extends State<TrayManagerHandler>
   }
 
   @override
+  void onTrayIconRightMouseDown() {
+    trayManager.popUpContextMenu();
+  }
+
+  @override
   void onTrayMenuItemClick(MenuItem menuItem) async {
     switch (menuItem.key) {
       case 'show':
         await windowManager.restore();
         await windowManager.show();
         await windowManager.focus();
-        break;
-      case 'hide':
-        await windowManager.hide();
         break;
       case 'quit':
         await windowManager.destroy();
@@ -149,6 +162,12 @@ class _TrayManagerHandlerState extends State<TrayManagerHandler>
   @override
   void onWindowMinimize() async {
     await windowManager.hide(); // Hide instead of minimizing.
+  }
+
+  @override
+  void onWindowFocus() {
+    // Make sure to call once.
+    setState(() {});
   }
 
   @override
